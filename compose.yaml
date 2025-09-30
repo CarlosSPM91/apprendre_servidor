@@ -1,0 +1,13 @@
+services:
+  apprendreapi:
+    image: apprendreapi
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/app
+  postgres-test:
+    image: postgres
+    env_file: .env
