@@ -1,6 +1,5 @@
 .env
 apprendre-env
-Makefile
 .venv
 .vscode
 __pycache__/
