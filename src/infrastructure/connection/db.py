@@ -39,6 +39,8 @@ async def async_init_db(engine):
     """
     from src.infrastructure.entities.user import User
     from src.infrastructure.entities.roles import Role
+    from src.infrastructure.entities.accces_logs import AccesLog
+    from src.infrastructure.entities.deletion_logs import DeletionLog
     
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)

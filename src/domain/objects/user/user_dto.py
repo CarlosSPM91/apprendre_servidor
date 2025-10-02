@@ -4,8 +4,7 @@ from pydantic import BaseModel
 
 class UserDTO(BaseModel):
     id: int
-    email: str
+    username: str
     name: str
-    lastname: str
-    token: str
+    last_name: str
     role: str

@@ -6,8 +6,14 @@ application service layer.
 
 :author: Carlos S. Paredes Morillo
 """
+
+from typing import Optional
+
+from fastapi import Depends
+from src.application.services.password_service import PasswordService
 from src.domain.objects.user.user_create_dto import UserCreateDTO
 from src.domain.objects.user.user_dto import UserDTO
+from src.infrastructure.entities.user import User
 from src.infrastructure.repositories.user import UserRepository
 
 
@@ -18,7 +24,8 @@ class UserService:
 
     :author: Carlos S. Paredes Morillo
     """
-    def __init__(self, repo: UserRepository):
+
+    async def __init__(self, repo: UserRepository, pwd_service: PasswordService):
         """Initialize the service with a UserRepository.
 
         Args:
@@ -27,8 +34,12 @@ class UserService:
         :author: Carlos S. Paredes Morillo
         """
         self.userRepo = repo
+        self.pwdService = pwd_service
 
-    def create(self, payload: UserCreateDTO) -> UserDTO:
+    async def create(
+        self,
+        payload: UserCreateDTO,
+    ) -> UserDTO:
         """Create a new user.
 
         Args:
@@ -39,4 +50,18 @@ class UserService:
 
         :author: Carlos S. Paredes Morillo
         """
-        self.userRepo.create(payload)
+        pwd_hash= self.pwdService.hash_password(payload.password)
+        payload.password= pwd_hash
+        return self.userRepo.create(payload)
+
+    async def getUserByUsermame(self, user_id: int) -> Optional[User]:
+
+        self.userRepo.getUserByUsermame(user_id)
+
+    async def getUserbyId(self, user_id: int) -> Optional[UserDTO]:
+
+        self.userRepo.getById(user_id)
+
+    async def updateLastUsed(self, user_id: int) -> bool:
+
+        self.userRepo.updateLastUsed(user_id)

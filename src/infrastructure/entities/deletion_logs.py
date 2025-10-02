@@ -1,16 +1,18 @@
 """
 Access Logs Entity.
 
-Represents the `access_log` table in the database, used to store
+Represents the `deletion_log` table in the database, used to store
 user access information.
 
 :author: Carlos S. Paredes Morillo
 """
+
 from datetime import datetime, timezone
 from typing import Optional
 from sqlmodel import Column, Field, ForeignKey, Integer, Relationship, SQLModel
 
-class AccesLog(SQLModel, table=True):
+
+class DeletionLog(SQLModel, table=True):
     """Database model for user access logs.
 
     Attributes:
@@ -22,23 +24,17 @@ class AccesLog(SQLModel, table=True):
 
     :author: Carlos S. Paredes Morillo
     """
-    __tablename__ = "access_log"
+
+    __tablename__ = "deletion_logs"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: int = Field(
-        sa_column=Column(
-            Integer,
-            ForeignKey("users.id", ondelete="CASCADE"),
-            nullable=False,
-        )
-    )
-    username: str = Field(default=None, nullable=False, max_length=30)
-    acces_date: datetime = Field(
+    user_id: int
+    name: str = Field(default=None, nullable=False, max_length=50)
+    last_name: str = Field(default=None, nullable=False, max_length=100)
+    deletion_date: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-
-    users: "User" = Relationship(
-        back_populates="access_logs",
-        cascade_delete=True,
-    )
+    user_who_deleted: int
+    name_who_deleted: str = Field(default=None, nullable=False, max_length=50)
+    last_name_who_deleted: str = Field(default=None, nullable=False, max_length=100)

@@ -15,6 +15,7 @@ class UserCreateDTO(BaseModel):
 
     Attributes:
         email (str): User's email address.
+        username (str): User's username.
         name (str): User's first name.
         lastname (str): User's last name.
         dni (str): National identification number.
@@ -24,10 +25,11 @@ class UserCreateDTO(BaseModel):
 
     :author: Carlos S. Paredes Morillo
     """
+    username: str
     email: str
     name: str
-    lastname: str
+    last_name: str
     dni:str
-    pwd: str
+    password: str
     phone: int
-    role: str
+    role_id: int

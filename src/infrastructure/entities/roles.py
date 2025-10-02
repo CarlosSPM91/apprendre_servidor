@@ -11,10 +11,6 @@ from __future__ import annotations
 from typing import Optional, List
 from sqlmodel import SQLModel, Field, Relationship
 
-from src.infrastructure.entities.user import User
-
-
-
 class Role(SQLModel, table=True):
     """Database model for user roles.
 

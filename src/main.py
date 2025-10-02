@@ -31,7 +31,8 @@ async def lifespan(app: FastAPI):
 
     :author: Carlos S. Paredes Morillo
     """
-    await async_init_db()
+    engine = container.database_engine()
+    await async_init_db(engine)
     yield
 
 container = Container()

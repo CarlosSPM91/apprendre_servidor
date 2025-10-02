@@ -11,8 +11,6 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, List, Optional
 from sqlmodel import Column, Field, ForeignKey, Integer, Relationship, SQLModel
 
-from src.infrastructure.entities.accces_logs import AccesLog
-from src.infrastructure.entities.roles import Role
 
 
 class User(SQLModel, table=True):
@@ -39,13 +37,13 @@ class User(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(
-        sa_column_kwargs={"unique": True}, max_length=255, nullable=False
+        sa_column_kwargs={"unique": True}, max_length=30, nullable=False
     )
     name: str = Field(nullable=False, max_length=50)
     last_names: str = Field(nullable=False, max_length=100)
-    email: str | None
-    phone: int = Field(nullable=False, max_length=9)
-    dni: Optional[str] = Field(default=None, max_length=10)
+    email: str = Field(default=None, max_length=100, nullable=True)
+    phone: int = Field(nullable=False)
+    dni: Optional[str] = Field(default=None, max_length=10, nullable=True)
     password: str = Field(nullable=False, max_length=255)
     create_time: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
@@ -56,17 +54,13 @@ class User(SQLModel, table=True):
         sa_column=Column(
             Integer,
             ForeignKey("roles.id", ondelete="RESTRICT"),
-            nullable=False
+            nullable=False,
+            index=True
         ),
-        index=True
     )
 
     role: "Role" = Relationship(back_populates="users")
-    access_logs: List["AccesLog"] = Relationship(
+    access_logs: List["AccesLog"]= Relationship(
         back_populates="users",
-        sa_relationship_kwargs={
-            "cascade": "all, delete-orphan",
-            "passive_deletes": True,
-            "lazy": "selectin",
-        },
+        cascade_delete=True,
     )
