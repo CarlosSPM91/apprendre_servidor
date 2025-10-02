@@ -10,4 +10,9 @@ services:
       - ./:/app
   postgres-test:
     image: postgres
-    env_file: .env
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: Adm1n
+      POSTGRES_DB: apprendre_test
+    ports:
+      - 5432:5432
