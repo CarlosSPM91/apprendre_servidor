@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     :author: Carlos S. Paredes Morillo
     """
     database_url: str
+    secret_key:str
+    algorithm:str
 
     model_config = SettingsConfigDict(
         env_file=".env",
