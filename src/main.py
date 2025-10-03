@@ -63,6 +63,6 @@ def health():
     """
     return {"message": "Server OK possibly"}
 
-app.include_router(user_router, prefix="/user")
+app.include_router(user_router)
 
-container.wire(modules=[sys.modules[__name__]])
+container.wire(modules=["src.endpoints.user"])

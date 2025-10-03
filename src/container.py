@@ -17,6 +17,7 @@ from src.application.use_case.user.delete_user_case import DeleteUserCase
 from src.application.use_case.user.find_user_case import FindUserCase
 from src.application.use_case.user.update_user_case import UpdateUserCase
 from src.infrastructure.connection.db import get_engine, get_session
+from src.infrastructure.controllers.user import UserController
 from src.infrastructure.repositories.user import UserRepository
 
 
@@ -60,4 +61,13 @@ class Container(containers.DeclarativeContainer):
         update_case=update_user_case,
         pwd_service=pwd_service,
         token_service=token_service,
+    )
+    
+    # Controllers
+    user_controller = providers.Factory(
+        UserController,
+        find_case=find_user_case,
+        create_case=create_user_case,
+        update_case=update_user_case,
+        delete_case=delete_user_case,
     )

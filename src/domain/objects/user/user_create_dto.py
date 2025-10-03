@@ -11,20 +11,7 @@ from pydantic import BaseModel
 
 
 class UserCreateDTO(BaseModel):
-    """DTO for creating a new user.
 
-    Attributes:
-        email (str): User's email address.
-        username (str): User's username.
-        name (str): User's first name.
-        lastname (str): User's last name.
-        dni (str): National identification number.
-        pwd (str): User's password (raw, should be hashed before storage).
-        phone (int): User's phone number.
-        role (str): Role name assigned to the user.
-
-    :author: Carlos S. Paredes Morillo
-    """
     username: str
     email: str
     name: str

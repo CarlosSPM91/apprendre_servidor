@@ -13,10 +13,12 @@ class LoginUseCase:
         self,
         pwd_service: PasswordService,
         token_service: TokenService,
+        find_case: FindUserCase,
         update_case: UpdateUserCase,
     ):
         self.pwd_service = pwd_service
         self.token_sevice = token_service
+        self.find_user_case = find_case
         self.update_user_case = update_case
 
     async def login(
@@ -25,7 +27,7 @@ class LoginUseCase:
     ) -> LoginResponse:
         hash_pass = self.pwd_service.hash_password(payload.password)
 
-        user: User = self.user_service.getUserByUsermame(payload["username"])
+        user: User = self.find_user_case.get_user_by_username(payload["username"])
 
         if not user:
             raise HTTPException(
@@ -49,7 +51,7 @@ class LoginUseCase:
 
         token = self.token_sevice.generate_token(jwtPayload)
 
-        await self.user_service.updateLastUsed(user.id)
+        await self.update_user_case.update_last_used(user.id)
 
         return {
             "acces_token": token,

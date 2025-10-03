@@ -38,7 +38,3 @@ class AccesLog(SQLModel, table=True):
         nullable=False,
     )
 
-    users: "User" = Relationship(
-        back_populates="access_logs",
-        cascade_delete=True,
-    )

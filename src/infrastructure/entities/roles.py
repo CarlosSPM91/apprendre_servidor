@@ -25,5 +25,3 @@ class Role(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     rol: str = Field(max_length=64, nullable=False, sa_column_kwargs={"unique": True})
-
-    users: List["User"] = Relationship(back_populates="role")

@@ -7,7 +7,7 @@ from src.infrastructure.repositories.user import UserRepository
 
 
 class CreateUserCase:
-    async def __init__(self, pwd_service: PasswordService, repo: UserRepository):
+    def __init__(self, pwd_service: PasswordService, repo: UserRepository):
         self.pwdService = pwd_service
         self.userRepo = repo
 
@@ -15,6 +15,7 @@ class CreateUserCase:
         self,
         payload: UserCreateDTO,
     ) -> CommonResponse:
+        print("------Use CASE---->"+(str(payload.role_id)))
         pwd_hash = self.pwdService.hash_password(payload.password)
         payload.password = pwd_hash
         user = await self.userRepo.create(payload)

@@ -18,6 +18,7 @@ from src.domain.objects.user.user_dto import UserDTO
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
 
 
+
 class UserController:
     """Controller for user operations.
 
@@ -40,6 +41,7 @@ class UserController:
 
     async def create_user(self, payload: UserCreateDTO):
         try:
+            print("-----CONTROLLER ----->"+(payload.last_name))
             resp = await self.create_user_case.create(payload)
             return {
                 "status": "success",

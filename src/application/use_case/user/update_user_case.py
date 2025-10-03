@@ -11,7 +11,7 @@ from src.infrastructure.repositories.user import UserRepository
 
 
 class UpdateUserCase:
-    async def __init__(self, pwd_service: PasswordService, repo: UserRepository):
+    def __init__(self, pwd_service: PasswordService, repo: UserRepository):
         self.pwdService = pwd_service
         self.userRepo = repo
         

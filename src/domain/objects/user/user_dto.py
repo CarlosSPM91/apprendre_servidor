@@ -7,4 +7,4 @@ class UserDTO(BaseModel):
     username: str
     name: str
     last_name: str
-    role: str
+    role: int

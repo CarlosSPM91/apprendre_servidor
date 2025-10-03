@@ -11,26 +11,9 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, List, Optional
 from sqlmodel import Column, Field, ForeignKey, Integer, Relationship, SQLModel
 
+from src.infrastructure.entities.accces_logs import AccesLog
+
 class User(SQLModel, table=True):
-    """Database model for application users.
-
-    Attributes:
-        id (Optional[int]): Primary key, user identifier.
-        username (str): Unique username.
-        name (str): User's first name.
-        last_names (str): User's last names.
-        email (Optional[str]): User's email address.
-        phone (int): User's phone number (9 digits max).
-        dni (Optional[str]): National identification number (max length 10).
-        password (str): User's hashed password.
-        create_time (datetime): User creation timestamp.
-        last_used (Optional[datetime]): Last login timestamp.
-        role_id (int): Foreign key referencing `roles.id`.
-        role (Role): Relationship to the associated role.
-        access_logs (List[AccesLog]): Relationship to access logs.
-
-    :author: Carlos S. Paredes Morillo
-    """
     __tablename__ = "users"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -38,7 +21,7 @@ class User(SQLModel, table=True):
         sa_column_kwargs={"unique": True}, max_length=30, nullable=False
     )
     name: str = Field(nullable=False, max_length=50)
-    last_names: str = Field(nullable=False, max_length=100)
+    last_name: str = Field(nullable=False, max_length=100)
     email: str = Field(default=None, max_length=100, nullable=True)
     phone: int = Field(nullable=False)
     dni: Optional[str] = Field(default=None, max_length=10, nullable=True)
@@ -48,17 +31,5 @@ class User(SQLModel, table=True):
         nullable=False,
     )
     last_used: Optional[datetime] = Field(default=None)
-    role_id: int = Field(
-        sa_column=Column(
-            Integer,
-            ForeignKey("roles.id", ondelete="RESTRICT"),
-            nullable=False,
-            index=True
-        ),
-    )
+    role_id: int = Field(default=None, foreign_key="roles.id")
 
-    role: "Role" = Relationship(back_populates="users")
-    access_logs: List["AccesLog"]= Relationship(
-        back_populates="users",
-        cascade_delete=True,
-    )

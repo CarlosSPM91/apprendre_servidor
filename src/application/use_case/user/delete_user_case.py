@@ -5,7 +5,7 @@ from src.infrastructure.repositories.user import UserRepository
 
 
 class DeleteUserCase:
-    async def __init__(self, repo: UserRepository):
+    def __init__(self, repo: UserRepository):
         self.userRepo = repo
 
     async def delete(

@@ -45,55 +45,77 @@ class UserRepository:
 
         :author: Carlos S. Paredes Morillo
         """
-        async with self.session as session:
+        async for session in self.session:
+            print("------REPO---->"+(str(payload.role_id)))
             user = User(
                 username=payload.username,
                 name=payload.name,
-                last_names=payload.last_name,
+                last_name=payload.last_name,
                 email=payload.email or None,
                 phone=payload.phone or None,
                 dni=payload.dni or None,
                 password=payload.password,
-                role=payload.role_id,
+                role_id=payload.role_id,
             )
-        session.add(user)
-        await session.commit()
-        await session.refresh(user)
+            print("------REPO---->"+(str(user.role_id)))
+            session.add(user)
+            await session.commit()
+            await session.refresh(user)
 
-        return UserDTO(
-            id=user.id, name=user.name, last_name=user.last_names, role=user.role
-        )
+            return UserDTO(
+                user_id=user.id,
+                username=user.username,
+                name=user.name,
+                last_name=user.last_name,
+                role=user.role_id
+            )
 
     async def get_user_by_id(
         self,
         user_id: int,
     ) -> Optional[UserDTO]:
-        async with self.session as session:
-            user: User = await session.exec(select(User).where(User.id == user_id)).first()
-
-        return UserDTO(
-            user_id=user.id,
-            username=user.username,
-            name=user.name,
-            last_name=user.last_names,
-            role=user.role_id,
-        )
+        async for session in self.session:
+            user: User = (await session.exec(select(User).where(User.id == user_id))).first()
+            
+            if not user:
+                return None
+                
+            return UserDTO(
+                user_id=user.id,
+                username=user.username,
+                name=user.name,
+                last_name=user.last_names,
+                role=user.role,
+            )
 
     async def get_user_by_username(
         self,
         username: str,
-    ) -> Optional[User]:
-        async with self.session as session:
-            return await session.exec(
+    ) -> Optional[UserUpdateDTO]:
+        async for session in self.session:
+            user: User = (await session.exec(
                 select(User).where(User.username == username)
-            ).first()
+            )).first()
+            
+            if user:
+                return UserUpdateDTO(
+                    user_id=user.id,
+                    name=user.name,
+                    last_name=user.last_name,
+                    username=user.username,
+                    dni=user.dni,
+                    email=user.email,
+                    phone=user.phone,
+                    role_id=user.role_id
+                )
+            return None
 
     async def update_last_used(
         self,
         user_id: int,
     ) -> bool:
-        async with self.session as session:
-            user: User = await session.exec(select(User).where(User.id == user_id)).first()
+        async for session in self.session:
+            user: User = (await session.exec(select(User).where(User.id == user_id))).first()
 
             if user:
                 user.last_used = datetime.now(timezone.utc)
@@ -105,27 +127,30 @@ class UserRepository:
     async def update_user(
         self,
         user_update: UserUpdateDTO,
-    ) -> bool:
-        async with self.session as session:
-            user: User = await session.exec(select(User).where(User.id == user.id)).first()
+    ) -> UserDTO:
+        async for session in self.session:
+            user: User = (await session.exec(select(User).where(User.id == user_update.user_id))).first()
 
             if user:
                 for field, value in user_update.model_dump(exclude_unset=True).items():
-                    setattr(user, field, value)
+                    if field != 'user_id':  # No actualizar el ID
+                        setattr(user, field, value)
 
                 session.add(user)
                 await session.commit()
                 await session.refresh(user)
                 return UserDTO(
                     user_id=user.id,
+                    username=user.username,
                     name=user.name,
-                    last_name=user.last_names,
-                    role=user.role,
+                    last_name=user.last_name,
+                    role=user.role_id,
                 )
+            return None
 
     async def change_password(self, user_id: int, hash_pass: str) -> bool:
-        async with self.session as session:
-            user: User = await session.exec(select(User).where(User.id == user_id)).first()
+        async for session in self.session:
+            user: User = (await session.exec(select(User).where(User.id == user_id))).first()
             if user:
                 user.password = hash_pass
                 session.add(user)
@@ -134,8 +159,8 @@ class UserRepository:
             return False
         
     async def delete(self, user_id: int) -> bool:
-        async with self.session as session:
-            user: User = await session.exec(select(User).where(User.id == user_id)).first()
+        async for session in self.session:
+            user: User = (await session.exec(select(User).where(User.id == user_id))).first()
             if user:
                 session.delete(user)
                 await session.commit()
