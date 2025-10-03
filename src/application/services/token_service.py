@@ -1,17 +1,17 @@
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from datetime import datetime, timedelta, timezone
 from src import settings
-from src.application.services.user import UserService
+from src.application.use_case.user.find_user_case import FindUserCase
 from src.domain.objects.token.jwtPayload import JwtPayload
 
 
 class TokenService:
-    def __init__(self, user_service: UserService):
+    def __init__(self, find_case: FindUserCase):
         self.jwt_secret=settings.secret_key
         self.jwt_algorithm=settings.algorithm
         self.jwt_expiration=24
-        self.user_service=user_service
+        self.find_case=find_case
     
     def generate_token(self, payload:JwtPayload) -> str:
         tokenPayload ={
@@ -65,7 +65,7 @@ class TokenService:
             token:str,
     ) -> str:
         token_data = self.validate_token(token)
-        user = await self.user_service.get_user_by_id(int(token_data["user_id"]))
+        user = await self.find_case.get_user_by_id(int(token_data["user_id"]))
 
         if not user:
             raise HTTPException(

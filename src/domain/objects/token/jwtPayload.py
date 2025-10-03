@@ -17,8 +17,9 @@ class JwtPayload:
 
     :author: Carlos S. Paredes Morillo
     """
-    id: str
-    username: str
-    name: str
-    last_name: str
-    role: int
+    def __init__(self, user_id: int, username: str, name: str, last_name: str, role: int):
+        self.user_id = user_id
+        self.username = username
+        self.name = name
+        self.last_name = last_name
+        self.role = role

@@ -1,6 +1,6 @@
 from typing import Container
-from fastapi import Depends, HTTPException, status
-from src.application.services.auth_service import AuthService
+from fastapi import Depends
+from src.application.use_case.auth.login_use_case import LoginUseCase
 from src.container import Container
 from dependency_injector.wiring import Provide
 from src.domain.objects.auth.login_req import LoginRequest
@@ -12,9 +12,9 @@ class AuthController:
     async def login(
             self,
             payload:LoginRequest,
-            auth_service: AuthService = Depends(Provide[Container.auth_service]),
+            login_case: LoginUseCase = Depends(Provide[Container.auth_service]),
     ):
-            return await auth_service.login(payload)
+            return await login_case.login(payload)
 
 
 

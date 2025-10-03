@@ -11,8 +11,6 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, List, Optional
 from sqlmodel import Column, Field, ForeignKey, Integer, Relationship, SQLModel
 
-
-
 class User(SQLModel, table=True):
     """Database model for application users.
 

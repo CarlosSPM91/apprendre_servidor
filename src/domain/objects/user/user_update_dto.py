@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 
 class UserUpdateDTO(BaseModel):
-    id: int
+    user_id: int
     username: Optional[str] = None
     name: Optional[str] = None
     last_name: Optional[str] = None

@@ -1,25 +1,23 @@
-import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from src.application.services.password_service import PasswordService
 from src.application.services.token_service import TokenService
-from datetime import datetime, timedelta, timezone
-from src import settings
-from src.application.services.user import UserService
+from src.application.use_case.user.find_user_case import FindUserCase
+from src.application.use_case.user.update_user_case import UpdateUserCase
 from src.domain.objects.auth.login_resp import LoginResponse
 from src.domain.objects.token.jwtPayload import JwtPayload
 from src.infrastructure.entities.user import User
 
 
-class AuthService:
+class LoginUseCase:
     def __init__(
         self,
         pwd_service: PasswordService,
         token_service: TokenService,
-        user_service: UserService,
+        update_case: UpdateUserCase,
     ):
         self.pwd_service = pwd_service
         self.token_sevice = token_service
-        self.user_service = user_service
+        self.update_user_case = update_case
 
     async def login(
         self,
@@ -49,7 +47,7 @@ class AuthService:
         jwtPayload.last_name = user.last_names
         jwtPayload.role = user.role
 
-        token = self.token_service.generate_token(jwtPayload)
+        token = self.token_sevice.generate_token(jwtPayload)
 
         await self.user_service.updateLastUsed(user.id)
 

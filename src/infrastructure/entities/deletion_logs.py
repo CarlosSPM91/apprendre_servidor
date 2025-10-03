@@ -9,7 +9,7 @@ user access information.
 
 from datetime import datetime, timezone
 from typing import Optional
-from sqlmodel import Column, Field, ForeignKey, Integer, Relationship, SQLModel
+from sqlmodel import Field, SQLModel
 
 
 class DeletionLog(SQLModel, table=True):

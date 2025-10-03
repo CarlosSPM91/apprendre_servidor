@@ -44,6 +44,7 @@ async def async_init_db(engine):
     
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
+        pass
 
 async def get_session(engine):
     """Provide an asynchronous database session.
