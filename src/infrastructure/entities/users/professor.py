@@ -1,0 +1,35 @@
+"""
+Role Entity.
+
+Represents the role table in the database. Each role can be
+associated with multiple users.
+
+:author: Carlos S. Paredes Morillo
+"""
+
+from __future__ import annotations
+from datetime import datetime, timezone
+from typing import List, Optional
+from sqlmodel import Column, ForeignKey, Integer, Relationship, SQLModel, Field
+
+from src.infrastructure.entities.users.user import User
+
+class Professor(SQLModel, table=True):
+    __tablename__ = "professors"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    create_time: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    user_id: int = Field(
+        sa_column=Column(
+            Integer,
+            ForeignKey("users.id", ondelete="CASCADE"),
+            nullable=False,
+        )
+    )
+    user: User = Relationship()
+    subject_classes: List["SubjectClass"] = Relationship(back_populates="professor")
+    tutor_of: List["StudentsClass"] = Relationship(back_populates="tutor", sa_relationship_kwargs={"foreign_keys": "[StudentsClass.tutor_id]"})
+

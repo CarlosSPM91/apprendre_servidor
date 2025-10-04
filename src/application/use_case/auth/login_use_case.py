@@ -7,7 +7,7 @@ from src.domain.objects.auth.login_req import LoginRequest
 from src.domain.objects.auth.login_resp import LoginResponse
 from src.domain.objects.token.jwtPayload import JwtPayload
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
-from src.infrastructure.entities.user import User
+
 
 
 class LoginUseCase:

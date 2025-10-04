@@ -11,7 +11,7 @@ from src.domain.objects.role.role_dto import RoleDTO
 from src.domain.objects.user.user_dto import UserDTO
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
-from src.infrastructure.entities.roles import Role
+from src.infrastructure.entities.users.roles import Role
 
 
 class RoleRepository:

@@ -35,6 +35,6 @@ class DeletionLog(SQLModel, table=True):
         default_factory=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-    user_who_deleted: int
+    user_who_deleted: int = Field(default=None, foreign_key="users.id")
     name_who_deleted: str = Field(default=None, nullable=False, max_length=50)
     last_name_who_deleted: str = Field(default=None, nullable=False, max_length=100)

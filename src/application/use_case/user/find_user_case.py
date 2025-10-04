@@ -3,7 +3,6 @@ from typing import Optional
 from fastapi import HTTPException, status
 from src.domain.objects.user.user_dto import UserDTO
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
-from src.infrastructure.entities.user import User
 from src.infrastructure.repositories.user import UserRepository
 
 

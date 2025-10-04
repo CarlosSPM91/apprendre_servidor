@@ -16,7 +16,8 @@ from src.domain.objects.user.user_dto import UserDTO
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
-from src.infrastructure.entities.user import User
+from src.infrastructure.entities.users.user import User
+
 
 
 class UserRepository:
