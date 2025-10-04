@@ -8,7 +8,7 @@ user access information.
 """
 from datetime import datetime, timezone
 from typing import Optional
-from sqlmodel import Column, Field, ForeignKey, Integer, Relationship, SQLModel
+from sqlmodel import Column, Field, ForeignKey, Integer, SQLModel
 
 class AccesLog(SQLModel, table=True):
     """Database model for user access logs.

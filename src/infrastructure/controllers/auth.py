@@ -1,8 +1,6 @@
-from typing import Container
 
 from fastapi import HTTPException
 from src.application.use_case.auth.login_use_case import LoginUseCase
-from dependency_injector.wiring import Provide
 from src.domain.exceptions.except_manager import manage_auth_except
 from src.domain.objects.auth.login_req import LoginRequest
 

@@ -8,7 +8,7 @@ associated with multiple users.
 """
 
 from __future__ import annotations
-from sqlmodel import Relationship, SQLModel, Field
+from sqlmodel import SQLModel, Field
 
 class StudentIntolerance(SQLModel, table=True):
     __tablename__ = "students_intolerances"

@@ -1,5 +1,4 @@
 
-from typing import List
 from fastapi import APIRouter, Body, Depends, status
 from fastapi.security import HTTPBearer
 from dependency_injector.wiring import Provide, inject

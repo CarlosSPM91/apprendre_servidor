@@ -8,12 +8,9 @@ Implements data access methods for the User entity.
 
 from datetime import datetime, timezone
 from typing import Callable, Optional
-from fastapi import Depends
 
-from src.application.services.password_service import PasswordService
 from src.domain.objects.user.user_create_dto import UserCreateDTO
 from src.domain.objects.user.user_dto import UserDTO
-from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
 from src.infrastructure.entities.users.user import User

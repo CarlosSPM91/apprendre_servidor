@@ -2,7 +2,6 @@
 from typing import List
 
 from fastapi import HTTPException, status
-from src.domain.objects.common.common_resp import CommonResponse
 from src.domain.objects.role.role_dto import RoleDTO
 from src.infrastructure.repositories.role import RoleRepository
 

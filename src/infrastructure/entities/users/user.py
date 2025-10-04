@@ -8,10 +8,9 @@ relationships, and constraints.
 """
 from __future__ import annotations
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, List, Optional
-from sqlmodel import Column, Field, ForeignKey, Integer, Relationship, SQLModel
+from typing import List, Optional
+from sqlmodel import Field, Relationship, SQLModel
 
-from src.infrastructure.entities.users.accces_logs import AccesLog
 from src.infrastructure.entities.users.roles import Role
 
 class User(SQLModel, table=True):

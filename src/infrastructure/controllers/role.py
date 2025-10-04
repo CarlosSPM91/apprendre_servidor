@@ -1,6 +1,4 @@
-from typing import Container
-from dependency_injector.wiring import Provide
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 
 from src.application.use_case.role.create_role_case import CreateRoleCase
 from src.application.use_case.role.delete_role_case import DeleteRoleCase

@@ -6,7 +6,7 @@ Defines the API routes for user operations (creation, retrieval, etc.).
 :author: Carlos S. Paredes Morillo
 """
 
-from fastapi import APIRouter, Body, Depends, status
+from fastapi import APIRouter, Depends, status
 
 from src.container import Container
 from src.domain.objects.auth.change_pass_dto import ChangePasswordDTO

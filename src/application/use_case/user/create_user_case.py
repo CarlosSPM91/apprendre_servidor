@@ -4,7 +4,6 @@ from fastapi import HTTPException, status
 from src.application.services.password_service import PasswordService
 from src.domain.objects.common.common_resp import CommonResponse
 from src.domain.objects.user.user_create_dto import UserCreateDTO
-from src.domain.objects.user.user_dto import UserDTO
 from src.infrastructure.repositories.user import UserRepository
 
 

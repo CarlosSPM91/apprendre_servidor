@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 
-from fastapi import HTTPException, status
 from src.domain.objects.common.common_resp import CommonResponse
 from src.infrastructure.repositories.role import RoleRepository
 
@@ -14,7 +13,7 @@ class DeleteRoleCase:
         role_id: int,
     ) -> CommonResponse:
         
-        role = await self.role_repo.delete(role_id)
+        await self.role_repo.delete(role_id)
         return CommonResponse(
             item_id=role_id,
             event_date=datetime.now(timezone.utc)

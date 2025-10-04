@@ -8,8 +8,7 @@ defines the application lifecycle, and exposes the health check endpoint.
 """
 
 from contextlib import asynccontextmanager
-import sys
-from fastapi import Depends, FastAPI, Request
+from fastapi import FastAPI
 
 from src.endpoints.user import router as user_router
 from src.endpoints.auth import router as auth_router
@@ -17,8 +16,6 @@ from src.endpoints.role import router as role_router
 
 from .infrastructure.connection.db import async_init_db
 from .container import Container
-from dependency_injector.wiring import Provide
-from src.application.services.token_service import TokenService
 
 
 @asynccontextmanager

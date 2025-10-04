@@ -8,7 +8,7 @@ associated with multiple users.
 """
 
 from __future__ import annotations
-from typing import List, Optional
+from typing import Optional
 from sqlmodel import Relationship, SQLModel, Field
 
 from src.infrastructure.entities.quiz.quiz import Quiz
