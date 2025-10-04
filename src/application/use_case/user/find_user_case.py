@@ -12,14 +12,14 @@ class FindUserCase:
         self.userRepo = repo
 
     async def get_user_by_username(self, user_id: int) -> Optional[UserUpdateDTO]:
-        user = self.userRepo.get_user_by_username(user_id)
+        user = await self.userRepo.get_user_by_username(user_id)
 
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         return user
 
     async def get_user_by_id(self, user_id: int) -> Optional[UserDTO]:
-        user =  self.userRepo.get_user_by_id(user_id)
+        user =  await self.userRepo.get_user_by_id(user_id)
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         return user

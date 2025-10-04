@@ -1,5 +1,5 @@
 
-import datetime
+from datetime import datetime, timezone
 from src.domain.objects.common.common_resp import CommonResponse
 from src.infrastructure.repositories.user import UserRepository
 
@@ -10,11 +10,11 @@ class DeleteUserCase:
 
     async def delete(
         self,
-        user_id:str,
+        user_id:int,
     ) -> CommonResponse:
-        resp= self.userRepo.delete(user_id)
+        resp= await self.userRepo.delete(user_id)
         if resp:
             return CommonResponse(
-                user_id=user_id,
-                delete_date=datetime.now(datetime.timezone.utc)
+                item_id=user_id,
+                event_date=datetime.now(timezone.utc)
             )

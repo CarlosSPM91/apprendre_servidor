@@ -13,6 +13,7 @@ from src.application.use_case.user.delete_user_case import DeleteUserCase
 from src.application.use_case.user.find_user_case import FindUserCase
 from src.application.use_case.user.update_user_case import UpdateUserCase
 from src.domain.objects.common.common_resp import CommonResponse
+from src.domain.objects.auth.change_pass_dto import ChangePasswordDTO
 from src.domain.objects.user.user_create_dto import UserCreateDTO
 from src.domain.objects.user.user_dto import UserDTO
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
@@ -41,7 +42,6 @@ class UserController:
 
     async def create_user(self, payload: UserCreateDTO):
         try:
-            print("-----CONTROLLER ----->"+(payload.last_name))
             resp = await self.create_user_case.create(payload)
             return {
                 "status": "success",
@@ -51,9 +51,28 @@ class UserController:
                 },
             }
         except HTTPException as e:
+            if e.status_code == status.HTTP_409_CONFLICT:
+                raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail= {
+                    "status": "error",
+                    "message": "User already exist"
+                }
+            )
+
+            if e.status_code == status.HTTP_404_NOT_FOUND:
+                raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail= {
+                    "status": "error",
+                    "message": "User not found"
+                }
+            )
+
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
             )
+        
     async def update_user(self, payload: UserUpdateDTO):
         try:
             await self.find_user_case.get_user_by_id(payload.user_id)
@@ -66,14 +85,23 @@ class UserController:
                 },
             }
         except HTTPException as e:
+            if e.status_code == status.HTTP_404_NOT_FOUND:
+                raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail= {
+                    "status": "error",
+                    "message": "User not found"
+                }
+            )
+
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
             )
 
-    async def change_password(self, user_id: int, password: str):
+    async def change_password(self, payload:ChangePasswordDTO):
         try:
-            await self.find_user_case.get_user_by_id(user_id)
-            resp = await self.update_user_case.change_password(password)
+            await self.find_user_case.get_user_by_id(payload.user_id)
+            resp = await self.update_user_case.change_password(payload)
             return {
                 "status": "success",
                 "data": {
@@ -82,6 +110,15 @@ class UserController:
                 },
             }
         except HTTPException as e:
+            if e.status_code == status.HTTP_404_NOT_FOUND:
+                raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail= {
+                    "status": "error",
+                    "message": "User not found"
+                }
+            )
+
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
             )
@@ -90,6 +127,15 @@ class UserController:
         try:
             return await self.find_user_case.get_user_by_id(user_id)
         except HTTPException as e:
+            if e.status_code == status.HTTP_404_NOT_FOUND:
+                raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail= {
+                    "status": "error",
+                    "message": "User not found"
+                }
+            )
+
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
             )
@@ -98,11 +144,20 @@ class UserController:
         try:
             return await self.find_user_case.get_user_by_id(user_id)
         except HTTPException as e:
+            if e.status_code == status.HTTP_404_NOT_FOUND:
+                raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail= {
+                    "status": "error",
+                    "message": "User not found"
+                }
+            )
+
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
             )
 
-    async def delete_user(self, user_id: str):
+    async def delete_user(self, user_id: int):
         try:
             await self.find_user_case.get_user_by_id(user_id)
             resp = await self.delete_user_case.delete(user_id)
@@ -114,6 +169,15 @@ class UserController:
                 },
             }
         except HTTPException as e:
+            if e.status_code == status.HTTP_404_NOT_FOUND:
+                raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail= {
+                    "status": "error",
+                    "message": "User not found"
+                }
+            )
+
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
             )

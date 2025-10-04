@@ -1,7 +1,7 @@
 import jwt
 from fastapi import HTTPException, status
 from datetime import datetime, timedelta, timezone
-from src import settings
+from src.settings import settings
 from src.application.use_case.user.find_user_case import FindUserCase
 from src.domain.objects.token.jwtPayload import JwtPayload
 
@@ -15,7 +15,7 @@ class TokenService:
     
     def generate_token(self, payload:JwtPayload) -> str:
         tokenPayload ={
-            "id": payload.id,
+            "user_id": payload.user_id,
             "username": payload.username,
             "name": payload.name,
             "last_name": payload.last_name,
@@ -69,24 +69,27 @@ class TokenService:
 
         if not user:
             raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="User not found",
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail= {
+                    "status": "error",
+                    "message": "User not found"
+                }
+            )
         
-        jwtPayload = JwtPayload()
-        jwtPayload.id = str(user.id)
-        jwtPayload.username = user.username
-        jwtPayload.name = user.name
-        jwtPayload.last_name = user.last_name
-        jwtPayload.role = user.role
+        jwtPayload = JwtPayload(
+            user_id=str(user.user_id),
+            username=user.username,
+            name=user.name,
+            last_name=user.last_name,
+            role=user.role
+        )
 
         new_token = self.generate_token(jwtPayload)
 
         return {
-            "acces_token": new_token,
+            "access_token": new_token,
             "token_type": "bearer",
-            "user_id": user.id,
+            "user_id": user.user_id,
             "username": user.username,
             "role": user.role,
         }

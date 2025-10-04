@@ -11,6 +11,7 @@ import sys
 from fastapi import Depends, FastAPI, Request
 
 from src.endpoints.user import router as user_router
+from src.endpoints.auth import router as auth_router
 
 from .infrastructure.connection.db import async_init_db
 from .container import Container
@@ -64,5 +65,6 @@ def health():
     return {"message": "Server OK possibly"}
 
 app.include_router(user_router)
+app.include_router(auth_router)
 
-container.wire(modules=["src.endpoints.user"])
+container.wire(modules=["src.endpoints.user", "src.endpoints.auth"])

@@ -10,19 +10,7 @@ BaseSettings. Loads environment variables from `.env`.
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    """Application settings model.
 
-    Attributes:
-        database_url (str): Database connection URL.
-
-    Configuration:
-        - env_file: `.env`
-        - env_prefix: none
-        - extra: ignore unknown variables
-        - case_sensitive: False
-
-    :author: Carlos S. Paredes Morillo
-    """
     database_url: str
     secret_key:str
     algorithm:str
@@ -35,3 +23,7 @@ class Settings(BaseSettings):
     )
 
 settings = Settings()
+
+print(f"DATABASE_URL: {settings.database_url}")
+print(f"SECRET_KEY: {settings.secret_key}")
+print(f"ALGORITHM: {settings.algorithm}")

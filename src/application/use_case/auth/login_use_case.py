@@ -3,8 +3,10 @@ from src.application.services.password_service import PasswordService
 from src.application.services.token_service import TokenService
 from src.application.use_case.user.find_user_case import FindUserCase
 from src.application.use_case.user.update_user_case import UpdateUserCase
+from src.domain.objects.auth.login_req import LoginRequest
 from src.domain.objects.auth.login_resp import LoginResponse
 from src.domain.objects.token.jwtPayload import JwtPayload
+from src.domain.objects.user.user_update_dto import UserUpdateDTO
 from src.infrastructure.entities.user import User
 
 
@@ -23,11 +25,11 @@ class LoginUseCase:
 
     async def login(
         self,
-        payload: JwtPayload,
+        payload:LoginRequest,
     ) -> LoginResponse:
         hash_pass = self.pwd_service.hash_password(payload.password)
 
-        user: User = self.find_user_case.get_user_by_username(payload["username"])
+        user: UserUpdateDTO =await self.find_user_case.get_user_by_username(payload.username)
 
         if not user:
             raise HTTPException(
@@ -42,21 +44,22 @@ class LoginUseCase:
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-        jwtPayload = JwtPayload()
-        jwtPayload.id = str(user.id)
-        jwtPayload.username = user.username
-        jwtPayload.name = user.name
-        jwtPayload.last_name = user.last_names
-        jwtPayload.role = user.role
+        jwtPayload = JwtPayload(
+            user_id=str(user.user_id),
+            username=user.username,
+            name=user.name,
+            last_name=user.last_name,
+            role=user.role_id
+        )
 
         token = self.token_sevice.generate_token(jwtPayload)
 
-        await self.update_user_case.update_last_used(user.id)
+        await self.update_user_case.update_last_used(user.user_id)
 
         return {
-            "acces_token": token,
+            "access_token": token,
             "token_type": "bearer",
-            "user_id": user.id,
+            "user_id": str(user.user_id),
             "username": user.username,
-            "role": user.role,
+            "role": user.role_id,
         }

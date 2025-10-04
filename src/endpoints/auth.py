@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPBearer
 
 from src.container import Container
-from dependency_injector.wiring import Provide
+from dependency_injector.wiring import Provide, inject
 from src.domain.objects.auth.login_req import LoginRequest
 from src.domain.objects.auth.login_resp import LoginResponse
 from src.infrastructure.controllers.auth import AuthController
@@ -23,6 +23,7 @@ secutiry = HTTPBearer()
     status_code=status.HTTP_200_OK,
     name="login"
 )
+@inject
 async def login(
     payload:LoginRequest,
     controller: AuthController = Depends(Provide[Container.auth_controller])
