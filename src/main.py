@@ -6,12 +6,14 @@ defines the application lifecycle, and exposes the health check endpoint.
 
 :author: Carlos S. Paredes Morillo
 """
+
 from contextlib import asynccontextmanager
 import sys
 from fastapi import Depends, FastAPI, Request
 
 from src.endpoints.user import router as user_router
 from src.endpoints.auth import router as auth_router
+from src.endpoints.role import router as role_router
 
 from .infrastructure.connection.db import async_init_db
 from .container import Container
@@ -38,6 +40,7 @@ async def lifespan(app: FastAPI):
     await async_init_db(engine)
     yield
 
+
 container = Container()
 app = FastAPI(lifespan=lifespan)
 app.container = container
@@ -49,9 +52,10 @@ app.container = container
 #     token_service = TokenService()
 #     resp = token_service.validate(token)
 #     print(resp.user_id)
-#     response = await call_next(request) 
+#     response = await call_next(request)
 #     response.headers["X-Custom-Header"] = "MiMiddleware"
 #     return response
+
 
 @app.get("/health")
 def health():
@@ -64,7 +68,11 @@ def health():
     """
     return {"message": "Server OK possibly"}
 
+
 app.include_router(user_router)
 app.include_router(auth_router)
+app.include_router(role_router)
 
-container.wire(modules=["src.endpoints.user", "src.endpoints.auth"])
+container.wire(
+    modules=["src.endpoints.user", "src.endpoints.auth", "src.endpoints.role"]
+)

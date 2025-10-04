@@ -23,7 +23,3 @@ class Settings(BaseSettings):
     )
 
 settings = Settings()
-
-print(f"DATABASE_URL: {settings.database_url}")
-print(f"SECRET_KEY: {settings.secret_key}")
-print(f"ALGORITHM: {settings.algorithm}")

@@ -12,13 +12,19 @@ from dependency_injector import containers, providers
 from src.application.services.password_service import PasswordService
 from src.application.services.token_service import TokenService
 from src.application.use_case.auth.login_use_case import LoginUseCase
+from src.application.use_case.role.create_role_case import CreateRoleCase
+from src.application.use_case.role.delete_role_case import DeleteRoleCase
+from src.application.use_case.role.find_role_case import FindRoleCase
+from src.application.use_case.role.update_role_case import UpdateRoleCase
 from src.application.use_case.user.create_user_case import CreateUserCase
 from src.application.use_case.user.delete_user_case import DeleteUserCase
 from src.application.use_case.user.find_user_case import FindUserCase
 from src.application.use_case.user.update_user_case import UpdateUserCase
 from src.infrastructure.connection.db import get_engine, get_session
 from src.infrastructure.controllers.auth import AuthController
+from src.infrastructure.controllers.role import RoleController
 from src.infrastructure.controllers.user import UserController
+from src.infrastructure.repositories.role import RoleRepository
 from src.infrastructure.repositories.user import UserRepository
 
 
@@ -42,6 +48,7 @@ class Container(containers.DeclarativeContainer):
 
     # Repositories
     user_repository = providers.Factory(UserRepository, session=session.provider)
+    role_repository = providers.Factory(RoleRepository, session=session.provider)
 
     find_user_case = providers.Factory(FindUserCase, repo=user_repository)
 
@@ -64,7 +71,10 @@ class Container(containers.DeclarativeContainer):
         pwd_service=pwd_service,
         token_service=token_service,
     )
-    
+    find_role_case = providers.Factory(FindRoleCase, role_repo=role_repository)
+    create_role_case = providers.Factory(CreateRoleCase, role_repo=role_repository)
+    delete_role_case = providers.Factory(DeleteRoleCase, role_repo=role_repository)
+    update_role_case = providers.Factory(UpdateRoleCase, role_repo=role_repository)
     # Controllers
     user_controller = providers.Factory(
         UserController,
@@ -72,6 +82,14 @@ class Container(containers.DeclarativeContainer):
         create_case=create_user_case,
         update_case=update_user_case,
         delete_case=delete_user_case,
+    )
+
+    role_controller = providers.Factory(
+        RoleController,
+        find_role_case=find_role_case,
+        create_role_case=create_role_case,
+        update_role_case=update_role_case,
+        delete_role_case=delete_role_case,
     )
 
     auth_controller = providers.Factory(
