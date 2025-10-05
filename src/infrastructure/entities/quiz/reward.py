@@ -17,7 +17,3 @@ class Reward(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=50)
     points: Optional[int] = None
-
-    # history: List["RewardHistory"] = Relationship(back_populates="reward")
-
-

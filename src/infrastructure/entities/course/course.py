@@ -20,6 +20,3 @@ class Course(SQLModel, table=True):
     password: Optional[str] = Field(default=None, max_length=50)
     from_date: Optional[datetime] = None
     to_date: Optional[datetime] = None
-
-    # calendar_activities: List["CalendarActivity"] = Relationship(back_populates="course")
-    # subject_classes: List["SubjectClass"] = Relationship(back_populates="course")

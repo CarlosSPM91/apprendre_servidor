@@ -22,9 +22,3 @@ class RewardHistory(SQLModel, table=True):
     reward_id: int = Field(foreign_key="rewards.id", index=True)
     student_id: int = Field(foreign_key="students.id", index=True, ondelete="CASCADE")
     reward_date: Optional[datetime] = Field(default_factory=datetime.now(timezone.utc))
-
-    # reward: Reward = Relationship(back_populates="history")
-    # student: Student = Relationship(back_populates="rewards_history", cascade_delete=True)
-
-
-

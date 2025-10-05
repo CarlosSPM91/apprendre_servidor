@@ -8,8 +8,10 @@ associated with multiple users.
 """
 
 from __future__ import annotations
-from typing import Optional
-from sqlmodel import SQLModel, Field
+from typing import List, Optional
+from sqlmodel import Relationship, SQLModel, Field
+
+
 
 class Role(SQLModel, table=True):
     """Database model for user roles.
@@ -25,3 +27,4 @@ class Role(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     role_name: str = Field(max_length=64, nullable=False, sa_column_kwargs={"unique": True})
+

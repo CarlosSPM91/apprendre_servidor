@@ -25,5 +25,4 @@ class MedicalInfo(SQLModel, table=True):
     description: Optional[str] = Field(default=None, max_length=100)
     medication: Optional[str] = Field(default=None, max_length=100)
 
-    # students: List[Student] = Relationship(back_populates="medical", link_model=StudentMedicalInfo)
 
