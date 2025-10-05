@@ -1,5 +1,6 @@
 
 from fastapi import HTTPException
+import sentry_sdk
 from src.application.use_case.auth.login_use_case import LoginUseCase
 from src.domain.exceptions.except_manager import manage_auth_except
 from src.domain.objects.auth.login_req import LoginRequest
@@ -16,4 +17,5 @@ class AuthController:
         try:
             return await self.login_case.login(payload)
         except HTTPException as e:
+            sentry_sdk.capture_exception(e)
             manage_auth_except(e)

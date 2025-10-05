@@ -24,6 +24,8 @@ from src.infrastructure.connection.db import get_engine, get_session
 from src.infrastructure.controllers.auth import AuthController
 from src.infrastructure.controllers.role import RoleController
 from src.infrastructure.controllers.user import UserController
+from src.infrastructure.repositories.acces_logs import AccessRepository
+from src.infrastructure.repositories.deletion_logs import DeletionRepository
 from src.infrastructure.repositories.role import RoleRepository
 from src.infrastructure.repositories.user import UserRepository
 
@@ -49,6 +51,10 @@ class Container(containers.DeclarativeContainer):
     # Repositories
     user_repository = providers.Factory(UserRepository, session=session.provider)
     role_repository = providers.Factory(RoleRepository, session=session.provider)
+    access_repository = providers.Factory(AccessRepository, session=session.provider)
+    deletion_repository = providers.Factory(
+        DeletionRepository, session=session.provider
+    )
 
     find_user_case = providers.Factory(FindUserCase, repo=user_repository)
 
@@ -60,7 +66,12 @@ class Container(containers.DeclarativeContainer):
     create_user_case = providers.Factory(
         CreateUserCase, repo=user_repository, pwd_service=pwd_service
     )
-    delete_user_case = providers.Factory(DeleteUserCase, repo=user_repository)
+    delete_user_case = providers.Factory(
+        DeleteUserCase,
+        repo=user_repository,
+        find_user_case=find_user_case,
+        deletion_repo=deletion_repository,
+    )
     update_user_case = providers.Factory(
         UpdateUserCase, repo=user_repository, pwd_service=pwd_service
     )
@@ -70,6 +81,7 @@ class Container(containers.DeclarativeContainer):
         update_case=update_user_case,
         pwd_service=pwd_service,
         token_service=token_service,
+        access_repository=access_repository,
     )
     find_role_case = providers.Factory(FindRoleCase, role_repo=role_repository)
     create_role_case = providers.Factory(CreateRoleCase, role_repo=role_repository)

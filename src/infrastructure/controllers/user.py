@@ -8,6 +8,7 @@ services for user-related operations.
 """
 
 from fastapi import HTTPException
+import sentry_sdk
 from src.application.use_case.user.create_user_case import CreateUserCase
 from src.application.use_case.user.delete_user_case import DeleteUserCase
 from src.application.use_case.user.find_user_case import FindUserCase
@@ -50,6 +51,7 @@ class UserController:
                 },
             }
         except HTTPException as e:
+            sentry_sdk.capture_exception(e)
             manage_user_except(e)
         
     async def update_user(self, payload: UserUpdateDTO):
@@ -64,6 +66,7 @@ class UserController:
                 },
             }
         except HTTPException as e:
+            sentry_sdk.capture_exception(e)
             manage_user_except(e)
 
     async def change_password(self, payload:ChangePasswordDTO):
@@ -78,24 +81,27 @@ class UserController:
                 },
             }
         except HTTPException as e:
+            sentry_sdk.capture_exception(e)
             manage_user_except(e)
 
     async def get_user(self, user_id: str):
         try:
             return await self.find_user_case.get_user_by_id(user_id)
         except HTTPException as e:
+            sentry_sdk.capture_exception(e)
             manage_user_except(e)
 
     async def me(self, user_id: str):
         try:
             return await self.find_user_case.get_user_by_id(user_id)
         except HTTPException as e:
+            sentry_sdk.capture_exception(e)
             manage_user_except(e)
 
-    async def delete_user(self, user_id: int):
+    async def delete_user(self, user_id: int, user_eraser_id:int):
         try:
             await self.find_user_case.get_user_by_id(user_id)
-            resp = await self.delete_user_case.delete(user_id)
+            resp = await self.delete_user_case.delete(user_id, user_who_delete=user_eraser_id)
             return {
                 "status": "success",
                 "data": {
@@ -104,4 +110,5 @@ class UserController:
                 },
             }
         except HTTPException as e:
+            sentry_sdk.capture_exception(e)
             manage_user_except(e)

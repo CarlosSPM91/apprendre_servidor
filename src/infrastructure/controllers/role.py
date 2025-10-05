@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+import sentry_sdk
 
 from src.application.use_case.role.create_role_case import CreateRoleCase
 from src.application.use_case.role.delete_role_case import DeleteRoleCase
@@ -29,6 +30,7 @@ class RoleController:
                 "data": resp,
             }
         except HTTPException as e:
+            sentry_sdk.capture_exception(e)
             manage_role_except(e)
 
     async def create_role(self, role_name: str):
@@ -42,6 +44,7 @@ class RoleController:
                 },
             }
         except HTTPException as e:
+            sentry_sdk.capture_exception(e)
             manage_role_except(e)
 
     async def update_role(self, role: RoleDTO):
@@ -56,6 +59,7 @@ class RoleController:
                 },
             }
         except HTTPException as e:
+            sentry_sdk.capture_exception(e)
             manage_role_except(e)
 
     async def deleterole(self, role_id: int):
@@ -70,4 +74,5 @@ class RoleController:
                 },
             }
         except HTTPException as e:
+            sentry_sdk.capture_exception(e)
             manage_role_except(e)

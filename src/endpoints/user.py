@@ -6,7 +6,7 @@ Defines the API routes for user operations (creation, retrieval, etc.).
 :author: Carlos S. Paredes Morillo
 """
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from src.container import Container
 from src.domain.objects.auth.change_pass_dto import ChangePasswordDTO
@@ -25,8 +25,21 @@ router = APIRouter(prefix="/user", tags=["user"])
     name="me",
 )
 @inject
-async def me(controller: UserController = Depends(Provide[Container.user_controller])):
-    return await controller.me()
+async def me(
+    request: Request,
+    controller: UserController = Depends(Provide[Container.user_controller]),
+    token_service=Depends(Provide[Container.token_service]),
+):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or invalid Authorization header",
+        )
+    token = auth_header.split(" ")[1]
+    token_info = await token_service.validate_token(token)
+    user_id = int(token_info["user_id"])
+    return await controller.me(user_id)
 
 
 @router.get("/{user_id}", status_code=status.HTTP_200_OK, name="find")
@@ -68,7 +81,18 @@ async def change_password(
 @router.delete("/{user_id}", status_code=status.HTTP_200_OK, name="delete-user")
 @inject
 async def delete_user(
+    request: Request,
     user_id: int,
     controller: UserController = Depends(Provide[Container.user_controller]),
+    token_service=Depends(Provide[Container.token_service]),
 ):
-    return await controller.delete_user(user_id)
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or invalid Authorization header",
+        )
+    token = auth_header.split(" ")[1]
+    token_info = await token_service.validate_token(token)
+    token_user_id = int(token_info["user_id"])
+    return await controller.delete_user(user_id, token_user_id)

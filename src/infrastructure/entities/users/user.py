@@ -11,7 +11,6 @@ from datetime import datetime, timezone
 from typing import List, Optional
 from sqlmodel import Field, Relationship, SQLModel
 
-from src.infrastructure.entities.users.roles import Role
 
 class User(SQLModel, table=True):
     __tablename__ = "users"

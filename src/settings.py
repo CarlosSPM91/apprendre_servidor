@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     database_url: str
     secret_key:str
     algorithm:str
+    sentry_dsn:str
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -9,12 +9,13 @@ Implements data access methods for the User entity.
 from datetime import datetime, timezone
 from typing import Callable, Optional
 
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from src.domain.objects.user.user_create_dto import UserCreateDTO
 from src.domain.objects.user.user_dto import UserDTO
 from sqlmodel import select
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
 from src.infrastructure.entities.users.user import User
-
 
 
 class UserRepository:
@@ -25,7 +26,7 @@ class UserRepository:
     :author: Carlos S. Paredes Morillo
     """
 
-    def __init__(self, session:Callable):
+    def __init__(self, session: Callable):
         self.session = session
 
     async def create(
@@ -34,24 +35,31 @@ class UserRepository:
     ) -> UserDTO:
         async for session in self.session():
             user = User(
-                    username=payload.username,
-                    name=payload.name,
-                    last_name=payload.last_name,
-                    email=payload.email or None,
-                    phone=payload.phone or None,
-                    dni=payload.dni or None,
-                    password=payload.password,
-                    role_id=payload.role_id,
-                )
+                username=payload.username,
+                name=payload.name,
+                last_name=payload.last_name,
+                email=payload.email or None,
+                phone=payload.phone or None,
+                dni=payload.dni or None,
+                password=payload.password,
+                role_id=payload.role_id,
+            )
             session.add(user)
-            await session.commit()
-            await session.refresh(user)
-            return UserDTO(
+            try:
+                await session.commit()
+                await session.refresh(user)
+                return UserDTO(
                     user_id=user.id,
                     username=user.username,
                     name=user.name,
                     last_name=user.last_name,
                     role=user.role_id,
+                )
+            except IntegrityError as e:
+                await session.rollback()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Something wrong on server",
                 )
 
     async def get_user_by_id(
@@ -64,7 +72,7 @@ class UserRepository:
             ).first()
 
             if not user:
-                return None
+                raise HTTPException(status_code=404, detail="User not found")
 
             return UserDTO(
                 user_id=user.id,
@@ -83,19 +91,20 @@ class UserRepository:
                 await session.exec(select(User).where(User.username == username))
             ).first()
 
-            if user:
-                return UserUpdateDTO(
-                    user_id=user.id,
-                    name=user.name,
-                    last_name=user.last_name,
-                    username=user.username,
-                    dni=user.dni,
-                    email=user.email,
-                    phone=user.phone,
-                    role_id=user.role_id,
-                    password=user.password
-                )
-            return None
+            if not user:
+                return None
+
+            return UserUpdateDTO(
+                user_id=user.id,
+                name=user.name,
+                last_name=user.last_name,
+                username=user.username,
+                dni=user.dni,
+                email=user.email,
+                phone=user.phone,
+                role_id=user.role_id,
+                password=user.password,
+            )
 
     async def update_last_used(
         self,
@@ -106,12 +115,20 @@ class UserRepository:
                 await session.exec(select(User).where(User.id == user_id))
             ).first()
 
-            if user:
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            try:
                 user.last_used = datetime.now(timezone.utc)
                 session.add(user)
                 await session.commit()
                 return True
-            return False
+            except IntegrityError as e:
+                await session.rollback()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Something wrong on server",
+                )
 
     async def update_user(
         self,
@@ -122,7 +139,10 @@ class UserRepository:
                 await session.exec(select(User).where(User.id == user_update.user_id))
             ).first()
 
-            if user:
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            try:
                 for field, value in user_update.model_dump(exclude_unset=True).items():
                     if field != "user_id":
                         setattr(user, field, value)
@@ -137,27 +157,46 @@ class UserRepository:
                     last_name=user.last_name,
                     role=user.role_id,
                 )
-            return None
+            except IntegrityError as e:
+                await session.rollback()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Something wrong on server",
+                )
 
     async def change_password(self, user_id: int, hash_pass: str) -> bool:
         async for session in self.session():
             user: User = (
                 await session.exec(select(User).where(User.id == user_id))
             ).first()
-            if user:
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+            try:
                 user.password = hash_pass
                 session.add(user)
                 await session.commit()
                 return True
-            return False
+            except IntegrityError as e:
+                await session.rollback()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Something wrong on server",
+                )
 
     async def delete(self, user_id: int) -> bool:
         async for session in self.session():
             user: User = (
                 await session.exec(select(User).where(User.id == user_id))
             ).first()
-            if user:
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+            try:
                 await session.delete(user)
                 await session.commit()
                 return True
-            return False
+            except IntegrityError as e:
+                await session.rollback()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Something wrong on server",
+                )

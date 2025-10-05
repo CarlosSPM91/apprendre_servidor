@@ -9,11 +9,12 @@ defines the application lifecycle, and exposes the health check endpoint.
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+import sentry_sdk
 
 from src.endpoints.user import router as user_router
 from src.endpoints.auth import router as auth_router
 from src.endpoints.role import router as role_router
-
+from src.settings import settings
 from .infrastructure.connection.db import async_init_db
 from .container import Container
 
@@ -37,7 +38,10 @@ async def lifespan(app: FastAPI):
     await async_init_db(engine)
     yield
 
-
+sentry_sdk.init(
+    dsn=settings.sentry_dsn,
+    send_default_pii=True,
+)
 container = Container()
 app = FastAPI(lifespan=lifespan)
 app.container = container
@@ -65,6 +69,9 @@ def health():
     """
     return {"message": "Server OK possibly"}
 
+@app.get("/sentry-debug")
+async def trigger_error():
+    division_by_zero = 1 / 0
 
 app.include_router(user_router)
 app.include_router(auth_router)
