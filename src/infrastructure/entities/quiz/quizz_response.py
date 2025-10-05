@@ -22,7 +22,7 @@ class QuizResponse(SQLModel, table=True):
     student_id: int = Field(foreign_key="students.id", index=True)
     response: Optional[str] = Field(default=None, max_length=250)
 
-    quiz: Quiz = Relationship(back_populates="responses")
-    student: Student = Relationship(back_populates="quiz_responses")
+    # quiz: Quiz = Relationship(back_populates="responses")
+    # student: Student = Relationship(back_populates="quiz_responses")
 
 

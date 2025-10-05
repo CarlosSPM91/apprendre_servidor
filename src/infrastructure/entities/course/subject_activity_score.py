@@ -22,7 +22,7 @@ class SubjectActivityScore(SQLModel, table=True):
     student_id: int = Field(foreign_key="students.id", index=True)
     note: Optional[float] = None
 
-    subject_activity: SubjectActivity = Relationship(back_populates="scores")
-    student: Student = Relationship(back_populates="subject_activity_scores")
+    # subject_activity: SubjectActivity = Relationship(back_populates="scores")
+    # student: Student = Relationship(back_populates="subject_activity_scores")
 
 

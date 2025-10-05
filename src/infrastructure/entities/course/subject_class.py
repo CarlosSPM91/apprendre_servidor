@@ -25,13 +25,13 @@ class SubjectClass(SQLModel, table=True):
     students_class_id: Optional[int] = Field(default=None, foreign_key="student_class.id")
     professor_id: Optional[int] = Field(default=None, foreign_key="professors.id")
 
-    course: Course = Relationship(back_populates="subject_classes")
-    subject: SchoolSubject = Relationship(back_populates="subject_classes")
-    students_class: Optional[StudentClass] = Relationship(back_populates="subject_classes")
-    professor: Optional[Professor] = Relationship(back_populates="subject_classes")
+    # course: Course = Relationship(back_populates="subject_classes")
+    # subject: SchoolSubject = Relationship(back_populates="subject_classes")
+    # students_class: Optional[StudentClass] = Relationship(back_populates="subject_classes")
+    # professor: Optional[Professor] = Relationship(back_populates="subject_classes")
 
-    subject_activities: List["SubjectActivity"] = Relationship(back_populates="subject_class")
-    quizzes: List["Quiz"] = Relationship(back_populates="subject_class")
+    # subject_activities: List["SubjectActivity"] = Relationship(back_populates="subject_class")
+    # quizzes: List["Quiz"] = Relationship(back_populates="subject_class")
 
 
 

@@ -17,5 +17,5 @@ class ActivityType(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     role_name: str = Field(max_length=20, nullable=False, sa_column_kwargs={"unique": True})
 
-    calendar_activities: List["CalendarActivity"] = Relationship(back_populates="activity_type")
-    subject_activities: List["SubjectActivity"] = Relationship(back_populates="activity_type")
+    # calendar_activities: List["CalendarActivity"] = Relationship(back_populates="activity_type")
+    # subject_activities: List["SubjectActivity"] = Relationship(back_populates="activity_type")

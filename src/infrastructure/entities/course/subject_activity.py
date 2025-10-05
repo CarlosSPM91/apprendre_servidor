@@ -25,9 +25,9 @@ class SubjectActivity(SQLModel, table=True):
     name: str = Field(max_length=50)
     activity_type_id: Optional[int] = Field(default=None, foreign_key="activity_type.id")
 
-    subject_class: SubjectClass = Relationship(back_populates="subject_activities")
-    activity_type: Optional[ActivityType] = Relationship(back_populates="subject_activities")
-    scores: List["SubjectActivityScore"] = Relationship(back_populates="subject_activity")
+    # subject_class: SubjectClass = Relationship(back_populates="subject_activities")
+    # activity_type: Optional[ActivityType] = Relationship(back_populates="subject_activities")
+    # scores: List["SubjectActivityScore"] = Relationship(back_populates="subject_activity")
 
 
 

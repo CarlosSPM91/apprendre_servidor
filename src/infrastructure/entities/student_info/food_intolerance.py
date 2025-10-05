@@ -21,5 +21,5 @@ class FoodIntolerance(SQLModel, table=True):
     name:str = Field(max_length=50)
     description: Optional[str] = Field(default=None, max_length=100)
 
-    students: List[Student] = Relationship(back_populates="food_intolerances", link_model=StudentIntolerance)
+    # students: List[Student] = Relationship(back_populates="food_intolerances", link_model=StudentIntolerance)
 

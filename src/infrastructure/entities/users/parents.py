@@ -22,4 +22,4 @@ class Parent(SQLModel, table=True):
     student_id: int = Field(foreign_key="students.id", index=True)
 
     user: User = Relationship()
-    student: Student = Relationship(back_populates="parents")
+    # student: Student = Relationship(back_populates="parents")

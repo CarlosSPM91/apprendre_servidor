@@ -23,9 +23,9 @@ class StudentClass(SQLModel, table=True):
     points: Optional[int] = 0
     tutor_id: Optional[int] = Field(default=None, foreign_key="professors.id")
 
-    student: Student = Relationship(back_populates="classes")
-    tutor: Optional[Professor] = Relationship(back_populates="tutor_of")
-    subject_classes: List["SubjectClass"] = Relationship(back_populates="students_class")
-    common_activities: List["CalendarActivity"] = Relationship(back_populates="students_classes", link_model=ClassCommonActivity)
+    # student: Student = Relationship(back_populates="classes")
+    # tutor: Optional[Professor] = Relationship(back_populates="tutor_of")
+    # subject_classes: List["SubjectClass"] = Relationship(back_populates="students_class")
+    # common_activities: List["CalendarActivity"] = Relationship(back_populates="students_classes", link_model=ClassCommonActivity)
 
 

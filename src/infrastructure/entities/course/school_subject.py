@@ -18,7 +18,7 @@ class SchoolSubject(SQLModel, table=True):
     name: str = Field(max_length=30)
     description: Optional[str] = Field(default=None, max_length=100)
 
-    subject_classes: List["SubjectClass"] = Relationship(back_populates="subject")
-    quizzes: List["Quiz"] = Relationship(back_populates="subject")
+    # subject_classes: List["SubjectClass"] = Relationship(back_populates="subject")
+    # quizzes: List["Quiz"] = Relationship(back_populates="subject")
 
 

@@ -30,6 +30,6 @@ class Professor(SQLModel, table=True):
         )
     )
     user: User = Relationship()
-    subject_classes: List["SubjectClass"] = Relationship(back_populates="professor")
-    tutor_of: List["StudentsClass"] = Relationship(back_populates="tutor", sa_relationship_kwargs={"foreign_keys": "[StudentsClass.tutor_id]"})
+    # subject_classes: List["SubjectClass"] = Relationship(back_populates="professor")
+    # tutor_of: List["StudentsClass"] = Relationship(back_populates="tutor", sa_relationship_kwargs={"foreign_keys": "[StudentsClass.tutor_id]"})
 

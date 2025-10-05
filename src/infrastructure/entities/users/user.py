@@ -33,6 +33,6 @@ class User(SQLModel, table=True):
     last_used: Optional[datetime] = Field(default=None)
     role_id: int = Field(default=None, foreign_key="roles.id")
 
-    role: Optional[Role] = Relationship(back_populates="users")
-    ccess_logs: List["AccessLog"] = Relationship(back_populates="user")
-    deletion_logs_by: List["DeletionLog"] = Relationship(back_populates="deleted_by_user", sa_relationship_kwargs={"foreign_keys": "[DeletionLog.user_who_deleted]"})
+    # role: Optional[Role] = Relationship(back_populates="users")
+    # ccess_logs: List["AccessLog"] = Relationship(back_populates="user")
+    # deletion_logs_by: List["DeletionLog"] = Relationship(back_populates="deleted_by_user", sa_relationship_kwargs={"foreign_keys": "[DeletionLog.user_who_deleted]"})

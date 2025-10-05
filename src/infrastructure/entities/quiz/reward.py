@@ -18,6 +18,6 @@ class Reward(SQLModel, table=True):
     name: str = Field(max_length=50)
     points: Optional[int] = None
 
-    history: List["RewardHistory"] = Relationship(back_populates="reward")
+    # history: List["RewardHistory"] = Relationship(back_populates="reward")
 
 

@@ -26,8 +26,8 @@ class CalendarActivity(SQLModel, table=True):
     activity_name: str = Field(max_length=50)
     activity_type_id: Optional[int] = Field(default=None, foreign_key="activity_type.id")
 
-    course: Course = Relationship(back_populates="calendar_activities")
-    activity_type: Optional[ActivityType] = Relationship(back_populates="calendar_activities")
-    students_classes: List[StudentClass] = Relationship(back_populates="common_activities", link_model=ClassCommonActivity)
+    # course: Course = Relationship(back_populates="calendar_activities")
+    # activity_type: Optional[ActivityType] = Relationship(back_populates="calendar_activities")
+    # students_classes: List[StudentClass] = Relationship(back_populates="common_activities", link_model=ClassCommonActivity)
 
 

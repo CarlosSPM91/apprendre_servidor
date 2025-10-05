@@ -21,5 +21,5 @@ class Course(SQLModel, table=True):
     from_date: Optional[datetime] = None
     to_date: Optional[datetime] = None
 
-    calendar_activities: List["CalendarActivity"] = Relationship(back_populates="course")
-    subject_classes: List["SubjectClass"] = Relationship(back_populates="course")
+    # calendar_activities: List["CalendarActivity"] = Relationship(back_populates="course")
+    # subject_classes: List["SubjectClass"] = Relationship(back_populates="course")
