@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     secret_key:str
     algorithm:str
     sentry_dsn:str
+    redis_url:str
 
     model_config = SettingsConfigDict(
         env_file=".env",

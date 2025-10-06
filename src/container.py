@@ -12,6 +12,7 @@ from dependency_injector import containers, providers
 from src.application.services.password_service import PasswordService
 from src.application.services.token_service import TokenService
 from src.application.use_case.auth.login_use_case import LoginUseCase
+from src.application.use_case.auth.logout_use_case import LogoutUseCase
 from src.application.use_case.role.create_role_case import CreateRoleCase
 from src.application.use_case.role.delete_role_case import DeleteRoleCase
 from src.application.use_case.role.find_role_case import FindRoleCase
@@ -21,6 +22,7 @@ from src.application.use_case.user.delete_user_case import DeleteUserCase
 from src.application.use_case.user.find_user_case import FindUserCase
 from src.application.use_case.user.update_user_case import UpdateUserCase
 from src.infrastructure.connection.db import get_engine, get_session
+from src.infrastructure.connection.redis import get_redis_client, get_redis_session
 from src.infrastructure.controllers.auth import AuthController
 from src.infrastructure.controllers.role import RoleController
 from src.infrastructure.controllers.user import UserController
@@ -47,6 +49,8 @@ class Container(containers.DeclarativeContainer):
 
     database_engine = providers.Singleton(get_engine)
     session = providers.Factory(get_session, engine=database_engine)
+    redis_client = providers.Singleton(get_redis_client)
+    redis_session = providers.Factory(get_redis_session)
 
     # Repositories
     user_repository = providers.Factory(UserRepository, session=session.provider)
@@ -60,7 +64,7 @@ class Container(containers.DeclarativeContainer):
 
     # Services
     pwd_service = providers.Factory(PasswordService)
-    token_service = providers.Factory(TokenService, find_case=find_user_case)
+    token_service = providers.Factory(TokenService, find_case=find_user_case, redis_session=redis_session.provider)
 
     # Use case
     create_user_case = providers.Factory(
@@ -82,6 +86,10 @@ class Container(containers.DeclarativeContainer):
         pwd_service=pwd_service,
         token_service=token_service,
         access_repository=access_repository,
+    )
+    logout_user_case = providers.Factory(
+        LogoutUseCase,
+        token_service=token_service,
     )
     find_role_case = providers.Factory(FindRoleCase, role_repo=role_repository)
     create_role_case = providers.Factory(CreateRoleCase, role_repo=role_repository)
@@ -107,4 +115,5 @@ class Container(containers.DeclarativeContainer):
     auth_controller = providers.Factory(
         AuthController,
         login_case=login_user_case,
+        logout_case=logout_user_case
     )

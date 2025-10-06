@@ -10,10 +10,13 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from src.container import Container
 from src.domain.objects.auth.change_pass_dto import ChangePasswordDTO
+from src.domain.objects.token.jwtPayload import JwtPayload
 from src.domain.objects.user.user_create_dto import UserCreateDTO
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
 from src.infrastructure.controllers.user import UserController
 from dependency_injector.wiring import inject, Provide
+
+from src.middleware.token.authenticateToken import get_current_user
 
 
 router = APIRouter(prefix="/user", tags=["user"])
@@ -29,17 +32,9 @@ async def me(
     request: Request,
     controller: UserController = Depends(Provide[Container.user_controller]),
     token_service=Depends(Provide[Container.token_service]),
+    current_user:JwtPayload= Depends(get_current_user)
 ):
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing or invalid Authorization header",
-        )
-    token = auth_header.split(" ")[1]
-    token_info = await token_service.validate_token(token)
-    user_id = int(token_info["user_id"])
-    return await controller.me(user_id)
+    return await controller.me(current_user.user_id)
 
 
 @router.get("/{user_id}", status_code=status.HTTP_200_OK, name="find")
@@ -85,14 +80,7 @@ async def delete_user(
     user_id: int,
     controller: UserController = Depends(Provide[Container.user_controller]),
     token_service=Depends(Provide[Container.token_service]),
+    current_user:JwtPayload= Depends(get_current_user)
 ):
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing or invalid Authorization header",
-        )
-    token = auth_header.split(" ")[1]
-    token_info = await token_service.validate_token(token)
-    token_user_id = int(token_info["user_id"])
-    return await controller.delete_user(user_id, token_user_id)
+
+    return await controller.delete_user(user_id, current_user.user_id)

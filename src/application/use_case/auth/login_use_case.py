@@ -22,7 +22,7 @@ class LoginUseCase:
         access_repository: AccessRepository,
     ):
         self.pwd_service = pwd_service
-        self.token_sevice = token_service
+        self.token_service = token_service
         self.find_user_case = find_case
         self.update_user_case = update_case
         self.access_repo = access_repository
@@ -58,7 +58,7 @@ class LoginUseCase:
             role=user.role_id,
         )
 
-        token = self.token_sevice.generate_token(jwtPayload)
+        token = self.token_service.generate_token(jwtPayload)
 
         await self.update_user_case.update_last_used(user.user_id)
 
