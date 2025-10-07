@@ -7,6 +7,7 @@ services for user-related operations.
 :author: Carlos S. Paredes Morillo
 """
 
+from typing import List
 from fastapi import HTTPException
 import sentry_sdk
 from src.application.use_case.user.create_user_case import CreateUserCase
@@ -16,6 +17,7 @@ from src.application.use_case.user.update_user_case import UpdateUserCase
 from src.domain.exceptions.except_manager import manage_user_except
 from src.domain.objects.auth.change_pass_dto import ChangePasswordDTO
 from src.domain.objects.user.user_create_dto import UserCreateDTO
+from src.domain.objects.user.user_dto import UserDTO
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
 
 
@@ -79,6 +81,17 @@ class UserController:
                     "id": str(resp.item_id),
                     "deletion_date": str(resp.event_date),
                 },
+            }
+        except HTTPException as e:
+            sentry_sdk.capture_exception(e)
+            manage_user_except(e)
+
+    async def get_all(self):
+        try:
+            resp: List[UserDTO] = await self.find_user_case.get_all()
+            return {
+                "status": "success",
+                "data": resp,
             }
         except HTTPException as e:
             sentry_sdk.capture_exception(e)

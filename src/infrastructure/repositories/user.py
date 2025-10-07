@@ -7,7 +7,7 @@ Implements data access methods for the User entity.
 """
 
 from datetime import datetime, timezone
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
@@ -62,6 +62,28 @@ class UserRepository:
                     detail="Something wrong on server",
                 )
 
+    async def get_all(
+        self,
+    ) -> Optional[List[UserDTO]]:
+        async for session in self.session():
+            users: List[User] = (await session.exec(select(User))).all()
+
+            if not users:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, detail="Users not found"
+                )
+
+            return [
+                UserDTO(
+                    user_id=user.id,
+                    username=user.username,
+                    name=user.name,
+                    last_name=user.last_name,
+                    role=user.role_id,
+                )
+                for user in users
+            ]
+
     async def get_user_by_id(
         self,
         user_id: int,
@@ -72,7 +94,9 @@ class UserRepository:
             ).first()
 
             if not user:
-                raise HTTPException(status_code=404, detail="User not found")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+                )
 
             return UserDTO(
                 user_id=user.id,

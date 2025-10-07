@@ -9,7 +9,6 @@ from src.domain.objects.token.jwtPayload import JwtPayload
 secutiry = HTTPBearer()
 
 
-@inject
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(secutiry),
     token_service: TokenService = Depends(Provide[Container.token_service]),
@@ -17,7 +16,6 @@ async def get_current_user(
     token = credentials.credentials
     return await token_service.validate_token(token)
 
-@inject
 async def get_token(
     credentials: HTTPAuthorizationCredentials = Depends(secutiry),
 ) -> str:

@@ -32,7 +32,7 @@ async def me(
     request: Request,
     controller: UserController = Depends(Provide[Container.user_controller]),
     token_service=Depends(Provide[Container.token_service]),
-    current_user:JwtPayload= Depends(get_current_user)
+    current_user: JwtPayload = Depends(get_current_user),
 ):
     return await controller.me(current_user.user_id)
 
@@ -44,6 +44,14 @@ async def find_user(
     controller: UserController = Depends(Provide[Container.user_controller]),
 ):
     return await controller.get_user(user_id)
+
+
+@router.get("/all", status_code=status.HTTP_200_OK, name="findAll")
+@inject
+async def find_all_user(
+    controller: UserController = Depends(Provide[Container.user_controller]),
+):
+    return await controller.get_all()
 
 
 @router.post("/create-user", status_code=status.HTTP_201_CREATED, name="create-user")
@@ -80,7 +88,7 @@ async def delete_user(
     user_id: int,
     controller: UserController = Depends(Provide[Container.user_controller]),
     token_service=Depends(Provide[Container.token_service]),
-    current_user:JwtPayload= Depends(get_current_user)
+    current_user: JwtPayload = Depends(get_current_user),
 ):
 
     return await controller.delete_user(user_id, current_user.user_id)
