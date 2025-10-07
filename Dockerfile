@@ -24,4 +24,4 @@ EXPOSE 10000
 COPY . /app
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
-CMD ["uv","run","uvicorn", "src.main:app", "--host", "0.0.0.0", "--port ${PORT: -10000}"]
+CMD ["uv","run","uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "10000"]
