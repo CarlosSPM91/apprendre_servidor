@@ -30,6 +30,7 @@ router = APIRouter(prefix="/user", tags=["user"])
 @inject
 async def me(
     controller: UserController = Depends(Provide[Container.user_controller]),
+    token_service=Depends(Provide[Container.token_service]),
     current_user: JwtPayload = Depends(get_current_user),
 ):
     return await controller.me(current_user.user_id)
@@ -38,6 +39,7 @@ async def me(
 @router.get("/all", status_code=status.HTTP_200_OK, name="findAll")
 @inject
 async def find_all_user(
+    token_service=Depends(Provide[Container.token_service]),
     current_user: JwtPayload = Depends(get_current_user),
     controller: UserController = Depends(Provide[Container.user_controller]),
 ):
