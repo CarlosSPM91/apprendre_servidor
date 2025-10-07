@@ -23,7 +23,7 @@ class FindUserCase:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         return user
     
-    async def get_all(self, user_id: int) -> Optional[List[UserDTO]]:
+    async def get_all(self) -> Optional[List[UserDTO]]:
         users: Optional[List[UserDTO]] =  await self.userRepo.get_all()
         if users is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Users not found")

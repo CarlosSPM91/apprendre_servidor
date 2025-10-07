@@ -30,7 +30,6 @@ router = APIRouter(prefix="/user", tags=["user"])
 @inject
 async def me(
     controller: UserController = Depends(Provide[Container.user_controller]),
-    token_service=Depends(Provide[Container.token_service]),
     current_user: JwtPayload = Depends(get_current_user),
 ):
     return await controller.me(current_user.user_id)
@@ -39,14 +38,13 @@ async def me(
 @router.get("/all", status_code=status.HTTP_200_OK, name="findAll")
 @inject
 async def find_all_user(
-    token_service=Depends(Provide[Container.token_service]),
     current_user: JwtPayload = Depends(get_current_user),
     controller: UserController = Depends(Provide[Container.user_controller]),
 ):
     return await controller.get_all()
 
 
-@router.get("/{user_id}", status_code=status.HTTP_200_OK, name="find")
+@router.get("/{user_id}/find", status_code=status.HTTP_200_OK, name="find")
 @inject
 async def find_user(
     user_id: int,
@@ -85,11 +83,8 @@ async def change_password(
 @router.delete("/{user_id}", status_code=status.HTTP_200_OK, name="delete-user")
 @inject
 async def delete_user(
-    request: Request,
     user_id: int,
     controller: UserController = Depends(Provide[Container.user_controller]),
-    token_service=Depends(Provide[Container.token_service]),
     current_user: JwtPayload = Depends(get_current_user),
 ):
-
     return await controller.delete_user(user_id, current_user.user_id)

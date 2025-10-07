@@ -78,5 +78,5 @@ app.include_router(auth_router)
 app.include_router(role_router)
 
 container.wire(
-    modules=["src.endpoints.user", "src.endpoints.auth", "src.endpoints.role"]
+    modules=["src.endpoints.user", "src.endpoints.auth", "src.endpoints.role", "src.middleware.token.authenticateToken"]
 )
