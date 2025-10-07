@@ -14,7 +14,9 @@ async def get_current_user(
     token_service: TokenService = Depends(Provide[Container.token_service]),
 ) -> JwtPayload:
     token = credentials.credentials
-    return await token_service.validate_token(token)
+    decoded_token = token_service.decode_token(token)
+    await token_service.validate_token(decoded_token)
+    return await token_service.get_user_info(token)
 
 
 async def get_token(
@@ -24,7 +26,6 @@ async def get_token(
 
 @inject
 def require_role(required_roles: int):
-    
     async def role_checker(
       credentials: HTTPAuthorizationCredentials = Depends(secutiry),
         token_service: TokenService = Depends(Provide[Container.token_service]),

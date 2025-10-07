@@ -58,7 +58,7 @@ class LoginUseCase:
             role=user.role_id,
         )
 
-        token = self.token_service.generate_token(jwtPayload)
+        token = await self.token_service.generate_token(jwtPayload)
 
         await self.update_user_case.update_last_used(user.user_id)
 

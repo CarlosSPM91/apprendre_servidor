@@ -1,11 +1,8 @@
 build:
-	docker compose build --target dev
+	docker compose build
 
-up:
-	docker compose up
+up: down build
+	docker compose up --abort-on-container-exit
 
 down:
 	docker compose down
-
-pushA:
-	git push origin main:main

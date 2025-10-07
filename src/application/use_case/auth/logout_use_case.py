@@ -19,5 +19,5 @@ class LogoutUseCase:
     ):
         self.token_sevice = token_service
 
-    async def logout(self, token:str) -> bool:
-        return await self.token_sevice.invalidate_token(token)
+    async def logout(self, user_id:int) -> bool:
+        return await self.token_sevice.invalidate_token(user_id)

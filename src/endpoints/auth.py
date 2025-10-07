@@ -14,8 +14,6 @@ router = APIRouter(
     prefix="/auth",
     tags=["authentication"]
 )
-
-
 @router.post(
     "/login",
     response_model=LoginResponse,
@@ -37,6 +35,6 @@ async def login(
 @inject
 async def logout(
     controller: AuthController = Depends(Provide[Container.auth_controller]),
-    token:str= Depends(get_token)
+    current_user: JwtPayload = Depends(get_current_user),
 ):
-    return await controller.logout(token)
+    return await controller.logout(current_user.user_id)
