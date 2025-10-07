@@ -1,5 +1,5 @@
 build:
-	docker compose build
+	docker compose build --target dev
 
 up:
 	docker compose up
@@ -9,6 +9,3 @@ down:
 
 pushA:
 	git push origin main:main
-
-venv:
-	.venv\Scripts\actívate"
