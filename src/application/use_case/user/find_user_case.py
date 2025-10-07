@@ -27,4 +27,4 @@ class FindUserCase:
         users: Optional[List[UserDTO]] =  await self.userRepo.get_all()
         if users is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Users not found")
-        return usrs
+        return users

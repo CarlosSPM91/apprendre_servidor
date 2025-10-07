@@ -38,7 +38,7 @@ class AuthController:
                 )
             return {
                     "status": "success",
-                    "message": "Token is invalidated"
+                    "message": "Session closed"
                 }
         except HTTPException as e:
             sentry_sdk.capture_exception(e)

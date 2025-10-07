@@ -21,7 +21,6 @@ from src.domain.objects.user.user_dto import UserDTO
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
 
 
-
 class UserController:
     """Controller for user operations.
 
@@ -55,7 +54,7 @@ class UserController:
         except HTTPException as e:
             sentry_sdk.capture_exception(e)
             manage_user_except(e)
-        
+
     async def update_user(self, payload: UserUpdateDTO):
         try:
             await self.find_user_case.get_user_by_id(payload.user_id)
@@ -71,7 +70,7 @@ class UserController:
             sentry_sdk.capture_exception(e)
             manage_user_except(e)
 
-    async def change_password(self, payload:ChangePasswordDTO):
+    async def change_password(self, payload: ChangePasswordDTO):
         try:
             await self.find_user_case.get_user_by_id(payload.user_id)
             resp = await self.update_user_case.change_password(payload)
@@ -111,10 +110,12 @@ class UserController:
             sentry_sdk.capture_exception(e)
             manage_user_except(e)
 
-    async def delete_user(self, user_id: int, user_eraser_id:int):
+    async def delete_user(self, user_id: int, user_eraser_id: int):
         try:
             await self.find_user_case.get_user_by_id(user_id)
-            resp = await self.delete_user_case.delete(user_id, user_who_delete=user_eraser_id)
+            resp = await self.delete_user_case.delete(
+                user_id, user_who_delete=user_eraser_id
+            )
             return {
                 "status": "success",
                 "data": {
