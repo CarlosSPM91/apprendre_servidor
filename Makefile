@@ -6,3 +6,6 @@ up: down build
 
 down:
 	docker compose down
+
+testing:
+	PYTHONDONTWRITEBYTECODE=1 uv run pytest -v

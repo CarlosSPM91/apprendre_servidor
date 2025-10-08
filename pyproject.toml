@@ -19,7 +19,7 @@ dependencies = [
     "redis>=6.4.0",
     "sentry-sdk[fastapi]>=2.39.0",
     "sqlalchemy>=2.0.43",
-    "sqlmodel>=0.0.25",
+    "sqlmodel>=0.0.26",
     "uvicorn[standard]>=0.37.0",
 ]
 
@@ -28,4 +28,8 @@ dev = [
     "sqlalchemy2-stubs>=0.0.2a38",
     "ruff>=0.13.2",
     "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "aiosqlite>=0.21.0",
+    "greenlet>=3.2.4",
+    "asyncpg>=0.30.0",
 ]
