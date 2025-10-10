@@ -1,0 +1,101 @@
+
+import pytest
+import pytest_asyncio
+from sqlmodel import SQLModel, create_engine, text
+from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import sessionmaker
+
+
+from src.domain.objects.user.user_create_dto import UserCreateDTO
+from src.infrastructure.entities.users.deletion_logs import DeletionLog
+from src.infrastructure.repositories.deletion_logs import DeletionRepository
+from src.infrastructure.repositories.role import RoleRepository
+from src.infrastructure.repositories.user import UserRepository
+
+
+DATABASE_URL = "postgresql+psycopg://root:Adm1n@0.0.0.0:5432/apprendre_test"
+
+
+@pytest_asyncio.fixture(scope="function")
+async def async_engine():
+    engine = create_async_engine(DATABASE_URL, echo=False, future=True)
+    async with engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.create_all)
+    yield engine
+
+    async with engine.begin() as conn:
+        await conn.execute(text("DROP SCHEMA public CASCADE; CREATE SCHEMA public;"))
+    await engine.dispose()
+
+
+@pytest_asyncio.fixture
+async def async_session(async_engine):
+    async_session_maker = sessionmaker(
+        async_engine, class_=AsyncSession, expire_on_commit=False
+    )
+    async with async_session_maker() as session:
+        yield session
+
+    await session.rollback()
+
+@pytest.fixture
+def user_repository(async_session):
+    async def session_gen():
+        yield async_session
+    return UserRepository(session=session_gen)
+
+@pytest.fixture
+def role_repository(async_session):
+    async def session_gen():
+        yield async_session
+    return RoleRepository(session=session_gen)
+
+@pytest.fixture
+def deletion_log_repo(async_session):
+    async def session_gen():
+        yield async_session
+    return DeletionRepository(session=session_gen)
+
+
+@pytest.mark.asyncio
+async def test_create_role(deletion_log_repo, user_repository, role_repository):
+    await role_repository.create("Admin")
+    deleted = UserCreateDTO(
+        username="deleted",
+        name="deleted",
+        last_name="ex",
+        email="create@test.com",
+        phone="123456",
+        dni="12345678X",
+        password="hashed_pass",
+        role_id=1,
+    )
+    deleter = UserCreateDTO(
+        username="deleter",
+        name="deleter",
+        last_name="ex2",
+        email="create@test.com",
+        phone="123456",
+        dni="12345678X",
+        password="hashed_pass",
+        role_id=1,
+    )
+    await user_repository.create(deleted)
+    await user_repository.create(deleter)
+    
+    deletion = DeletionLog(
+        name="deleted",
+        last_name="ex",
+        user_id=1,
+        user_who_deleted=2,
+        name_who_deleted="deleter",
+        last_name_who_deleted="ex2",
+    )
+    await deletion_log_repo.create(delete=deletion)
+    result = await deletion_log_repo.find(1)
+
+    assert result.user_id == 1
+    assert result.user_who_deleted == 2
+    assert result.name == "deleted"
+    assert result.name_who_deleted == "deleter"

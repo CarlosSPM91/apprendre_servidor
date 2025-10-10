@@ -9,3 +9,6 @@ down:
 
 testing:
 	PYTHONDONTWRITEBYTECODE=1 uv run pytest -v
+
+remove pycache:
+	find . -type d -name "__pycache__" -exec rm -rf {} +

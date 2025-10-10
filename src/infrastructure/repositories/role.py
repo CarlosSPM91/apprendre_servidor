@@ -63,7 +63,7 @@ class RoleRepository:
                 await session.exec(select(Role).where(Role.id == role_id))
             ).first()
             if role:
-                return role
+                return RoleDTO(role_id=role.id, role_name=role.role_name)
             return None
 
     async def find_role_by_name(self, role_name: str) -> RoleDTO:

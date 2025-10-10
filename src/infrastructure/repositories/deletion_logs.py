@@ -22,3 +22,14 @@ class DeletionRepository:
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         detail="Something wrong on server",
                     )
+    
+    async def find(self, deletion_id) -> DeletionLog:
+        async for session in self.session():
+            try:
+                return (await session.exec(select(DeletionLog).where(DeletionLog.id == deletion_id))).first()
+            except IntegrityError as e:
+                    await session.rollback()
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail="Something wrong on server",
+                    )
