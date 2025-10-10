@@ -23,7 +23,10 @@ class TokenService:
             await self.save_token(user_id=payload.user_id, token=token)
             return token
         except Exception as e:
-            print(e)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=e,
+            )
 
     async def get_user_info(
         self,

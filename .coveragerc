@@ -1,0 +1,5 @@
+[run]
+omit =
+    test/*
+    */__pycache__/*
+    */__init__.py

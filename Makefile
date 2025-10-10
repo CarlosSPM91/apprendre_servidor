@@ -12,3 +12,7 @@ testing:
 
 remove pycache:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
+
+coverage: 
+	coverage run -m pytest
+	coverage html
