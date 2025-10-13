@@ -1,7 +1,8 @@
 import pytest
 import jwt
+import time
 from unittest.mock import AsyncMock, MagicMock
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from datetime import datetime, timedelta, timezone
 
 from src.application.services.token_service import TokenService
@@ -17,11 +18,11 @@ def fake_settings(monkeypatch):
 @pytest.fixture
 def fake_payload():
     return JwtPayload(
-        user_id="1",
+        user_id=1,
         username="testuser",
         name="Test",
         last_name="User",
-        role="1"
+        role=1
     )
 
 
@@ -59,28 +60,39 @@ def token_service(fake_settings, mock_find_user, mock_redis):
 
 @pytest.mark.asyncio
 async def test_generate_token(token_service, fake_payload):
+
     token = await token_service.generate_token(fake_payload)
     
     assert isinstance(token, str)
     assert len(token) > 0
     
     decoded = jwt.decode(token, "test_secret_key", algorithms=["HS256"])
-    assert decoded["user_id"] == "1"
+    assert decoded["user_id"] == 1
     assert decoded["username"] == "testuser"
     assert "exp" in decoded
     assert "iat" in decoded
 
 
 @pytest.mark.asyncio
+async def test_generate_token_exception(token_service, fake_payload):
+    token_service.save_token = AsyncMock(side_effect=Exception("DB error"))
+
+    with pytest.raises(HTTPException) as exc_info:
+        await token_service.generate_token(fake_payload)
+
+    assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+    assert "DB error" in str(exc_info.value.detail)
+
+@pytest.mark.asyncio
 async def test_decode_token(token_service, fake_payload):
     token = await token_service.generate_token(fake_payload)
     decoded = token_service.decode_token(token)
     
-    assert decoded["user_id"] == "1"
+    assert decoded["user_id"] == 1
     assert decoded["username"] == "testuser"
     assert decoded["name"] == "Test"
     assert decoded["last_name"] == "User"
-    assert decoded["role"] == "1"
+    assert decoded["role"] == 1
 
 
 @pytest.mark.asyncio
@@ -208,3 +220,27 @@ async def test_generate_token_saves_to_redis(token_service, fake_payload, mock_r
     
     assert isinstance(token, str)
     assert len(token) > 0
+
+
+@pytest.mark.asyncio
+async def test_validate_token_invalidated(token_service, fake_payload):
+    token_service.is_token_listed = AsyncMock(return_value=False)
+    token_dict = fake_payload.to_dict()  
+
+    with pytest.raises(HTTPException) as exc_info:
+        await token_service.validate_token(token_dict)
+
+    assert exc_info.value.status_code == 401
+    assert "Token has invalidated" in str(exc_info.value.detail)
+
+@pytest.mark.asyncio
+async def test_validate_token_expired(token_service, fake_payload):
+    token_service.is_token_listed = AsyncMock(return_value=True)
+    token_dict = fake_payload.to_dict()  
+    token_dict["exp"] = int(time.time()) - 10
+
+    with pytest.raises(HTTPException) as exc_info:
+        await token_service.validate_token(token_dict)
+
+    assert exc_info.value.status_code == 401
+    assert "Token has expired" in str(exc_info.value.detail)

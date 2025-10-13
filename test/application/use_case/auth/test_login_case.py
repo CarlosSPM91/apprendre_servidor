@@ -84,7 +84,7 @@ async def test_login_user_not_found(use_case, find_user_case):
         await use_case.login(payload)
 
     assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
-    assert exc_info.value.detail == "user not found"
+    assert exc_info.value.detail == "User not found"
 
 
 @pytest.mark.asyncio
