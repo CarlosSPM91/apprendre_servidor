@@ -15,7 +15,8 @@ from ...settings import settings
 
 
 def get_engine():
-    """Create and return the asynchronous database engine.
+    """
+    Create and return the asynchronous database engine.
 
     Returns:
         AsyncEngine: Database engine instance.
@@ -30,15 +31,23 @@ def get_engine():
 
 
 async def async_init_db(engine):
+    """
+    Initialize the database schema asynchronously.
 
-     #Users
+    Imports all entity models and creates tables if they do not exist.
+
+    Args:
+        engine (AsyncEngine): The asynchronous database engine.
+    """
+    # Users
     from src.infrastructure.entities.users.roles import Role
     from src.infrastructure.entities.users.user import User
     from src.infrastructure.entities.users.accces_logs import AccessLog
     from src.infrastructure.entities.users.deletion_logs import DeletionLog
     from src.infrastructure.entities.users.professor import Professor
     from src.infrastructure.entities.users.parents import Parent
-    #Student
+
+    # Student
     from src.infrastructure.entities.student_info.student_medical_info import StudentMedicalInfo
     from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
     from src.infrastructure.entities.student_info.student_intolerance import StudentIntolerance
@@ -46,18 +55,19 @@ async def async_init_db(engine):
     from src.infrastructure.entities.student_info.food_intolerance import FoodIntolerance
     from src.infrastructure.entities.student_info.student_allergy import StudentAllergy
     from src.infrastructure.entities.student_info.student import Student
-    #Course
+
+    # Course
     from src.infrastructure.entities.course.course import Course
     from src.infrastructure.entities.course.activity_type import ActivityType
     from src.infrastructure.entities.course.calendary_activity import CalendarActivity
     from src.infrastructure.entities.course.class_common_activity import ClassCommonActivity
-    from src.infrastructure.entities.course.calendary_activity import CalendarActivity
     from src.infrastructure.entities.course.school_subject import SchoolSubject
     from src.infrastructure.entities.course.student_class import StudentClass
     from src.infrastructure.entities.course.subject_activity import SubjectActivity
     from src.infrastructure.entities.course.subject_activity_score import SubjectActivityScore
     from src.infrastructure.entities.course.subject_class import SubjectClass
-    #Quiz
+
+    # Quiz
     from src.infrastructure.entities.quiz.quiz import Quiz
     from src.infrastructure.entities.quiz.quizz_response import QuizResponse
     from src.infrastructure.entities.quiz.reward import Reward
@@ -65,9 +75,17 @@ async def async_init_db(engine):
 
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
-        pass
 
 
 async def get_session(engine):
+    """
+    Generate an asynchronous database session for use with FastAPI dependencies.
+
+    Args:
+        engine (AsyncEngine): The asynchronous database engine.
+
+    Yields:
+        AsyncSession: A session to interact with the database.
+    """
     async with AsyncSession(engine) as session:
         yield session
