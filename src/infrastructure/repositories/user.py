@@ -21,7 +21,8 @@ from src.infrastructure.entities.users.user import User
 class UserRepository:
     """Repository for managing User persistence.
 
-    Provides CRUD operations over the User entity.
+    Provides CRUD operations and auxiliary methods
+    for interacting with the User entity in the database.
 
     :author: Carlos S. Paredes Morillo
     """
@@ -33,6 +34,17 @@ class UserRepository:
         self,
         payload: UserCreateDTO,
     ) -> UserDTO:
+        """Create a new user in the database.
+
+        Args:
+            payload (UserCreateDTO): Data required to create a new user.
+
+        Returns:
+            UserDTO: The created user's data.
+
+        Raises:
+            HTTPException: If a database integrity error occurs during user creation.
+        """
         async for session in self.session():
             user = User(
                 username=payload.username,
@@ -65,6 +77,14 @@ class UserRepository:
     async def get_all(
         self,
     ) -> Optional[List[UserDTO]]:
+        """Retrieve all users from the database.
+
+        Returns:
+            Optional[List[UserDTO]]: A list of users, or raises 404 if none are found.
+
+        Raises:
+            HTTPException: If no users are found in the database.
+        """
         async for session in self.session():
             users: List[User] = (await session.exec(select(User))).all()
 
@@ -88,6 +108,17 @@ class UserRepository:
         self,
         user_id: int,
     ) -> Optional[UserDTO]:
+        """Retrieve a user by their unique ID.
+
+        Args:
+            user_id (int): The ID of the user.
+
+        Returns:
+            Optional[UserDTO]: The matching user's data.
+
+        Raises:
+            HTTPException: If the user is not found.
+        """
         async for session in self.session():
             user: User = (
                 await session.exec(select(User).where(User.id == user_id))
@@ -110,6 +141,14 @@ class UserRepository:
         self,
         username: str,
     ) -> Optional[UserUpdateDTO]:
+        """Retrieve a user by their username.
+
+        Args:
+            username (str): The username of the user.
+
+        Returns:
+            Optional[UserUpdateDTO]: The user's full data if found, otherwise None.
+        """
         async for session in self.session():
             user: User = (
                 await session.exec(select(User).where(User.username == username))
@@ -134,6 +173,17 @@ class UserRepository:
         self,
         user_id: int,
     ) -> bool:
+        """Update the 'last_used' timestamp for a user.
+
+        Args:
+            user_id (int): The ID of the user.
+
+        Returns:
+            bool: True if the update succeeded.
+
+        Raises:
+            HTTPException: If the user is not found or a database error occurs.
+        """
         async for session in self.session():
             user: User = (
                 await session.exec(select(User).where(User.id == user_id))
@@ -158,6 +208,17 @@ class UserRepository:
         self,
         user_update: UserUpdateDTO,
     ) -> UserDTO:
+        """Update a user's information.
+
+        Args:
+            user_update (UserUpdateDTO): The new user data to update.
+
+        Returns:
+            UserDTO: The updated user's data.
+
+        Raises:
+            HTTPException: If the user is not found or an integrity error occurs.
+        """
         async for session in self.session():
             user: User = (
                 await session.exec(select(User).where(User.id == user_update.user_id))
@@ -189,6 +250,18 @@ class UserRepository:
                 )
 
     async def change_password(self, user_id: int, hash_pass: str) -> bool:
+        """Change a user's password.
+
+        Args:
+            user_id (int): The ID of the user.
+            hash_pass (str): The new hashed password.
+
+        Returns:
+            bool: True if the password was successfully updated.
+
+        Raises:
+            HTTPException: If the user is not found or a database error occurs.
+        """
         async for session in self.session():
             user: User = (
                 await session.exec(select(User).where(User.id == user_id))
@@ -208,6 +281,17 @@ class UserRepository:
                 )
 
     async def delete(self, user_id: int) -> bool:
+        """Delete a user from the database.
+
+        Args:
+            user_id (int): The ID of the user to delete.
+
+        Returns:
+            bool: True if the deletion succeeded.
+
+        Raises:
+            HTTPException: If the user is not found or a database error occurs.
+        """
         async for session in self.session():
             user: User = (
                 await session.exec(select(User).where(User.id == user_id))

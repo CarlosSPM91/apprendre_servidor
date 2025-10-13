@@ -10,6 +10,7 @@ dependencies = [
     "coverage>=7.10.7",
     "dependency-injector>=4.48.2",
     "fastapi>=0.117.1",
+    "pdoc>=15.0.4",
     "psycopg2-binary>=2.9.10",
     "psycopg[binary]>=3.2.10",
     "pydantic>=2.11.9",

@@ -16,3 +16,6 @@ remove pycache:
 coverage: 
 	coverage run -m pytest
 	coverage html
+
+docs:
+	pdoc --no-show-source src -o docs
