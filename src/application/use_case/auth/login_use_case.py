@@ -1,3 +1,12 @@
+"""
+Login Use Case.
+
+Handles user login, password verification, token generation, 
+and access logging.
+
+:author: Carlos S. Paredes Morillo
+"""
+
 from datetime import datetime, timezone
 from fastapi import HTTPException, status
 from src.application.services.password_service import PasswordService
@@ -13,6 +22,8 @@ from src.infrastructure.repositories.acces_logs import AccessRepository
 
 
 class LoginUseCase:
+    """Use case for handling user login operations."""
+
     def __init__(
         self,
         pwd_service: PasswordService,
@@ -21,16 +32,36 @@ class LoginUseCase:
         update_case: UpdateUserCase,
         access_repository: AccessRepository,
     ):
+        """
+        Initialize the LoginUseCase with required services and repositories.
+
+        Args:
+            pwd_service (PasswordService): Service for password hashing.
+            token_service (TokenService): Service for JWT token generation and validation.
+            find_case (FindUserCase): Use case to find users.
+            update_case (UpdateUserCase): Use case to update user data.
+            access_repository (AccessRepository): Repository for logging user access events.
+        """
         self.pwd_service = pwd_service
         self.token_service = token_service
         self.find_user_case = find_case
         self.update_user_case = update_case
         self.access_repo = access_repository
 
-    async def login(
-        self,
-        payload: LoginRequest,
-    ) -> LoginResponse:
+    async def login(self, payload: LoginRequest) -> LoginResponse:
+        """
+        Authenticate a user, generate a JWT token, update last login, 
+        and log access.
+
+        Args:
+            payload (LoginRequest): The login request containing username and password.
+
+        Returns:
+            LoginResponse: Contains JWT access token, token type, and user info.
+
+        Raises:
+            HTTPException: If the user is not found or the password is invalid.
+        """
         hash_pass = self.pwd_service.hash_password(payload.password)
 
         user: UserUpdateDTO = await self.find_user_case.get_user_by_username(
@@ -40,7 +71,7 @@ class LoginUseCase:
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="user not found",
+                detail="User not found",
                 headers={"WWW-Authenticate": "Bearer"},
             )
         if user.password != hash_pass:
