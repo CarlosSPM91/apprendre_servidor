@@ -1,31 +1,31 @@
 # Aprendre API
 
-Applicació per fer el seguiment escolar.
+Application for school tracking.
 
 ## Getting Started
 ### Pre-requisits
 - Python 3.13
-- uv (gestor de paquets) → pip install uv
+- uv (package manager) → pip install uv
 - Docker
-- Un editor de codi (VS Code, PyCharm)
-- Postman o editor web (Swagger UI) per provar l’API
+- Code editor (VS Code, PyCharm)
+- Postman or web editor (Swagger UI) to test the API
 
-### clona el repository
+### Clone the repository
 ```
 git clone https://github.com/CarlosSPM91/apprendre_servidor.git
 cd aprendre-api
 ```
 
-### instala dependencies
+### Install dependencies
 ```
 pip install uv
 uv sync
 ```
 
-### Variables d'entorn
-1.Canvia el fitxer .env.exemple a .env
+### Envitoment variables
+1.Rename the file .env.exemple to .env
 
-2.Omple les dades de connexió per treballar en local i fer proves, per exemple:
+2.Fill in the connection data to work locally and make tests, for example:
 ```
 APP_ENV=dev
 APP_PORT=8000
@@ -39,21 +39,57 @@ DB_PASSWORD=aprendre
 DATABASE_URL=postgresql+psycopg://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
 ```
 
-### Executar API en local
+### Run local API
 ```
 uv run uvicorn src.main:app --reload
 ```
 
 ### Executar API amb Docker
-Constuir l'imatge
+Build Image
 ```
 	docker compose build
 ```
-Aixecar la app en docker
+Start App
 ```
 	docker compose up
 ```
-Aturar la app
+Stop App
 ```
 	docker compose down
+```
+
+### Run with Make
+Install make
+```
+	En windows 
+		Instalar cocholately o MSYS2
+		Chololately: choco install make
+		MSY: pacman -S make
+	
+	En mac
+		Instalar Homebre
+			brew install make
+```
+
+Build Image
+```
+	make build
+```
+Start the app
+```
+	make up
+```
+Stop the app
+```
+	make down
+```
+
+Testing
+```
+	make testing
+```
+
+View coverage
+```
+	make coverage
 ```
