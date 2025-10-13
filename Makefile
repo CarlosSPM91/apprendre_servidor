@@ -18,5 +18,4 @@ coverage:
 	coverage html
 
 docs:
-	rm -rf docs
 	pdoc --no-show-source src -o docs
