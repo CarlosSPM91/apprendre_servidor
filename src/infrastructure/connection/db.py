@@ -62,6 +62,7 @@ async def async_init_db(engine):
     from src.infrastructure.entities.course.calendary_activity import CalendarActivity
     from src.infrastructure.entities.course.class_common_activity import ClassCommonActivity
     from src.infrastructure.entities.course.school_subject import SchoolSubject
+    from src.infrastructure.entities.course.classes import Classes
     from src.infrastructure.entities.course.student_class import StudentClass
     from src.infrastructure.entities.course.subject_activity import SubjectActivity
     from src.infrastructure.entities.course.subject_activity_score import SubjectActivityScore

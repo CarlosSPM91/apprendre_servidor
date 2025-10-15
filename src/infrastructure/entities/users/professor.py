@@ -14,6 +14,7 @@ from sqlmodel import Column, ForeignKey, Integer, Relationship, SQLModel, Field
 
 from src.infrastructure.entities.users.user import User
 
+
 class Professor(SQLModel, table=True):
     __tablename__ = "professors"
 

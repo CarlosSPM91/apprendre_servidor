@@ -17,6 +17,10 @@ from src.application.use_case.role.create_role_case import CreateRoleCase
 from src.application.use_case.role.delete_role_case import DeleteRoleCase
 from src.application.use_case.role.find_role_case import FindRoleCase
 from src.application.use_case.role.update_role_case import UpdateRoleCase
+from src.application.use_case.student.create_student_case import CreateStudenCase
+from src.application.use_case.student.delete_student_case import DeleteStudentCase
+from src.application.use_case.student.find_student_case import FindStudentCase
+from src.application.use_case.student.update_student_case import UpdateStudentCase
 from src.application.use_case.user.create_user_case import CreateUserCase
 from src.application.use_case.user.delete_user_case import DeleteUserCase
 from src.application.use_case.user.find_user_case import FindUserCase
@@ -25,10 +29,12 @@ from src.infrastructure.connection.db import get_engine, get_session
 from src.infrastructure.connection.redis import get_redis_client, get_redis_session
 from src.infrastructure.controllers.auth import AuthController
 from src.infrastructure.controllers.role import RoleController
+from src.infrastructure.controllers.student import StudentController
 from src.infrastructure.controllers.user import UserController
 from src.infrastructure.repositories.acces_logs import AccessRepository
 from src.infrastructure.repositories.deletion_logs import DeletionRepository
 from src.infrastructure.repositories.role import RoleRepository
+from src.infrastructure.repositories.student import StudentRepository
 from src.infrastructure.repositories.user import UserRepository
 from src.settings import settings
 
@@ -61,6 +67,7 @@ class Container(containers.DeclarativeContainer):
     deletion_repository = providers.Factory(
         DeletionRepository, session=session.provider
     )
+    student_repository = providers.Factory(StudentRepository, session=session.provider)
 
     find_user_case = providers.Factory(FindUserCase, repo=user_repository)
 
@@ -104,6 +111,14 @@ class Container(containers.DeclarativeContainer):
     create_role_case = providers.Factory(CreateRoleCase, role_repo=role_repository)
     delete_role_case = providers.Factory(DeleteRoleCase, role_repo=role_repository)
     update_role_case = providers.Factory(UpdateRoleCase, role_repo=role_repository)
+    find_student_case = providers.Factory(FindStudentCase, repo=student_repository)
+    create_student_case = providers.Factory(CreateStudenCase, repo=student_repository)
+    update_student_case = providers.Factory(UpdateStudentCase, repo=student_repository)
+    delete_student_case = providers.Factory(
+        DeleteStudentCase,
+        repo=student_repository,
+        find_student_case=find_student_case,
+    )
     # Controllers
     user_controller = providers.Factory(
         UserController,
@@ -119,6 +134,14 @@ class Container(containers.DeclarativeContainer):
         create_role_case=create_role_case,
         update_role_case=update_role_case,
         delete_role_case=delete_role_case,
+    )
+
+    student_contoller = providers.Factory(
+        StudentController,
+        find_case=find_student_case,
+        create_case=create_student_case,
+        update_case=update_student_case,
+        delete_case=delete_student_case,
     )
 
     auth_controller = providers.Factory(

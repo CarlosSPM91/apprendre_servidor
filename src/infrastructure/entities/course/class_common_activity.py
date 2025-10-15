@@ -13,7 +13,7 @@ from sqlmodel import SQLModel, Field
 class ClassCommonActivity(SQLModel, table=True):
     __tablename__ = "class_common_activities"
 
-    students_class_id: int = Field(foreign_key="student_class.id", primary_key=True)
+    class_id: int = Field(foreign_key="classes.id", primary_key=True)
     calendar_activities_id: int = Field(foreign_key="calendar_activities.id", primary_key=True)
 
 

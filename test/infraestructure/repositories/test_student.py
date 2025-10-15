@@ -49,7 +49,7 @@ def fake_user():
 
 @pytest.mark.asyncio
 async def test_init():
-    mock_session_test = AsyncMock()
+    mock_session_test = MagicMock()
     student_repository = StudentRepository(mock_session_test)
     assert student_repository.session == mock_session_test
 

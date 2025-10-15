@@ -11,16 +11,11 @@ from __future__ import annotations
 from typing import List, Optional
 from sqlmodel import Relationship, SQLModel, Field
 
-from src.infrastructure.entities.course.course import Course
-from src.infrastructure.entities.course.school_subject import SchoolSubject
-from src.infrastructure.entities.course.student_class import StudentClass
-from src.infrastructure.entities.users.professor import Professor
-
 class SubjectClass(SQLModel, table=True):
     __tablename__ = "subject_class"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     course_id: int = Field(foreign_key="courses.id", index=True)
     subject_id: int = Field(foreign_key="school_subjects.id", index=True) 
-    students_class_id: Optional[int] = Field(default=None, foreign_key="student_class.id")
+    class_id: Optional[int] = Field(default=None, foreign_key="classes.id")
     professor_id: Optional[int] = Field(default=None, foreign_key="professors.id")

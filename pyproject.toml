@@ -35,4 +35,5 @@ dev = [
     "greenlet>=3.2.4",
     "asyncpg>=0.30.0",
     "pytest-html>=4.1.1",
+    "pdoc>=15.0.4",
 ]
