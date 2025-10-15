@@ -30,6 +30,7 @@ from src.infrastructure.repositories.acces_logs import AccessRepository
 from src.infrastructure.repositories.deletion_logs import DeletionRepository
 from src.infrastructure.repositories.role import RoleRepository
 from src.infrastructure.repositories.user import UserRepository
+from src.settings import settings
 
 
 class Container(containers.DeclarativeContainer):
@@ -51,6 +52,7 @@ class Container(containers.DeclarativeContainer):
     session = providers.Factory(get_session, engine=database_engine)
     redis_client = providers.Singleton(get_redis_client)
     redis_session = providers.Factory(get_redis_session)
+    config = providers.Object(settings)
 
     # Repositories
     user_repository = providers.Factory(UserRepository, session=session.provider)
@@ -64,7 +66,14 @@ class Container(containers.DeclarativeContainer):
 
     # Services
     pwd_service = providers.Factory(PasswordService)
-    token_service = providers.Factory(TokenService, find_case=find_user_case, redis_session=redis_session.provider)
+    token_service = providers.Factory(
+        TokenService,
+        find_case=find_user_case,
+        redis_session=redis_session.provider,
+        jwt_secret=config.provided.secret_key,
+        jwt_algorithm=config.provided.algorithm,
+        jwt_expiration=config.provided.duration,
+    )
 
     # Use case
     create_user_case = providers.Factory(
@@ -113,7 +122,5 @@ class Container(containers.DeclarativeContainer):
     )
 
     auth_controller = providers.Factory(
-        AuthController,
-        login_case=login_user_case,
-        logout_case=logout_user_case
+        AuthController, login_case=login_user_case, logout_case=logout_user_case
     )

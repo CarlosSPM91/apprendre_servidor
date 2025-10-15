@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     algorithm:str
     sentry_dsn:str
     redis_url:str
+    duration:int
 
     model_config = SettingsConfigDict(
         env_file=".env",

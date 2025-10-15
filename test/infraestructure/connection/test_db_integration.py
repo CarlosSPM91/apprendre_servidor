@@ -1,3 +1,9 @@
+"""
+@file test_db_integration.py
+@brief Integration tests for database connection utilities.
+@details This file contains integration tests for database engine, session, and initialization utilities, verifying correct table creation and CRUD workflow.
+"""
+
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch, call
 import pytest_asyncio
@@ -9,6 +15,10 @@ from src.infrastructure.connection.db import get_engine, async_init_db, get_sess
 
 @pytest_asyncio.fixture
 async def sqlite_engine():
+    """
+    @brief Fixture that creates an in-memory SQLite async engine.
+    @return AsyncEngine instance.
+    """
     from sqlalchemy.ext.asyncio import create_async_engine
 
     engine = create_async_engine(
@@ -22,6 +32,11 @@ async def sqlite_engine():
 
 @pytest_asyncio.fixture
 async def test_db_engine(monkeypatch):
+    """
+    @brief Fixture that creates a PostgreSQL async engine for testing.
+    @param monkeypatch Pytest monkeypatch utility.
+    @return AsyncEngine instance.
+    """
     test_db_url = "postgresql+psycopg://root:Adm1n@0.0.0.0:5432/apprendre_test"
     monkeypatch.setattr(
         "src.infrastructure.connection.db.settings.database_url", test_db_url
@@ -33,13 +48,17 @@ async def test_db_engine(monkeypatch):
 
     yield engine_postgre
     async with engine_postgre.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.drop_all)
+        await conn.execute(text("DROP SCHEMA public CASCADE; CREATE SCHEMA public;"))
 
     await engine_postgre.dispose()
 
 
 @pytest.mark.asyncio
 async def test_async_init_db_creates_tables_successfully(sqlite_engine):
+    """
+    @brief Verifies that async_init_db creates all expected tables in SQLite.
+    @param sqlite_engine AsyncEngine instance.
+    """
     await async_init_db(sqlite_engine)
     async with sqlite_engine.connect() as conn:
         result = await conn.execute(
@@ -53,6 +72,10 @@ async def test_async_init_db_creates_tables_successfully(sqlite_engine):
 
 @pytest.mark.asyncio
 async def test_get_session_provides_working_session(sqlite_engine):
+    """
+    @brief Verifies that get_session yields a working session for queries.
+    @param sqlite_engine AsyncEngine instance.
+    """
     await async_init_db(sqlite_engine)
     async for session in get_session(sqlite_engine):
         from sqlmodel import select
@@ -66,6 +89,10 @@ async def test_get_session_provides_working_session(sqlite_engine):
 
 @pytest.mark.asyncio
 async def test_full_database_workflow(test_db_engine):
+    """
+    @brief Verifies full database workflow: insert, commit, refresh, and query for User and Role entities.
+    @param test_db_engine AsyncEngine instance.
+    """
     from src.infrastructure.entities.users.user import User
     from src.infrastructure.entities.users.roles import Role
     from sqlmodel import select

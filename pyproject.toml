@@ -34,4 +34,5 @@ dev = [
     "aiosqlite>=0.21.0",
     "greenlet>=3.2.4",
     "asyncpg>=0.30.0",
+    "pytest-html>=4.1.1",
 ]

@@ -1,3 +1,9 @@
+"""
+@file test_db_unit.py
+@brief Unit tests for database connection utilities.
+@details This file contains tests for the database engine, session, and initialization utilities, verifying correct engine creation, session management, and table initialization.
+"""
+
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch, call
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncConnection
@@ -10,6 +16,11 @@ from src.infrastructure.connection.db import get_engine, async_init_db, get_sess
 def test_get_engine_creates_engine_with_correct_params(
     mock_settings, mock_create_engine
 ):
+    """
+    @brief Verifies that get_engine creates an engine with the correct parameters.
+    @param mock_settings Mocked settings object.
+    @param mock_create_engine Mocked create_async_engine function.
+    """
     mock_settings.database_url = "postgresql+asyncpg://user:pass@localhost/test"
     mock_engine = MagicMock(spec=AsyncEngine)
     mock_create_engine.return_value = mock_engine
@@ -27,6 +38,11 @@ def test_get_engine_creates_engine_with_correct_params(
 @patch("src.infrastructure.connection.db.create_async_engine")
 @patch("src.infrastructure.connection.db.settings")
 def test_get_engine_returns_async_engine(mock_settings, mock_create_engine):
+    """
+    @brief Verifies that get_engine returns an AsyncEngine instance.
+    @param mock_settings Mocked settings object.
+    @param mock_create_engine Mocked create_async_engine function.
+    """
     mock_settings.database_url = "postgresql+asyncpg://test"
     mock_engine = MagicMock(spec=AsyncEngine)
     mock_create_engine.return_value = mock_engine
@@ -39,6 +55,9 @@ def test_get_engine_returns_async_engine(mock_settings, mock_create_engine):
 
 @pytest.mark.asyncio
 async def test_async_init_db_creates_all_tables():
+    """
+    @brief Verifies that async_init_db calls run_sync to create all tables.
+    """
     mock_conn = AsyncMock(spec=AsyncConnection)
     mock_begin = AsyncMock()
     mock_begin.__aenter__.return_value = mock_conn
@@ -61,6 +80,9 @@ async def test_async_init_db_creates_all_tables():
 
 @pytest.mark.asyncio
 async def test_get_session_yields_async_session():
+    """
+    @brief Verifies that get_session yields an AsyncSession instance.
+    """
     mock_session = AsyncMock(spec=AsyncSession)
     mock_session.__aenter__.return_value = mock_session
     mock_session.__aexit__.return_value = None
@@ -78,6 +100,9 @@ async def test_get_session_yields_async_session():
 
 @pytest.mark.asyncio
 async def test_get_session_closes_after_use():
+    """
+    @brief Verifies that get_session closes the session after use.
+    """
     mock_session = AsyncMock(spec=AsyncSession)
     mock_session.__aenter__.return_value = mock_session
     mock_session.__aexit__.return_value = None

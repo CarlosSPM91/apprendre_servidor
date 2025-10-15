@@ -1,3 +1,9 @@
+"""
+@file test_access_logs.py
+@brief Integration tests for AccessLog repository.
+@details This file contains integration tests for the AccessRepository, verifying correct creation and retrieval of access logs, including user and role setup.
+"""
+
 import pytest
 import pytest_asyncio
 from sqlmodel import SQLModel, text
@@ -17,6 +23,10 @@ DATABASE_URL = "postgresql+psycopg://root:Adm1n@0.0.0.0:5432/apprendre_test"
 
 @pytest_asyncio.fixture(scope="function")
 async def async_engine():
+    """
+    @brief Fixture that creates a PostgreSQL async engine and initializes all tables.
+    @return AsyncEngine instance.
+    """
     engine = create_async_engine(DATABASE_URL, echo=False, future=True)
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
@@ -28,6 +38,11 @@ async def async_engine():
 
 @pytest_asyncio.fixture
 async def async_session(async_engine):
+    """
+    @brief Fixture that provides an AsyncSession for database operations.
+    @param async_engine AsyncEngine instance.
+    @return AsyncSession instance.
+    """
     async_session_maker = sessionmaker(
         async_engine, class_=AsyncSession, expire_on_commit=False
     )
@@ -37,18 +52,33 @@ async def async_session(async_engine):
 
 @pytest.fixture
 def user_repository(async_session):
+    """
+    @brief Fixture that provides a UserRepository using the async session.
+    @param async_session AsyncSession instance.
+    @return UserRepository instance.
+    """
     async def session_gen():
         yield async_session
     return UserRepository(session=session_gen)
 
 @pytest.fixture
 def role_repository(async_session):
+    """
+    @brief Fixture that provides a RoleRepository using the async session.
+    @param async_session AsyncSession instance.
+    @return RoleRepository instance.
+    """
     async def session_gen():
         yield async_session
     return RoleRepository(session=session_gen)
 
 @pytest.fixture
 def access_repository(async_session):
+    """
+    @brief Fixture that provides an AccessRepository using the async session.
+    @param async_session AsyncSession instance.
+    @return AccessRepository instance.
+    """
     async def session_gen():
         yield async_session
     return AccessRepository(session=session_gen)
@@ -56,6 +86,12 @@ def access_repository(async_session):
 
 @pytest.mark.asyncio
 async def test_create_and_find_access_log(access_repository, role_repository, user_repository):
+    """
+    @brief Verifies that AccessRepository can create and retrieve an access log entry.
+    @param access_repository Instance of AccessRepository.
+    @param role_repository Instance of RoleRepository.
+    @param user_repository Instance of UserRepository.
+    """
     await role_repository.create("Admin")
     access_user = UserCreateDTO(
         username="access",
@@ -73,7 +109,6 @@ async def test_create_and_find_access_log(access_repository, role_repository, us
         user_id=1,
         username=access_user.username,
         acces_date=datetime.now(timezone.utc)
-
     )
     await access_repository.create(access_log)
 

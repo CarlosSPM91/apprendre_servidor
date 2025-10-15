@@ -22,7 +22,14 @@ class TokenService:
     Stores tokens in Redis and interacts with user data via FindUserCase.
     """
 
-    def __init__(self, find_case: FindUserCase, redis_session: Callable):
+    def __init__(
+        self,
+        find_case: FindUserCase,
+        redis_session: Callable,
+        jwt_secret: str,
+        jwt_algorithm: str,
+        jwt_expiration: int,
+    ):
         """
         Initialize the TokenService.
 
@@ -30,9 +37,9 @@ class TokenService:
             find_case (FindUserCase): Use case for retrieving user information.
             redis_session (Callable): Async Redis session factory.
         """
-        self.jwt_secret = settings.secret_key
-        self.jwt_algorithm = settings.algorithm
-        self.jwt_expiration = 24
+        self.jwt_secret = jwt_secret
+        self.jwt_algorithm = jwt_algorithm
+        self.jwt_expiration = jwt_expiration
         self.find_case = find_case
         self.redis = redis_session
 
@@ -104,7 +111,9 @@ class TokenService:
                     headers={"WWW-Authenticate": "Bearer"},
                 )
             exp_time = token.get("exp")
-            if exp_time and datetime.fromtimestamp(exp_time, tz=timezone.utc) < datetime.now(timezone.utc):
+            if exp_time and datetime.fromtimestamp(
+                exp_time, tz=timezone.utc
+            ) < datetime.now(timezone.utc):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Token has expired",

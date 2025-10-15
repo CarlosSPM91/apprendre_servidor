@@ -19,3 +19,6 @@ coverage:
 
 docs:
 	pdoc --no-show-source src -o docs
+
+test-doc:
+	pytest --html=proves/resultados/pytest_report.html --self-contained-html

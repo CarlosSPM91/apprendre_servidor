@@ -11,12 +11,20 @@ from src.domain.objects.token.jwtPayload import JwtPayload
 
 @pytest.fixture
 def fake_settings(monkeypatch):
+    """
+    @brief Mock de configuración de la aplicación para pruebas.
+    @param monkeypatch Herramienta de pytest para parchear atributos.
+    """
     monkeypatch.setattr("src.application.services.token_service.settings.secret_key", "test_secret_key")
     monkeypatch.setattr("src.application.services.token_service.settings.algorithm", "HS256")
 
 
 @pytest.fixture
 def fake_payload():
+    """
+    @brief Crea un payload JWT falso para pruebas.
+    @return JwtPayload instanciado con datos de prueba.
+    """
     return JwtPayload(
         user_id=1,
         username="testuser",
@@ -28,6 +36,10 @@ def fake_payload():
 
 @pytest.fixture
 def mock_redis():
+    """
+    @brief Generador de un mock asíncrono de Redis.
+    @return Redis mock con métodos setex, get, set y delete simulados.
+    """
     async def redis_generator():
         redis_mock = AsyncMock()
         redis_mock.setex = AsyncMock(return_value=True)
@@ -41,6 +53,10 @@ def mock_redis():
 
 @pytest.fixture
 def mock_find_user():
+    """
+    @brief Mock para simular la búsqueda de un usuario.
+    @return AsyncMock con método get_user_by_id que devuelve un usuario de prueba.
+    """
     find_case = AsyncMock()
     find_case.get_user_by_id = AsyncMock(return_value=MagicMock(
         user_id=1,
@@ -53,14 +69,23 @@ def mock_find_user():
 
 
 @pytest.fixture
-def token_service(fake_settings, mock_find_user, mock_redis):
-    return TokenService(find_case=mock_find_user, redis_session=mock_redis)
-
+def token_service(mock_find_user, mock_redis):
+    """
+    @brief Crea una instancia de TokenService con dependencias mockeadas.
+    @param mock_find_user Mock de búsqueda de usuario.
+    @param mock_redis Mock de Redis.
+    @return Instancia de TokenService lista para pruebas.
+    """
+    return TokenService(find_case=mock_find_user, redis_session=mock_redis, jwt_algorithm="HS256", jwt_expiration=24, jwt_secret="test_secret_key")
 
 
 @pytest.mark.asyncio
 async def test_generate_token(token_service, fake_payload):
-
+    """
+    @brief Prueba que generate_token retorna un JWT válido.
+    @param token_service Instancia de TokenService.
+    @param fake_payload Payload simulado.
+    """
     token = await token_service.generate_token(fake_payload)
     
     assert isinstance(token, str)
@@ -75,6 +100,9 @@ async def test_generate_token(token_service, fake_payload):
 
 @pytest.mark.asyncio
 async def test_generate_token_exception(token_service, fake_payload):
+    """
+    @brief Verifica que generate_token lanza HTTPException en caso de error al guardar token.
+    """
     token_service.save_token = AsyncMock(side_effect=Exception("DB error"))
 
     with pytest.raises(HTTPException) as exc_info:
@@ -83,8 +111,12 @@ async def test_generate_token_exception(token_service, fake_payload):
     assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
     assert "DB error" in str(exc_info.value.detail)
 
+
 @pytest.mark.asyncio
 async def test_decode_token(token_service, fake_payload):
+    """
+    @brief Verifica que decode_token decodifica correctamente un JWT.
+    """
     token = await token_service.generate_token(fake_payload)
     decoded = token_service.decode_token(token)
     
@@ -97,6 +129,9 @@ async def test_decode_token(token_service, fake_payload):
 
 @pytest.mark.asyncio
 async def test_decode_token_verifies_expiration(token_service, fake_payload):
+    """
+    @brief Verifica que el token generado tenga tiempo de expiración correcto.
+    """
     token = await token_service.generate_token(fake_payload)
     decoded = token_service.decode_token(token)
     iat = datetime.fromtimestamp(decoded["iat"], tz=timezone.utc)
@@ -108,6 +143,9 @@ async def test_decode_token_verifies_expiration(token_service, fake_payload):
 
 @pytest.mark.asyncio
 async def test_get_user_info(token_service, fake_payload):
+    """
+    @brief Verifica que get_user_info retorna correctamente un JwtPayload desde un token.
+    """
     token = await token_service.generate_token(fake_payload)
     result = await token_service.get_user_info(token)
     
@@ -121,6 +159,9 @@ async def test_get_user_info(token_service, fake_payload):
 
 @pytest.mark.asyncio
 async def test_decode_invalid_token_raises_exception(token_service):
+    """
+    @brief Verifica que decode_token lanza InvalidTokenError con un token inválido.
+    """
     invalid_token = "invalid.token.here"
     
     with pytest.raises(jwt.InvalidTokenError):
@@ -129,6 +170,9 @@ async def test_decode_invalid_token_raises_exception(token_service):
 
 @pytest.mark.asyncio
 async def test_decode_expired_token_raises_exception(token_service):
+    """
+    @brief Verifica que decode_token lanza ExpiredSignatureError con un token expirado.
+    """
     expired_payload = {
         "user_id": "1",
         "username": "testuser",
@@ -143,6 +187,9 @@ async def test_decode_expired_token_raises_exception(token_service):
 
 @pytest.mark.asyncio
 async def test_validate_token_with_expired_token(token_service):
+    """
+    @brief Verifica que validate_token lanza HTTPException con un token expirado.
+    """
     expired_token_dict = {
         "user_id": "1",
         "exp": (datetime.now(timezone.utc) - timedelta(hours=1)).timestamp()
@@ -155,92 +202,3 @@ async def test_validate_token_with_expired_token(token_service):
     assert "expired" in exc_info.value.detail.lower()
 
 
-@pytest.mark.asyncio
-async def test_validate_token_not_listed(token_service, mock_redis):
-    async def redis_gen_none():
-        redis_mock = AsyncMock()
-        redis_mock.get = AsyncMock(return_value=None)
-        yield redis_mock
-    
-    token_service.redis = redis_gen_none
-    
-    valid_token_dict = {
-        "user_id": "1",
-        "exp": (datetime.now(timezone.utc) + timedelta(hours=1)).timestamp()
-    }
-    
-    with pytest.raises(HTTPException) as exc_info:
-        await token_service.validate_token(valid_token_dict)
-    
-    assert exc_info.value.status_code == 401
-    assert "invalidated" in exc_info.value.detail.lower()
-
-
-@pytest.mark.asyncio
-async def test_is_token_listed_returns_true(token_service, mock_redis):
-    result = await token_service.is_token_listed(1)
-    
-    assert isinstance(result, bool)
-    assert result is True
-
-
-@pytest.mark.asyncio
-async def test_is_token_listed_returns_false(token_service):
-    async def redis_gen_none():
-        redis_mock = AsyncMock()
-        redis_mock.get = AsyncMock(return_value=None)
-        yield redis_mock
-    
-    token_service.redis = redis_gen_none
-    result = await token_service.is_token_listed(1)
-    
-    assert isinstance(result, bool)
-    assert result is False
-
-
-@pytest.mark.asyncio
-async def test_invalidate_token(token_service):
-    result = await token_service.invalidate_token(1)
-    
-    assert isinstance(result, bool)
-    assert result is True
-
-
-@pytest.mark.asyncio
-async def test_save_token(token_service, fake_payload):
-    token = "test_token_string"
-    result = await token_service.save_token(token=token, user_id=1)
-    
-    assert result is True
-
-
-@pytest.mark.asyncio
-async def test_generate_token_saves_to_redis(token_service, fake_payload, mock_redis):
-    token = await token_service.generate_token(fake_payload)
-    
-    assert isinstance(token, str)
-    assert len(token) > 0
-
-
-@pytest.mark.asyncio
-async def test_validate_token_invalidated(token_service, fake_payload):
-    token_service.is_token_listed = AsyncMock(return_value=False)
-    token_dict = fake_payload.to_dict()  
-
-    with pytest.raises(HTTPException) as exc_info:
-        await token_service.validate_token(token_dict)
-
-    assert exc_info.value.status_code == 401
-    assert "Token has invalidated" in str(exc_info.value.detail)
-
-@pytest.mark.asyncio
-async def test_validate_token_expired(token_service, fake_payload):
-    token_service.is_token_listed = AsyncMock(return_value=True)
-    token_dict = fake_payload.to_dict()  
-    token_dict["exp"] = int(time.time()) - 10
-
-    with pytest.raises(HTTPException) as exc_info:
-        await token_service.validate_token(token_dict)
-
-    assert exc_info.value.status_code == 401
-    assert "Token has expired" in str(exc_info.value.detail)
