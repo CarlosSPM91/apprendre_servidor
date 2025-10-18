@@ -11,8 +11,20 @@ repositories, and application services.
 from dependency_injector import containers, providers
 from src.application.services.password_service import PasswordService
 from src.application.services.token_service import TokenService
+from src.application.use_case.allerfy_info.create_allergy_case import CreateAllergyCase
+from src.application.use_case.allerfy_info.delete_allergy_case import DeleteAllergyCase
+from src.application.use_case.allerfy_info.find_allergy_case import FindAllergyCase
+from src.application.use_case.allerfy_info.update_allergy_case import UpdateAllergyCase
 from src.application.use_case.auth.login_use_case import LoginUseCase
 from src.application.use_case.auth.logout_use_case import LogoutUseCase
+from src.application.use_case.food_intolerance.create_intolerance_case import CreateIntoleranceCase
+from src.application.use_case.food_intolerance.delete_intolerance_case import DeleteIntoleranceCase
+from src.application.use_case.food_intolerance.find_intolerance_case import FindIntoleranceCase
+from src.application.use_case.food_intolerance.update_intolerance_case import UpdateIntoleranceCase
+from src.application.use_case.medical_info.create_medical_case import CreateMedicalCase
+from src.application.use_case.medical_info.delete_medical_case import DeleteMedicalCase
+from src.application.use_case.medical_info.find_medical_case import FindMedicalCase
+from src.application.use_case.medical_info.update_medical_case import UpdateMedicalCase
 from src.application.use_case.role.create_role_case import CreateRoleCase
 from src.application.use_case.role.delete_role_case import DeleteRoleCase
 from src.application.use_case.role.find_role_case import FindRoleCase
@@ -27,12 +39,18 @@ from src.application.use_case.user.find_user_case import FindUserCase
 from src.application.use_case.user.update_user_case import UpdateUserCase
 from src.infrastructure.connection.db import get_engine, get_session
 from src.infrastructure.connection.redis import get_redis_client, get_redis_session
+from src.infrastructure.controllers.allergy_info import AllergyController
 from src.infrastructure.controllers.auth import AuthController
+from src.infrastructure.controllers.food_intolrance import FoodIntoleranceController
+from src.infrastructure.controllers.medical_info import MedicalInfoController
 from src.infrastructure.controllers.role import RoleController
 from src.infrastructure.controllers.student import StudentController
 from src.infrastructure.controllers.user import UserController
 from src.infrastructure.repositories.acces_logs import AccessRepository
+from src.infrastructure.repositories.allergy_info import AllergyRepository
 from src.infrastructure.repositories.deletion_logs import DeletionRepository
+from src.infrastructure.repositories.food_intolerance import FoodIntoleranceRepository
+from src.infrastructure.repositories.medical_info import MedicalInfoRepository
 from src.infrastructure.repositories.role import RoleRepository
 from src.infrastructure.repositories.student import StudentRepository
 from src.infrastructure.repositories.user import UserRepository
@@ -68,6 +86,9 @@ class Container(containers.DeclarativeContainer):
         DeletionRepository, session=session.provider
     )
     student_repository = providers.Factory(StudentRepository, session=session.provider)
+    medical_info_repository = providers.Factory(MedicalInfoRepository, session=session.provider)
+    intolerance_food_repository = providers.Factory(FoodIntoleranceRepository, session=session.provider)
+    allergy_repository = providers.Factory(AllergyRepository, session=session.provider)
 
     find_user_case = providers.Factory(FindUserCase, repo=user_repository)
 
@@ -119,6 +140,21 @@ class Container(containers.DeclarativeContainer):
     update_role_case = providers.Factory(UpdateRoleCase, role_repo=role_repository)
     find_student_case = providers.Factory(FindStudentCase, repo=student_repository)
 
+    find_medical_case = providers.Factory(FindMedicalCase, repo=medical_info_repository)
+    create_medical_case = providers.Factory(CreateMedicalCase, role_repo=medical_info_repository)
+    update_medical_case = providers.Factory(DeleteMedicalCase, role_repo=medical_info_repository)
+    delete_medical_case = providers.Factory(UpdateMedicalCase, role_repo=medical_info_repository)
+
+    find_allergy_case = providers.Factory(FindAllergyCase, repo=allergy_repository)
+    create_allergy_case = providers.Factory(CreateAllergyCase, role_repo=allergy_repository)
+    update_allergy_case = providers.Factory(DeleteAllergyCase, role_repo=allergy_repository)
+    delete_allergy_case = providers.Factory(UpdateAllergyCase, role_repo=allergy_repository)
+
+    find_intolerance_case = providers.Factory(FindIntoleranceCase, repo=intolerance_food_repository)
+    create_intolerance_case = providers.Factory(CreateIntoleranceCase, role_repo=intolerance_food_repository)
+    update_intolerance_case = providers.Factory(DeleteIntoleranceCase, role_repo=intolerance_food_repository)
+    delete_intolerance_Case = providers.Factory(UpdateIntoleranceCase, role_repo=intolerance_food_repository)
+
     update_student_case = providers.Factory(UpdateStudentCase, repo=student_repository)
     delete_student_case = providers.Factory(
         DeleteStudentCase,
@@ -148,6 +184,30 @@ class Container(containers.DeclarativeContainer):
         create_case=create_student_case,
         update_case=update_student_case,
         delete_case=delete_student_case,
+    )
+
+    medical_info_controller = providers.Factory(
+        MedicalInfoController,
+        find_case=find_medical_case,
+        create_case=create_medical_case,
+        update_case=update_medical_case,
+        delete_case=delete_medical_case,
+    )
+
+    food_intolerance_controller = providers.Factory(
+        FoodIntoleranceController,
+        find_case=find_intolerance_case,
+        create_case=create_intolerance_case,
+        update_case=update_intolerance_case,
+        delete_case=delete_intolerance_Case,
+    )
+
+    allergy_controller = providers.Factory(
+        AllergyController,
+        find_case=find_allergy_case,
+        create_case=create_allergy_case,
+        update_case=update_allergy_case,
+        delete_case=delete_allergy_case,
     )
 
     auth_controller = providers.Factory(

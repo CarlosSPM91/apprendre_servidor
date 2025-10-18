@@ -13,8 +13,8 @@ from sqlmodel import SQLModel, Field
 class StudentAllergy(SQLModel, table=True):
     __tablename__ = "students_allergies"
 
-    students_user_id: int = Field(foreign_key="students.id", primary_key=True)
-    allergies_info_id: int = Field(foreign_key="allergies_info.id", primary_key=True)
+    students_user_id: int = Field(foreign_key="students.id", primary_key=True, ondelete="CASCADE")
+    allergies_info_id: int = Field(foreign_key="allergies_info.id", primary_key=True, ondelete="CASCADE")
 
 
 

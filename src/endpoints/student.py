@@ -57,3 +57,18 @@ async def update_user(
     controller: StudentController = Depends(Provide[Container.student_contoller]),
 ):
     return await controller.update(payload)
+
+@router.delete(
+    "/{student_id}",
+    status_code=status.HTTP_200_OK,
+    name="delete-user",
+    summary="Delete a user",
+    response_description="Returns the deleted user ID and timestamp",
+)
+@inject
+async def delete_student(
+    student_id: int,
+    controller: StudentController = Depends(Provide[Container.student_contoller]),
+    current_user: JwtPayload = Depends(get_current_user),
+):
+    return await controller.delete(student_id=student_id)

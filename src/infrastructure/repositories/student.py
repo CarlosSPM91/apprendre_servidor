@@ -6,9 +6,6 @@ from sqlmodel import delete, select
 
 from src.domain.objects.profiles.student_info_dto import StudentInfoDTO
 from src.domain.objects.profiles.student_update_dto import StudentUpdateDTO
-from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
-from src.infrastructure.entities.student_info.food_intolerance import FoodIntolerance
-from src.infrastructure.entities.student_info.medical_info import MedicalInfo
 from src.infrastructure.entities.student_info.student import Student
 from src.infrastructure.entities.student_info.student_allergy import StudentAllergy
 from src.infrastructure.entities.student_info.student_intolerance import (
@@ -85,6 +82,18 @@ class StudentRepository:
             )
 
     async def update(self, uptStudent: StudentUpdateDTO) -> Student:
+        """
+        Actualiza la información de un estudiante de forma segura y eficiente.
+
+        Args:
+            uptStudent: DTO con los datos a actualizar
+
+        Returns:
+            Student: Estudiante actualizado
+
+        Raises:
+            HTTPException: Si el estudiante no existe o hay error de integridad
+        """
         try:
             async for session in self.session():
                 student: Student = (
@@ -105,34 +114,32 @@ class StudentRepository:
                         )
                     )
                     for med_id in uptStudent.medical_info:
-                        await session.add(
+                        session.add(
                             StudentMedicalInfo(
                                 students_user_id=student.id, medical_info_id=med_id
                             )
                         )
                 if uptStudent.allergies is not None:
-                    student.allergies = uptStudent.allergies
                     await session.exec(
                         delete(StudentAllergy).where(
                             StudentAllergy.students_user_id == student.id
                         )
                     )
                     for allergy in uptStudent.allergies:
-                        await session.add(
+                        session.add(
                             StudentAllergy(
                                 students_user_id=student.id, allergy_info_id=allergy
                             )
                         )
 
                 if uptStudent.food_intolerance is not None:
-                    student.food_intolerance = uptStudent.food_intolerance
                     await session.exec(
                         delete(StudentIntolerance).where(
                             StudentIntolerance.students_user_id == student.id
                         )
                     )
                     for intolerance in uptStudent.food_intolerance:
-                        await session.add(
+                        session.add(
                             StudentIntolerance(
                                 students_user_id=student.id,
                                 food_intolerance_id=intolerance,
