@@ -4,6 +4,7 @@ from dependency_injector.wiring import inject, Provide
 
 from src.container import Container
 
+from src.domain.objects.profiles.student_update_dto import StudentUpdateDTO
 from src.domain.objects.token.jwtPayload import JwtPayload
 from src.infrastructure.controllers.student import StudentController
 from src.infrastructure.entities.student_info.student import Student
@@ -45,13 +46,13 @@ async def create(
 @router.put(
     "/",
     status_code=status.HTTP_200_OK,
-    name="update-user",
-    summary="Update an existing user",
-    response_description="Returns the updated user information",
+    name="update-student",
+    summary="Update an existing student",
+    response_description="Returns the updated student information",
 )
 @inject
 async def update_user(
-    payload: Student,
+    payload: StudentUpdateDTO,
     current_user: JwtPayload = Depends(get_current_user),
     controller: StudentController = Depends(Provide[Container.student_contoller]),
 ):

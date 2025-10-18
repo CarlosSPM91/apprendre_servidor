@@ -7,7 +7,7 @@ from src.application.use_case.student.delete_student_case import DeleteStudentCa
 from src.application.use_case.student.find_student_case import FindStudentCase
 from src.application.use_case.student.update_student_case import UpdateStudentCase
 from src.domain.exceptions.except_manager import manage_student_except
-from src.infrastructure.entities.student_info.student import Student
+from src.domain.objects.profiles.student_update_dto import StudentUpdateDTO
 
 class StudentController:
     def __init__(
@@ -36,9 +36,9 @@ class StudentController:
             sentry_sdk.capture_exception(e)
             manage_student_except(e)
 
-    async def update(self, payload: Student):
+    async def update(self, payload: StudentUpdateDTO):
         try:
-            await self.find_student_case.get_student_by_id(payload.id)
+            await self.find_student_case.get_student_by_id(payload.student_id)
             resp = await self.update_student_case.update_student(payload)
             return {
                 "status": "success",

@@ -22,7 +22,7 @@ class User(SQLModel, table=True):
     name: str = Field(nullable=False, max_length=50)
     last_name: str = Field(nullable=False, max_length=100)
     email: str = Field(default=None, max_length=100, nullable=True)
-    phone: int = Field(nullable=False)
+    phone: int = Field(default=None, nullable=True)
     dni: Optional[str] = Field(default=None, max_length=10, nullable=True)
     password: str = Field(nullable=False, max_length=255)
     create_time: datetime = Field(

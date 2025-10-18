@@ -5,6 +5,10 @@ from fastapi import HTTPException, status
 from sqlmodel import select
 
 from src.domain.objects.profiles.student_info_dto import StudentInfoDTO
+from src.domain.objects.profiles.student_update_dto import StudentUpdateDTO
+from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
+from src.infrastructure.entities.student_info.food_intolerance import FoodIntolerance
+from src.infrastructure.entities.student_info.medical_info import MedicalInfo
 from src.infrastructure.entities.student_info.student import Student
 from src.infrastructure.entities.users.user import User
 
@@ -69,20 +73,23 @@ class StudentRepository:
                 detail="Something wrong on server",
             )
 
-    async def update(self, uptStudent: Student) -> Student:
+    async def update(self, uptStudent: StudentUpdateDTO) -> Student:
         try:
             async for session in self.session():
                 student: Student = (
                     await session.exec(
-                        select(Student).where(Student.id == uptStudent.id)
+                        select(Student).where(Student.id == uptStudent.student_id)
                     )
                 ).first()
-
+                if not student:
+                    raise HTTPException(status_code=404, detail="Student not found")
+        
+                exclude_fields = {"student_id", "medical_info", "allergies", "food_intolerance"}
                 for field, value in uptStudent.model_dump(exclude_unset=True).items():
-                    if field != "id":
+                    if field not in exclude_fields:
                         setattr(student, field, value)
 
-                await session.add(student)
+                session.add(student)
                 await session.commit()
                 await session.refresh(student)
                 return student
