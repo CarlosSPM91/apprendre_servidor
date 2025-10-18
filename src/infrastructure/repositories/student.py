@@ -54,9 +54,6 @@ class StudentRepository:
         try:
             created = Student(
                 user_id=student.user_id,
-                allergies_id=student.allergies_id,
-                medical_id=student.medical_id,
-                food_intolerance_id=student.food_intolerance_id,
                 observations=student.observations,
             )
             async for session in self.session():
