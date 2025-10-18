@@ -218,3 +218,5 @@ __marimo__/
 docs
 .vscode
 proves
+alembic
+alembic.ini

@@ -6,6 +6,7 @@ from src.application.use_case.student.create_student_case import CreateStudenCas
 from src.application.use_case.student.delete_student_case import DeleteStudentCase
 from src.application.use_case.student.find_student_case import FindStudentCase
 from src.application.use_case.student.update_student_case import UpdateStudentCase
+from src.domain.exceptions.except_manager import manage_student_except
 from src.infrastructure.entities.student_info.student import Student
 
 class StudentController:
@@ -21,9 +22,9 @@ class StudentController:
         self.update_student_case = update_case
         self.delete_student_case = delete_case
 
-    async def create(self, payload: Student):
+    async def create(self, user_id: int):
         try:
-            resp = await self.create_user_case.create(payload)
+            resp = await self.create_student_case.create(user_id=user_id)
             return {
                 "status": "success",
                 "data": {
@@ -63,6 +64,20 @@ class StudentController:
                     "deletion_date": str(resp.event_date),
                 },
             }
+        except HTTPException as e:
+            sentry_sdk.capture_exception(e)
+            manage_student_except(e)
+
+    async def get_student(self, student_id: str):
+        try:
+            return await self.find_student_case.get_student_by_id(student_id=student_id)
+        except HTTPException as e:
+            sentry_sdk.capture_exception(e)
+            manage_student_except(e)
+
+    async def get_student_full_info(self, student_id: str):
+        try:
+            return await self.find_student_case.get_student_full_info(student_id=student_id)
         except HTTPException as e:
             sentry_sdk.capture_exception(e)
             manage_student_except(e)

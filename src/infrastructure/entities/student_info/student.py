@@ -32,9 +32,6 @@ class Student(SQLModel, table=True):
             nullable=False,
         )
     )
-    medical_id: Optional[int] = Field(default=None) 
-    allergies_id: Optional[int] = Field(default=None)  
-    food_intolerance_id: Optional[int] = Field(default=None) 
     observations: Optional[str] = Field(default=None, max_length=500)
 
     user: User = Relationship()

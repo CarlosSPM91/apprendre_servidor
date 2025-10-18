@@ -13,7 +13,7 @@ class StudentRepository:
     def __init__(self, session: Callable):
         self.session = session
 
-    async def getStudent(self, student_id: int) -> Student:
+    async def get_student(self, student_id: int) -> Student:
         try:
             async for session in self.session():
                 return (
@@ -27,7 +27,7 @@ class StudentRepository:
                 detail="Something wrong on server",
             )
 
-    async def getStudentFullInfo(self, student_id: int) -> StudentInfoDTO:
+    async def get_student_full_info(self, student_id: int) -> StudentInfoDTO:
         try:
             async for session in self.session():
                 result = (
@@ -40,7 +40,7 @@ class StudentRepository:
                     student_id=student.id,
                     user_id=student.user_id,
                     name=user.name,
-                    last_name=user.lastname,
+                    last_name=user.last_name,
                     obvervations=student.observations,
                 )
         except IntegrityError as e:
@@ -54,13 +54,13 @@ class StudentRepository:
         try:
             created = Student(
                 user_id=student.user_id,
-                allergies_id=student.allergies_id | None,
-                medical_id=student.medical_id | None,
-                food_intolerance_id=student.food_intolerance_id | None,
-                observations=student.observations | None,
+                allergies_id=student.allergies_id,
+                medical_id=student.medical_id,
+                food_intolerance_id=student.food_intolerance_id,
+                observations=student.observations,
             )
             async for session in self.session():
-                await session.add(created)
+                session.add(created)
                 await session.commit()
                 await session.refresh(created)
                 return created

@@ -12,10 +12,10 @@ class StudentInfoDTO(BaseModel):
     user_id:int
     name:str
     last_name:str
-    email: str | None
-    phone: int | None
-    classe: str | None
-    obvervations:int
-    medical_info: Optional[List[MedicalInfo]]
-    allergies: Optional[List[AllergyInfo]]
-    food_intolerance: Optional[List[FoodIntolerance]]
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    classe: Optional[str] = None
+    obvervations:Optional[str] = None
+    medical_info: Optional[List[MedicalInfo]] = []
+    allergies: Optional[List[AllergyInfo]] = []
+    food_intolerance: Optional[List[FoodIntolerance]] = [] 

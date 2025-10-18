@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Body, Depends, status
 from dependency_injector.wiring import inject, Provide
 
 from src.container import Container
@@ -12,7 +12,7 @@ from src.middleware.token.authenticateToken import get_current_user
 router = APIRouter(prefix="/student", tags=["student"])
 
 @router.get(
-    "/{id}/find",
+    "/{student_id}/find",
     status_code=status.HTTP_200_OK,
     name="find",
     summary="Get information of student",
@@ -20,7 +20,23 @@ router = APIRouter(prefix="/student", tags=["student"])
 )
 @inject
 async def find(
+    student_id: int,
     current_user: JwtPayload = Depends(get_current_user),
     controller: StudentController = Depends(Provide[Container.student_contoller]),
 ):
-    return await controller.get_all()
+    return await controller.get_student_full_info(student_id=student_id)
+
+@router.post(
+    "/",
+    status_code=status.HTTP_200_OK,
+    name="create",
+    summary="Create the student base",
+    response_description="Returns the information of student",
+)
+@inject
+async def create(
+    user_id:int = Body(..., embed=True),
+    current_user: JwtPayload = Depends(get_current_user),
+    controller: StudentController = Depends(Provide[Container.student_contoller]),
+):
+    return await controller.create(user_id=user_id)

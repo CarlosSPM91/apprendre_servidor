@@ -10,15 +10,24 @@ and duplicate username checks.
 from datetime import datetime, timezone
 from fastapi import HTTPException, status
 from src.application.services.password_service import PasswordService
+from src.application.use_case.role.find_role_case import FindRoleCase
+from src.application.use_case.student.create_student_case import CreateStudenCase
 from src.domain.objects.common.common_resp import CommonResponse
 from src.domain.objects.user.user_create_dto import UserCreateDTO
+from src.infrastructure.entities.student_info.student import Student
 from src.infrastructure.repositories.user import UserRepository
 
 
 class CreateUserCase:
     """Use case for creating new users in the system."""
 
-    def __init__(self, pwd_service: PasswordService, repo: UserRepository):
+    def __init__(
+        self,
+        pwd_service: PasswordService,
+        repo: UserRepository,
+        create_student_case: CreateStudenCase,
+        find_role_case:FindRoleCase
+    ):
         """
         Initialize the CreateUserCase with required services and repository.
 
@@ -28,6 +37,8 @@ class CreateUserCase:
         """
         self.pwdService = pwd_service
         self.userRepo = repo
+        self.createStudentCase = create_student_case
+        self.findRoleCase = find_role_case
 
     async def create(self, payload: UserCreateDTO) -> CommonResponse:
         """
@@ -45,16 +56,48 @@ class CreateUserCase:
         user_check = await self.userRepo.get_user_by_username(payload.username)
         if user_check:
             raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="User already exist"
+                status_code=status.HTTP_409_CONFLICT, detail="User already exist"
             )
 
         pwd_hash = self.pwdService.hash_password(payload.password)
         payload.password = pwd_hash
 
         user_created = await self.userRepo.create(payload)
+        roles = await self.findRoleCase.get_all()
+        roles_dict = {r.role_id: r.role_name for r in roles}
 
+        match user_created.role:
+            case 1: 
+                if roles_dict.get(1, "").lower() == "admin":
+                    pass
+                else:
+                    raise HTTPException(status_code=400, detail="Invalid role mapping for Admin")
+
+            case 2: 
+                if roles_dict.get(2, "").lower() == "teacher":
+                    pass
+                else:
+                    raise HTTPException(status_code=400, detail="Invalid role mapping for Teacher")
+
+            case 3: 
+                if roles_dict.get(3, "").lower() == "student":
+                    student = Student(
+                        user_id=user_created.user_id,  
+                    )
+                    await self.createStudentCase.create(student)
+                else:
+                    raise HTTPException(status_code=400, detail="Invalid role mapping for Student")
+
+            case 4: 
+                if roles_dict.get(4, "").lower() == "parent":
+                    pass
+                else:
+                    raise HTTPException(status_code=400, detail="Invalid role mapping for Parent")
+
+            case _:
+                raise HTTPException(status_code=400, detail="Role not valid")
+    
+            
         return CommonResponse(
-            item_id=user_created.user_id,
-            event_date=datetime.now(timezone.utc)
+            item_id=user_created.user_id, event_date=datetime.now(timezone.utc)
         )

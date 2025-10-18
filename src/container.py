@@ -83,8 +83,14 @@ class Container(containers.DeclarativeContainer):
     )
 
     # Use case
+    find_role_case = providers.Factory(FindRoleCase, role_repo=role_repository)
+    create_student_case = providers.Factory(CreateStudenCase, repo=student_repository)
     create_user_case = providers.Factory(
-        CreateUserCase, repo=user_repository, pwd_service=pwd_service
+        CreateUserCase,
+        repo=user_repository,
+        pwd_service=pwd_service,
+        create_student_case=create_student_case,
+        find_role_case=find_role_case
     )
     delete_user_case = providers.Factory(
         DeleteUserCase,
@@ -107,12 +113,12 @@ class Container(containers.DeclarativeContainer):
         LogoutUseCase,
         token_service=token_service,
     )
-    find_role_case = providers.Factory(FindRoleCase, role_repo=role_repository)
+
     create_role_case = providers.Factory(CreateRoleCase, role_repo=role_repository)
     delete_role_case = providers.Factory(DeleteRoleCase, role_repo=role_repository)
     update_role_case = providers.Factory(UpdateRoleCase, role_repo=role_repository)
     find_student_case = providers.Factory(FindStudentCase, repo=student_repository)
-    create_student_case = providers.Factory(CreateStudenCase, repo=student_repository)
+
     update_student_case = providers.Factory(UpdateStudentCase, repo=student_repository)
     delete_student_case = providers.Factory(
         DeleteStudentCase,

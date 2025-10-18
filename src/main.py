@@ -14,6 +14,7 @@ import sentry_sdk
 from src.endpoints.user import router as user_router
 from src.endpoints.auth import router as auth_router
 from src.endpoints.role import router as role_router
+from src.endpoints.student import router as student_router
 from src.settings import settings
 from .infrastructure.connection.db import async_init_db
 from .container import Container
@@ -38,6 +39,7 @@ async def lifespan(app: FastAPI):
     await async_init_db(engine)
     yield
 
+
 sentry_sdk.init(
     dsn=settings.sentry_dsn,
     send_default_pii=True,
@@ -45,17 +47,6 @@ sentry_sdk.init(
 container = Container()
 app = FastAPI(lifespan=lifespan)
 app.container = container
-
-# @app.middleware("http")
-# async def my_middleware(request: Request, call_next):
-#     print(f"Request path: {request.url.path}")
-#     token = request.headers.get("Authorization")
-#     token_service = TokenService()
-#     resp = token_service.validate(token)
-#     print(resp.user_id)
-#     response = await call_next(request)
-#     response.headers["X-Custom-Header"] = "MiMiddleware"
-#     return response
 
 
 @app.get("/health")
@@ -69,14 +60,23 @@ def health():
     """
     return {"message": "Server OK possibly"}
 
+
 @app.get("/sentry-debug")
 async def trigger_error():
     division_by_zero = 1 / 0
 
+
 app.include_router(user_router)
 app.include_router(auth_router)
 app.include_router(role_router)
+app.include_router(student_router)
 
 container.wire(
-    modules=["src.endpoints.user", "src.endpoints.auth", "src.endpoints.role", "src.middleware.token.authenticateToken"]
+    modules=[
+        "src.endpoints.user",
+        "src.endpoints.auth",
+        "src.endpoints.role",
+        "src.endpoints.student",
+        "src.middleware.token.authenticateToken",
+    ]
 )

@@ -19,5 +19,4 @@ class QuizResponse(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     quiz_id: int = Field(foreign_key="quiz.id", index=True)
-    student_id: int = Field(foreign_key="students.id", index=True)
     response: Optional[str] = Field(default=None, max_length=250)
