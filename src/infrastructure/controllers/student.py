@@ -38,8 +38,8 @@ class StudentController:
 
     async def update(self, payload: Student):
         try:
-            await self.find_user_case.get_user_by_id(payload.user_id)
-            resp = await self.update_user_case.update_user(payload)
+            await self.find_student_case.get_student_by_id(payload.id)
+            resp = await self.update_student_case.update_student(payload)
             return {
                 "status": "success",
                 "data": {
@@ -54,8 +54,8 @@ class StudentController:
     async def delete(self, student_id: int):
 
         try:
-            await self.find_user_case.get_user_by_id(student_id)
-            resp = await self.delete_user_case.delete(
+            await self.find_student_case.get_student_by_id(student_id=student_id)
+            resp = await self.delete_student_case.delete(
                 student_id)
             return {
                 "status": "success",

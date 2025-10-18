@@ -6,6 +6,7 @@ from src.container import Container
 
 from src.domain.objects.token.jwtPayload import JwtPayload
 from src.infrastructure.controllers.student import StudentController
+from src.infrastructure.entities.student_info.student import Student
 from src.middleware.token.authenticateToken import get_current_user
 
 
@@ -40,3 +41,18 @@ async def create(
     controller: StudentController = Depends(Provide[Container.student_contoller]),
 ):
     return await controller.create(user_id=user_id)
+
+@router.put(
+    "/",
+    status_code=status.HTTP_200_OK,
+    name="update-user",
+    summary="Update an existing user",
+    response_description="Returns the updated user information",
+)
+@inject
+async def update_user(
+    payload: Student,
+    current_user: JwtPayload = Depends(get_current_user),
+    controller: StudentController = Depends(Provide[Container.student_contoller]),
+):
+    return await controller.update(payload)
