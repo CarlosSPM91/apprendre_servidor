@@ -7,16 +7,17 @@ to register or persist a new user.
 :author: Carlos S. Paredes Morillo
 """
 
+from typing import Optional
 from pydantic import BaseModel
 
 
 class UserCreateDTO(BaseModel):
 
     username: str
-    email: str
+    email: Optional[str] = None
     name: str
     last_name: str
-    dni:str
+    dni:Optional[str] = None
     password: str
-    phone: int
+    phone: Optional[int] = None
     role_id: int

@@ -65,6 +65,8 @@ class UserRepository:
                     username=user.username,
                     name=user.name,
                     last_name=user.last_name,
+                    phone=user.phone,
+                    dni=user.dni,
                     role=user.role_id,
                 )
             except IntegrityError as e:
@@ -99,6 +101,8 @@ class UserRepository:
                     username=user.username,
                     name=user.name,
                     last_name=user.last_name,
+                    phone=user.phone,
+                    dni=user.dni,
                     role=user.role_id,
                 )
                 for user in users
@@ -134,6 +138,8 @@ class UserRepository:
                 username=user.username,
                 name=user.name,
                 last_name=user.last_name,
+                phone=user.phone,
+                dni=user.dni,
                 role=user.role_id,
             )
 
@@ -240,6 +246,8 @@ class UserRepository:
                     username=user.username,
                     name=user.name,
                     last_name=user.last_name,
+                    phone=user.phone,
+                    dni=user.dni,
                     role=user.role_id,
                 )
             except IntegrityError as e:

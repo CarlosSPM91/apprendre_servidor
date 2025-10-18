@@ -15,6 +15,7 @@ Attributes:
 :author: Carlos S. Paredes Morillo
 """
 
+from typing import Optional
 from pydantic import BaseModel
 
 class UserDTO(BaseModel):
@@ -22,4 +23,6 @@ class UserDTO(BaseModel):
     username: str
     name: str
     last_name: str
+    phone: Optional[int] = None
+    dni: Optional[str] = None
     role: int
