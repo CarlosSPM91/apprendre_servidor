@@ -2,7 +2,7 @@ from sqlite3 import IntegrityError
 from typing import Callable
 
 from fastapi import HTTPException, status
-from sqlmodel import select
+from sqlmodel import delete, select
 
 from src.domain.objects.profiles.student_info_dto import StudentInfoDTO
 from src.domain.objects.profiles.student_update_dto import StudentUpdateDTO
@@ -10,6 +10,13 @@ from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
 from src.infrastructure.entities.student_info.food_intolerance import FoodIntolerance
 from src.infrastructure.entities.student_info.medical_info import MedicalInfo
 from src.infrastructure.entities.student_info.student import Student
+from src.infrastructure.entities.student_info.student_allergy import StudentAllergy
+from src.infrastructure.entities.student_info.student_intolerance import (
+    StudentIntolerance,
+)
+from src.infrastructure.entities.student_info.student_medical_info import (
+    StudentMedicalInfo,
+)
 from src.infrastructure.entities.users.user import User
 
 
@@ -35,11 +42,15 @@ class StudentRepository:
         try:
             async for session in self.session():
                 result = (
-                    await session.exec(select(Student, User).join(User, Student.user_id == User.id).where(Student.id == student_id))
+                    await session.exec(
+                        select(Student, User)
+                        .join(User, Student.user_id == User.id)
+                        .where(Student.id == student_id)
+                    )
                 ).first()
-                student:Student 
-                user :User
-                student,user= result
+                student: Student
+                user: User
+                student, user = result
                 return StudentInfoDTO(
                     student_id=student.id,
                     user_id=student.user_id,
@@ -83,11 +94,50 @@ class StudentRepository:
                 ).first()
                 if not student:
                     raise HTTPException(status_code=404, detail="Student not found")
-        
-                exclude_fields = {"student_id", "medical_info", "allergies", "food_intolerance"}
-                for field, value in uptStudent.model_dump(exclude_unset=True).items():
-                    if field not in exclude_fields:
-                        setattr(student, field, value)
+
+                if uptStudent.observations is not None:
+                    student.observations = uptStudent.observations
+
+                if uptStudent.medical_info is not None:
+                    await session.exec(
+                        delete(StudentMedicalInfo).where(
+                            StudentMedicalInfo.students_user_id == student.id
+                        )
+                    )
+                    for med_id in uptStudent.medical_info:
+                        await session.add(
+                            StudentMedicalInfo(
+                                students_user_id=student.id, medical_info_id=med_id
+                            )
+                        )
+                if uptStudent.allergies is not None:
+                    student.allergies = uptStudent.allergies
+                    await session.exec(
+                        delete(StudentAllergy).where(
+                            StudentAllergy.students_user_id == student.id
+                        )
+                    )
+                    for allergy in uptStudent.allergies:
+                        await session.add(
+                            StudentAllergy(
+                                students_user_id=student.id, allergy_info_id=allergy
+                            )
+                        )
+
+                if uptStudent.food_intolerance is not None:
+                    student.food_intolerance = uptStudent.food_intolerance
+                    await session.exec(
+                        delete(StudentIntolerance).where(
+                            StudentIntolerance.students_user_id == student.id
+                        )
+                    )
+                    for intolerance in uptStudent.food_intolerance:
+                        await session.add(
+                            StudentIntolerance(
+                                students_user_id=student.id,
+                                food_intolerance_id=intolerance,
+                            )
+                        )
 
                 session.add(student)
                 await session.commit()
