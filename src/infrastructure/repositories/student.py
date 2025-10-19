@@ -1,11 +1,14 @@
 from sqlite3 import IntegrityError
-from typing import Callable
+from typing import Callable, List
 
 from fastapi import HTTPException, status
 from sqlmodel import delete, select
 
 from src.domain.objects.profiles.student_info_dto import StudentInfoDTO
 from src.domain.objects.profiles.student_update_dto import StudentUpdateDTO
+from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
+from src.infrastructure.entities.student_info.food_intolerance import FoodIntolerance
+from src.infrastructure.entities.student_info.medical_info import MedicalInfo
 from src.infrastructure.entities.student_info.student import Student
 from src.infrastructure.entities.student_info.student_allergy import StudentAllergy
 from src.infrastructure.entities.student_info.student_intolerance import (
@@ -38,22 +41,68 @@ class StudentRepository:
     async def get_student_full_info(self, student_id: int) -> StudentInfoDTO:
         try:
             async for session in self.session():
-                result = (
+                student_result = (
                     await session.exec(
                         select(Student, User)
                         .join(User, Student.user_id == User.id)
                         .where(Student.id == student_id)
                     )
                 ).first()
+                if not student_result:
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail=f"Student with id {student_id} not found",
+                    )
                 student: Student
                 user: User
-                student, user = result
+                student, user = student_result
+
+                allergies_result = (
+                    await session.exec(
+                        select(AllergyInfo)
+                        .join(
+                            StudentAllergy,
+                            StudentAllergy.allergies_info_id == AllergyInfo.id,
+                        )
+                        .where(StudentAllergy.students_user_id == student_id)
+                    )
+                ).all()
+
+                intolerances_result = (
+                    await session.exec(
+                        select(FoodIntolerance)
+                        .join(
+                            StudentIntolerance,
+                            StudentIntolerance.food_intolerance_id
+                            == FoodIntolerance.id,
+                        )
+                        .where(StudentIntolerance.students_user_id == student_id)
+                    )
+                ).all()
+
+                medical_result = (
+                    await session.exec(
+                        select(MedicalInfo)
+                        .join(
+                            StudentMedicalInfo,
+                            StudentMedicalInfo.medical_info_id == MedicalInfo.id,
+                        )
+                        .where(StudentMedicalInfo.students_user_id == student_id)
+                    )
+                ).all()
+
                 return StudentInfoDTO(
                     student_id=student.id,
                     user_id=student.user_id,
                     name=user.name,
                     last_name=user.last_name,
+                    email=user.email,
+                    phone=user.phone,
+                    classe="to improve",
                     obvervations=student.observations,
+                    medical_info=medical_result,
+                    allergies=allergies_result,
+                    food_intolerance=intolerances_result,
                 )
         except IntegrityError as e:
             await session.rollback()
@@ -82,18 +131,6 @@ class StudentRepository:
             )
 
     async def update(self, uptStudent: StudentUpdateDTO) -> Student:
-        """
-        Actualiza la información de un estudiante de forma segura y eficiente.
-
-        Args:
-            uptStudent: DTO con los datos a actualizar
-
-        Returns:
-            Student: Estudiante actualizado
-
-        Raises:
-            HTTPException: Si el estudiante no existe o hay error de integridad
-        """
         try:
             async for session in self.session():
                 student: Student = (
@@ -125,10 +162,11 @@ class StudentRepository:
                             StudentAllergy.students_user_id == student.id
                         )
                     )
-                    for allergy in uptStudent.allergies:
+                    for allergy_id in uptStudent.allergies:
                         session.add(
                             StudentAllergy(
-                                students_user_id=student.id, allergy_info_id=allergy
+                                students_user_id=student.id,
+                                allergies_info_id=allergy_id,
                             )
                         )
 

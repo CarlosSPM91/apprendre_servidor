@@ -31,8 +31,8 @@ class FoodIntoleranceRepository:
     async def create(self, intolerance: FoodIntolerance) -> FoodIntolerance:
         try:
             created = FoodIntolerance(
-                user_id=intolerance.name,
-                observations=intolerance.description,
+                name=intolerance.name,
+                description=intolerance.description,
             )
             async for session in self.session():
                 session.add(created)
@@ -60,7 +60,7 @@ class FoodIntoleranceRepository:
                     status_code=status.HTTP_404_NOT_FOUND, detail="Food Intolerance not found"
                 )
 
-            for field, value in intolerance_upt.model_dump(exclude_unset=True).items():
+            for field, value in intolerance.model_dump(exclude_unset=True).items():
                 if field != "id":
                     setattr(intolerance_upt, field, value)
 

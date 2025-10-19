@@ -6,11 +6,8 @@ from src.application.use_case.allerfy_info.create_allergy_case import CreateAlle
 from src.application.use_case.allerfy_info.delete_allergy_case import DeleteAllergyCase
 from src.application.use_case.allerfy_info.find_allergy_case import FindAllergyCase
 from src.application.use_case.allerfy_info.update_allergy_case import UpdateAllergyCase
-from src.application.use_case.medical_info.create_medical_case import CreateMedicalCase
-from src.application.use_case.medical_info.delete_medical_case import DeleteMedicalCase
-from src.application.use_case.medical_info.find_medical_case import FindMedicalCase
-from src.application.use_case.medical_info.update_medical_case import UpdateMedicalCase
 from src.domain.exceptions.except_manager import manage_allergy_except
+from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
 from src.infrastructure.entities.student_info.medical_info import MedicalInfo
 
 class AllergyController:
@@ -26,9 +23,10 @@ class AllergyController:
         self.update_case = update_case
         self.delete_case = delete_case
 
-    async def create(self, medical_id: int):
+    async def create(self, payload: AllergyInfo):
         try:
-            resp = await self.create_case.create(medical_id)
+
+            resp = await self.create_case.create(payload)
             return {
                 "status": "success",
                 "data": {
@@ -40,7 +38,7 @@ class AllergyController:
             sentry_sdk.capture_exception(e)
             manage_allergy_except(e)
 
-    async def update(self, payload: MedicalInfo):
+    async def update(self, payload: AllergyInfo):
         try:
             await self.find_case.get_allergy(payload.id)
             resp = await self.update_case.update(payload)
@@ -74,7 +72,7 @@ class AllergyController:
 
     async def get_allergy (self, allergy_id: str):
         try:
-            return await self.find_case.get_medical(intolernce_id=allergy_id)
+            return await self.find_case.get_allergy(allergy_id)
         except HTTPException as e:
             sentry_sdk.capture_exception(e)
             manage_allergy_except(e)

@@ -12,14 +12,14 @@ class DeleteAllergyCase:
     def __init__(
         self,
         repo: AllergyRepository,
-        find_intolerance_case: FindAllergyCase,
+        find_case: FindAllergyCase,
     ):
         self.repo = repo
-        self.find_case = find_intolerance_case
+        self.find_case = find_case
 
     async def delete(self, allergy_id:int) -> CommonResponse:
 
-        allergy = await self.find_case.get_medical(allergy_id)
+        allergy = await self.find_case.get_allergy(allergy_id)
 
         resp = await self.repo.delete(allergy_id)
         if resp:

@@ -22,9 +22,9 @@ class MedicalInfoController:
         self.update_case = update_case
         self.delete_case = delete_case
 
-    async def create(self, medical_id: int):
+    async def create(self, medical: MedicalInfo):
         try:
-            resp = await self.create_case.create(medical_id)
+            resp = await self.create_case.create(medical)
             return {
                 "status": "success",
                 "data": {

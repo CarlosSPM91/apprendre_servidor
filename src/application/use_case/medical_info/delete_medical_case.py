@@ -10,10 +10,10 @@ class DeleteMedicalCase:
     def __init__(
         self,
         repo: MedicalInfoRepository,
-        find_intolerance_case: FindMedicalCase,
+        find_case: FindMedicalCase,
     ):
         self.repo = repo
-        self.find_case = find_intolerance_case
+        self.find_case = find_case
 
     async def delete(self, medical_id:int) -> CommonResponse:
 

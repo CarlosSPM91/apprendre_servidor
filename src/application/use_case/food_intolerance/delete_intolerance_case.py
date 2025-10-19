@@ -11,10 +11,10 @@ class DeleteIntoleranceCase:
     def __init__(
         self,
         repo: FoodIntoleranceRepository,
-        find_intolerance_case: FindIntoleranceCase,
+        find_case: FindIntoleranceCase,
     ):
         self.repo = repo
-        self.find_case = find_intolerance_case
+        self.find_case = find_case
 
     async def delete(self, intolerance_id:int) -> CommonResponse:
 

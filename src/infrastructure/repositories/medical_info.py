@@ -30,8 +30,9 @@ class MedicalInfoRepository:
     async def create(self, medical: MedicalInfo) -> MedicalInfo:
         try:
             created = MedicalInfo(
-                user_id=medical.name,
-                observations=medical.description,
+                name=medical.name,
+                description=medical.description,
+                medication=medical.medication,
             )
             async for session in self.session():
                 session.add(created)
@@ -60,7 +61,7 @@ class MedicalInfoRepository:
                     detail="Medical Info not found",
                 )
 
-            for field, value in medical_upt.model_dump(exclude_unset=True).items():
+            for field, value in medical.model_dump(exclude_unset=True).items():
                 if field != "id":
                     setattr(medical_upt, field, value)
 

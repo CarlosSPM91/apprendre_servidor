@@ -22,9 +22,9 @@ class FoodIntoleranceController:
         self.update_intolerance_case = update_case
         self.delete_intolerance_case = delete_case
 
-    async def create(self, user_id: int):
+    async def create(self, intolerance: FoodIntolerance):
         try:
-            resp = await self.create_student_case.create(user_id=user_id)
+            resp = await self.create_intolerance_case.create(intolerance)
             return {
                 "status": "success",
                 "data": {
@@ -38,8 +38,8 @@ class FoodIntoleranceController:
 
     async def update(self, payload: FoodIntolerance):
         try:
-            await self.find_student_case.get_student_by_id(payload.student_id)
-            resp = await self.update_student_case.update_student(payload)
+            await self.find_intolerance_case.get_intolerance(payload.id)
+            resp = await self.update_intolerance_case.update(payload)
             return {
                 "status": "success",
                 "data": {
@@ -51,12 +51,12 @@ class FoodIntoleranceController:
             sentry_sdk.capture_exception(e)
             manage_intolerance_except(e)
 
-    async def delete(self, student_id: int):
+    async def delete(self, intolerance_id: int):
 
         try:
-            await self.find_student_case.get_student_by_id(student_id=student_id)
-            resp = await self.delete_student_case.delete(
-                student_id)
+            await self.find_intolerance_case.get_intolerance(intolerance_id)
+            resp = await self.delete_intolerance_case.delete(
+                intolerance_id)
             return {
                 "status": "success",
                 "data": {
@@ -70,7 +70,7 @@ class FoodIntoleranceController:
 
     async def get_intolerance(self, intolernce_id: str):
         try:
-            return await self.find_student_case.get_student_by_id(intolernce_id=intolernce_id)
+            return await self.find_intolerance_case.get_intolerance(intolernce_id)
         except HTTPException as e:
             sentry_sdk.capture_exception(e)
             manage_intolerance_except(e)

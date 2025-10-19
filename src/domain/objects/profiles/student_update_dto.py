@@ -10,6 +10,6 @@ from src.infrastructure.entities.student_info.medical_info import MedicalInfo
 class StudentUpdateDTO(BaseModel):
     student_id: int
     observations:Optional[str] = None
-    medical_info: Optional[List[MedicalInfo]] = []
-    allergies: Optional[List[AllergyInfo]] = []
-    food_intolerance: Optional[List[FoodIntolerance]] = [] 
+    medical_info: Optional[List[int]] = []
+    allergies: Optional[List[int]] = []
+    food_intolerance: Optional[List[int]] = [] 

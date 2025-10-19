@@ -15,6 +15,9 @@ from src.endpoints.user import router as user_router
 from src.endpoints.auth import router as auth_router
 from src.endpoints.role import router as role_router
 from src.endpoints.student import router as student_router
+from src.endpoints.allergy_info import router as allergy_router
+from src.endpoints.medical_info import router as medical_router
+from src.endpoints.food_intolerance import router as intolerance_router
 from src.settings import settings
 from .infrastructure.connection.db import async_init_db
 from .container import Container
@@ -70,6 +73,9 @@ app.include_router(user_router)
 app.include_router(auth_router)
 app.include_router(role_router)
 app.include_router(student_router)
+app.include_router(allergy_router)
+app.include_router(medical_router)
+app.include_router(intolerance_router)
 
 container.wire(
     modules=[
@@ -77,6 +83,9 @@ container.wire(
         "src.endpoints.auth",
         "src.endpoints.role",
         "src.endpoints.student",
+        "src.endpoints.allergy_info",
+        "src.endpoints.medical_info",
+        "src.endpoints.food_intolerance",
         "src.middleware.token.authenticateToken",
     ]
 )

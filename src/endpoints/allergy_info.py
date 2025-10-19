@@ -40,7 +40,7 @@ async def create(
     current_user: JwtPayload = Depends(get_current_user),
     controller: AllergyController = Depends(Provide[Container.allergy_controller]),
 ):
-    return await controller.create(intolerance=payload)
+    return await controller.create(payload)
 
 @router.put(
     "/",
@@ -55,6 +55,7 @@ async def update(
     current_user: JwtPayload = Depends(get_current_user),
     controller: AllergyController = Depends(Provide[Container.allergy_controller]),
 ):
+    print("-------- REPOSITORY update allergy -------- " + payload.description )
     return await controller.update(payload)
 
 @router.delete(
@@ -70,4 +71,4 @@ async def delete(
     controller: AllergyController = Depends(Provide[Container.allergy_controller]),
     current_user: JwtPayload = Depends(get_current_user),
 ):
-    return await controller.delete(medicalallergy_id_id=allergy_id)
+    return await controller.delete(allergy_id=allergy_id)

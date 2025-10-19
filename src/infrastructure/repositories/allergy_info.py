@@ -30,8 +30,8 @@ class AllergyRepository:
     async def create(self, allergy: AllergyInfo) -> AllergyInfo:
         try:
             created = AllergyInfo(
-                user_id=allergy.name,
-                observations=allergy.description,
+                name=allergy.name,
+                description=allergy.description,
             )
             async for session in self.session():
                 session.add(created)
@@ -47,19 +47,20 @@ class AllergyRepository:
             )
 
     async def update(self, allergy: AllergyInfo) -> Optional[AllergyInfo]:
+        print("-------- REPOSITORY update allergy -------- " + allergy.description )
         async for session in self.session():
             allergy_upt: AllergyInfo = (
                 await session.exec(
                     select(AllergyInfo).where(AllergyInfo.id == allergy.id)
                 )
             ).first()
-
+            print("-------- REPOSITORY update allergy -------- " + allergy_upt.name )
             if allergy_upt is None:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND, detail="Allergy not found"
                 )
-
-            for field, value in allergy_upt.model_dump(exclude_unset=True).items():
+            
+            for field, value in allergy.model_dump(exclude_unset=True).items():
                 if field != "id":
                     setattr(allergy_upt, field, value)
 
@@ -67,6 +68,7 @@ class AllergyRepository:
                 session.add(allergy_upt)
                 await session.commit()
                 await session.refresh(allergy_upt)
+                print("-------- REPOSITORY update allergy -------- " + allergy_upt.description )
                 return allergy_upt
             except IntegrityError:
                 await session.rollback()

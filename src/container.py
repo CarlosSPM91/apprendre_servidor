@@ -17,10 +17,18 @@ from src.application.use_case.allerfy_info.find_allergy_case import FindAllergyC
 from src.application.use_case.allerfy_info.update_allergy_case import UpdateAllergyCase
 from src.application.use_case.auth.login_use_case import LoginUseCase
 from src.application.use_case.auth.logout_use_case import LogoutUseCase
-from src.application.use_case.food_intolerance.create_intolerance_case import CreateIntoleranceCase
-from src.application.use_case.food_intolerance.delete_intolerance_case import DeleteIntoleranceCase
-from src.application.use_case.food_intolerance.find_intolerance_case import FindIntoleranceCase
-from src.application.use_case.food_intolerance.update_intolerance_case import UpdateIntoleranceCase
+from src.application.use_case.food_intolerance.create_intolerance_case import (
+    CreateIntoleranceCase,
+)
+from src.application.use_case.food_intolerance.delete_intolerance_case import (
+    DeleteIntoleranceCase,
+)
+from src.application.use_case.food_intolerance.find_intolerance_case import (
+    FindIntoleranceCase,
+)
+from src.application.use_case.food_intolerance.update_intolerance_case import (
+    UpdateIntoleranceCase,
+)
 from src.application.use_case.medical_info.create_medical_case import CreateMedicalCase
 from src.application.use_case.medical_info.delete_medical_case import DeleteMedicalCase
 from src.application.use_case.medical_info.find_medical_case import FindMedicalCase
@@ -86,8 +94,12 @@ class Container(containers.DeclarativeContainer):
         DeletionRepository, session=session.provider
     )
     student_repository = providers.Factory(StudentRepository, session=session.provider)
-    medical_info_repository = providers.Factory(MedicalInfoRepository, session=session.provider)
-    intolerance_food_repository = providers.Factory(FoodIntoleranceRepository, session=session.provider)
+    medical_info_repository = providers.Factory(
+        MedicalInfoRepository, session=session.provider
+    )
+    intolerance_food_repository = providers.Factory(
+        FoodIntoleranceRepository, session=session.provider
+    )
     allergy_repository = providers.Factory(AllergyRepository, session=session.provider)
 
     find_user_case = providers.Factory(FindUserCase, repo=user_repository)
@@ -111,7 +123,7 @@ class Container(containers.DeclarativeContainer):
         repo=user_repository,
         pwd_service=pwd_service,
         create_student_case=create_student_case,
-        find_role_case=find_role_case
+        find_role_case=find_role_case,
     )
     delete_user_case = providers.Factory(
         DeleteUserCase,
@@ -141,19 +153,37 @@ class Container(containers.DeclarativeContainer):
     find_student_case = providers.Factory(FindStudentCase, repo=student_repository)
 
     find_medical_case = providers.Factory(FindMedicalCase, repo=medical_info_repository)
-    create_medical_case = providers.Factory(CreateMedicalCase, role_repo=medical_info_repository)
-    update_medical_case = providers.Factory(DeleteMedicalCase, role_repo=medical_info_repository)
-    delete_medical_case = providers.Factory(UpdateMedicalCase, role_repo=medical_info_repository)
+    create_medical_case = providers.Factory(
+        CreateMedicalCase, repo=medical_info_repository
+    )
+    update_medical_case = providers.Factory(
+        UpdateMedicalCase, repo=medical_info_repository
+    )
+    delete_medical_case = providers.Factory(
+        DeleteMedicalCase, repo=medical_info_repository, find_case=find_medical_case
+    )
 
     find_allergy_case = providers.Factory(FindAllergyCase, repo=allergy_repository)
-    create_allergy_case = providers.Factory(CreateAllergyCase, role_repo=allergy_repository)
-    update_allergy_case = providers.Factory(DeleteAllergyCase, role_repo=allergy_repository)
-    delete_allergy_case = providers.Factory(UpdateAllergyCase, role_repo=allergy_repository)
+    create_allergy_case = providers.Factory(CreateAllergyCase, repo=allergy_repository)
+    update_allergy_case = providers.Factory(UpdateAllergyCase, repo=allergy_repository)
+    delete_allergy_case = providers.Factory(
+        DeleteAllergyCase, repo=allergy_repository, find_case=find_allergy_case
+    )
 
-    find_intolerance_case = providers.Factory(FindIntoleranceCase, repo=intolerance_food_repository)
-    create_intolerance_case = providers.Factory(CreateIntoleranceCase, role_repo=intolerance_food_repository)
-    update_intolerance_case = providers.Factory(DeleteIntoleranceCase, role_repo=intolerance_food_repository)
-    delete_intolerance_Case = providers.Factory(UpdateIntoleranceCase, role_repo=intolerance_food_repository)
+    find_intolerance_case = providers.Factory(
+        FindIntoleranceCase, repo=intolerance_food_repository
+    )
+    create_intolerance_case = providers.Factory(
+        CreateIntoleranceCase, repo=intolerance_food_repository
+    )
+    update_intolerance_case = providers.Factory(
+        UpdateIntoleranceCase, repo=intolerance_food_repository
+    )
+    delete_intolerance_Case = providers.Factory(
+        DeleteIntoleranceCase,
+        repo=intolerance_food_repository,
+        find_case=find_intolerance_case,
+    )
 
     update_student_case = providers.Factory(UpdateStudentCase, repo=student_repository)
     delete_student_case = providers.Factory(

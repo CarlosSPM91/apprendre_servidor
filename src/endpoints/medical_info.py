@@ -40,7 +40,7 @@ async def create(
     current_user: JwtPayload = Depends(get_current_user),
     controller: MedicalInfoController = Depends(Provide[Container.medical_info_controller]),
 ):
-    return await controller.create(intolerance=payload)
+    return await controller.create(payload)
 
 @router.put(
     "/",
