@@ -178,7 +178,7 @@ async def delete_user(
     user_id: int,
     controller: UserController = Depends(Provide[Container.user_controller]),
     current_user: JwtPayload = Depends(get_current_user),
-    role:JwtPayload = Depends(require_role[1]),
+    role: JwtPayload = Depends(require_role([1])),
 ):
     """Delete a user from the system.
 

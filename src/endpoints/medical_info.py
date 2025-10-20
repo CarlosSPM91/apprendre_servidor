@@ -37,7 +37,7 @@ async def find(
 @inject
 async def create(
     payload: MedicalInfo,
-    role:JwtPayload = Depends(require_role[1]),
+    role: JwtPayload = Depends(require_role([1])),
     controller: MedicalInfoController = Depends(Provide[Container.medical_info_controller]),
 ):
     return await controller.create(payload)
@@ -52,7 +52,7 @@ async def create(
 @inject
 async def update(
     payload: MedicalInfo,
-    role:JwtPayload = Depends(require_role[1]),
+    role: JwtPayload = Depends(require_role([1])),
     controller: MedicalInfoController = Depends(Provide[Container.medical_info_controller]),
 ):
     return await controller.update(payload)
@@ -68,6 +68,6 @@ async def update(
 async def delete(
     medical_id: int,
     controller: MedicalInfoController = Depends(Provide[Container.medical_info_controller]),
-    role:JwtPayload = Depends(require_role[1]),
+    role: JwtPayload = Depends(require_role([1])),
 ):
     return await controller.delete(medical_id=medical_id)

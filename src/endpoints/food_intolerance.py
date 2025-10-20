@@ -38,7 +38,7 @@ async def find(
 @inject
 async def create(
     payload: FoodIntolerance,
-    role:JwtPayload = Depends(require_role[1]),
+    role: JwtPayload = Depends(require_role([1])),
     controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
 ):
     return await controller.create(payload)
@@ -53,7 +53,7 @@ async def create(
 @inject
 async def update(
     payload: FoodIntolerance,
-    role:JwtPayload = Depends(require_role[1]),
+    role: JwtPayload = Depends(require_role([1])),
     controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
 ):
     return await controller.update(payload)
@@ -69,6 +69,6 @@ async def update(
 async def delete(
     intolerance_id: int,
     controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
-    role:JwtPayload = Depends(require_role[1]),
+    role: JwtPayload = Depends(require_role([1])),
 ):
     return await controller.delete(intolerance_id)

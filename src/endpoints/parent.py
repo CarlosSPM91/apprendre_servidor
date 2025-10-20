@@ -35,7 +35,7 @@ async def find(
 @inject
 async def create(
     payload: Parent,
-    role:JwtPayload = Depends(require_role[1]),
+    role: JwtPayload = Depends(require_role([1])),
     controller: ParentController = Depends(Provide[Container.parent_controller]),
 ):
     return await controller.create(payload)
@@ -51,7 +51,7 @@ async def create(
 async def delete(
     user_id: int,
     student_id: int,
-    role:JwtPayload = Depends(require_role[1]),
+    role: JwtPayload = Depends(require_role([1])),
     controller: ParentController = Depends(Provide[Container.parent_controller]),
 ):
     return await controller.delete(user_id=user_id, student_id=student_id)

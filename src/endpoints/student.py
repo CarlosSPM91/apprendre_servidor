@@ -69,6 +69,6 @@ async def update_user(
 async def delete_student(
     student_id: int,
     controller: StudentController = Depends(Provide[Container.student_contoller]),
-    role:JwtPayload = Depends(require_role[1]),
+    role: JwtPayload = Depends(require_role([1]))
 ):
     return await controller.delete(student_id=student_id)
