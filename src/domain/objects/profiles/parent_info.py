@@ -5,4 +5,9 @@ from src.domain.objects.profiles.student_info_dto import StudentInfoDTO
 
 
 class ParentDTO(BaseModel):
-    students: Optional[List[StudentInfoDTO]]
+    user_id:int
+    name:str
+    last_name:str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    students: Optional[List[int]]=[]

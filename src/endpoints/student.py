@@ -8,7 +8,7 @@ from src.domain.objects.profiles.student_update_dto import StudentUpdateDTO
 from src.domain.objects.token.jwtPayload import JwtPayload
 from src.infrastructure.controllers.student import StudentController
 from src.infrastructure.entities.student_info.student import Student
-from src.middleware.token.authenticateToken import get_current_user
+from src.middleware.token.authenticateToken import get_current_user, require_role
 
 
 router = APIRouter(prefix="/student", tags=["student"])
@@ -69,6 +69,6 @@ async def update_user(
 async def delete_student(
     student_id: int,
     controller: StudentController = Depends(Provide[Container.student_contoller]),
-    current_user: JwtPayload = Depends(get_current_user),
+    role:JwtPayload = Depends(require_role[1]),
 ):
     return await controller.delete(student_id=student_id)

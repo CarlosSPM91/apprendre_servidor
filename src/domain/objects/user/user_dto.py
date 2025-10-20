@@ -23,6 +23,7 @@ class UserDTO(BaseModel):
     username: str
     name: str
     last_name: str
+    email: Optional[str] = None
     phone: Optional[int] = None
     dni: Optional[str] = None
     role: int

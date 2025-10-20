@@ -8,7 +8,7 @@ from src.domain.objects.token.jwtPayload import JwtPayload
 from src.infrastructure.controllers.food_intolrance import FoodIntoleranceController
 from src.infrastructure.controllers.student import StudentController
 from src.infrastructure.entities.student_info.food_intolerance import FoodIntolerance
-from src.middleware.token.authenticateToken import get_current_user
+from src.middleware.token.authenticateToken import get_current_user, require_role
 
 
 router = APIRouter(prefix="/food-intolerance", tags=["food-intolerance"])
@@ -38,7 +38,7 @@ async def find(
 @inject
 async def create(
     payload: FoodIntolerance,
-    current_user: JwtPayload = Depends(get_current_user),
+    role:JwtPayload = Depends(require_role[1]),
     controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
 ):
     return await controller.create(payload)
@@ -53,7 +53,7 @@ async def create(
 @inject
 async def update(
     payload: FoodIntolerance,
-    current_user: JwtPayload = Depends(get_current_user),
+    role:JwtPayload = Depends(require_role[1]),
     controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
 ):
     return await controller.update(payload)
@@ -69,6 +69,6 @@ async def update(
 async def delete(
     intolerance_id: int,
     controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
-    current_user: JwtPayload = Depends(get_current_user),
+    role:JwtPayload = Depends(require_role[1]),
 ):
     return await controller.delete(intolerance_id)

@@ -16,7 +16,7 @@ from src.domain.objects.token.jwtPayload import JwtPayload
 from src.domain.objects.user.user_create_dto import UserCreateDTO
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
 from src.infrastructure.controllers.user import UserController
-from src.middleware.token.authenticateToken import get_current_user
+from src.middleware.token.authenticateToken import get_current_user, require_role
 
 
 router = APIRouter(prefix="/user", tags=["user"])
@@ -178,6 +178,7 @@ async def delete_user(
     user_id: int,
     controller: UserController = Depends(Provide[Container.user_controller]),
     current_user: JwtPayload = Depends(get_current_user),
+    role:JwtPayload = Depends(require_role[1]),
 ):
     """Delete a user from the system.
 

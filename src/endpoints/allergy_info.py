@@ -7,7 +7,7 @@ from src.container import Container
 from src.domain.objects.token.jwtPayload import JwtPayload
 from src.infrastructure.controllers.allergy_info import AllergyController
 from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
-from src.middleware.token.authenticateToken import get_current_user
+from src.middleware.token.authenticateToken import get_current_user, require_role
 
 
 router = APIRouter(prefix="/allergy-info", tags=["allergy-info"])
@@ -37,7 +37,7 @@ async def find(
 @inject
 async def create(
     payload: AllergyInfo,
-    current_user: JwtPayload = Depends(get_current_user),
+    role:JwtPayload = Depends(require_role[1]),
     controller: AllergyController = Depends(Provide[Container.allergy_controller]),
 ):
     return await controller.create(payload)
@@ -52,10 +52,9 @@ async def create(
 @inject
 async def update(
     payload: AllergyInfo,
-    current_user: JwtPayload = Depends(get_current_user),
+    role:JwtPayload = Depends(require_role[1]),
     controller: AllergyController = Depends(Provide[Container.allergy_controller]),
 ):
-    print("-------- REPOSITORY update allergy -------- " + payload.description )
     return await controller.update(payload)
 
 @router.delete(
@@ -69,6 +68,6 @@ async def update(
 async def delete(
     allergy_id: int,
     controller: AllergyController = Depends(Provide[Container.allergy_controller]),
-    current_user: JwtPayload = Depends(get_current_user),
+    role:JwtPayload = Depends(require_role[1]),
 ):
     return await controller.delete(allergy_id=allergy_id)

@@ -7,7 +7,7 @@ from src.container import Container
 from src.domain.objects.token.jwtPayload import JwtPayload
 from src.infrastructure.controllers.medical_info import MedicalInfoController
 from src.infrastructure.entities.student_info.medical_info import MedicalInfo
-from src.middleware.token.authenticateToken import get_current_user
+from src.middleware.token.authenticateToken import get_current_user, require_role
 
 
 router = APIRouter(prefix="/medical-info", tags=["medical-info"])
@@ -37,7 +37,7 @@ async def find(
 @inject
 async def create(
     payload: MedicalInfo,
-    current_user: JwtPayload = Depends(get_current_user),
+    role:JwtPayload = Depends(require_role[1]),
     controller: MedicalInfoController = Depends(Provide[Container.medical_info_controller]),
 ):
     return await controller.create(payload)
@@ -52,7 +52,7 @@ async def create(
 @inject
 async def update(
     payload: MedicalInfo,
-    current_user: JwtPayload = Depends(get_current_user),
+    role:JwtPayload = Depends(require_role[1]),
     controller: MedicalInfoController = Depends(Provide[Container.medical_info_controller]),
 ):
     return await controller.update(payload)
@@ -68,6 +68,6 @@ async def update(
 async def delete(
     medical_id: int,
     controller: MedicalInfoController = Depends(Provide[Container.medical_info_controller]),
-    current_user: JwtPayload = Depends(get_current_user),
+    role:JwtPayload = Depends(require_role[1]),
 ):
     return await controller.delete(medical_id=medical_id)

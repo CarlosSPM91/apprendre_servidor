@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dependency_injector.wiring import inject, Provide
@@ -25,7 +26,7 @@ async def get_token(
     return credentials.credentials
 
 @inject
-def require_role(required_roles: int):
+def require_role(required_roles: List[int]):
     async def role_checker(
       credentials: HTTPAuthorizationCredentials = Depends(secutiry),
         token_service: TokenService = Depends(Provide[Container.token_service]),

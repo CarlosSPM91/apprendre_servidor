@@ -33,6 +33,9 @@ from src.application.use_case.medical_info.create_medical_case import CreateMedi
 from src.application.use_case.medical_info.delete_medical_case import DeleteMedicalCase
 from src.application.use_case.medical_info.find_medical_case import FindMedicalCase
 from src.application.use_case.medical_info.update_medical_case import UpdateMedicalCase
+from src.application.use_case.parent.create_parent_case import CreateParentCase
+from src.application.use_case.parent.delete_parent_case import DeleteParentCase
+from src.application.use_case.parent.find_parent_case import FindParentCase
 from src.application.use_case.role.create_role_case import CreateRoleCase
 from src.application.use_case.role.delete_role_case import DeleteRoleCase
 from src.application.use_case.role.find_role_case import FindRoleCase
@@ -51,6 +54,7 @@ from src.infrastructure.controllers.allergy_info import AllergyController
 from src.infrastructure.controllers.auth import AuthController
 from src.infrastructure.controllers.food_intolrance import FoodIntoleranceController
 from src.infrastructure.controllers.medical_info import MedicalInfoController
+from src.infrastructure.controllers.parent import ParentController
 from src.infrastructure.controllers.role import RoleController
 from src.infrastructure.controllers.student import StudentController
 from src.infrastructure.controllers.user import UserController
@@ -59,6 +63,7 @@ from src.infrastructure.repositories.allergy_info import AllergyRepository
 from src.infrastructure.repositories.deletion_logs import DeletionRepository
 from src.infrastructure.repositories.food_intolerance import FoodIntoleranceRepository
 from src.infrastructure.repositories.medical_info import MedicalInfoRepository
+from src.infrastructure.repositories.parent import ParentRepository
 from src.infrastructure.repositories.role import RoleRepository
 from src.infrastructure.repositories.student import StudentRepository
 from src.infrastructure.repositories.user import UserRepository
@@ -101,6 +106,7 @@ class Container(containers.DeclarativeContainer):
         FoodIntoleranceRepository, session=session.provider
     )
     allergy_repository = providers.Factory(AllergyRepository, session=session.provider)
+    parent_repository = providers.Factory(ParentRepository, session=session.provider)
 
     find_user_case = providers.Factory(FindUserCase, repo=user_repository)
 
@@ -191,6 +197,18 @@ class Container(containers.DeclarativeContainer):
         repo=student_repository,
         find_student_case=find_student_case,
     )
+
+    find_parent_case = providers.Factory(
+        FindParentCase, repo=parent_repository
+    )
+    create_parent_case = providers.Factory(
+        CreateParentCase, repo=parent_repository
+    )
+    delete_parent_case = providers.Factory(
+        DeleteParentCase,
+        repo=parent_repository,
+    )
+    
     # Controllers
     user_controller = providers.Factory(
         UserController,
@@ -238,6 +256,13 @@ class Container(containers.DeclarativeContainer):
         create_case=create_allergy_case,
         update_case=update_allergy_case,
         delete_case=delete_allergy_case,
+    )
+
+    parent_controller = providers.Factory(
+        ParentController,
+        find_case=find_parent_case,
+        create_case=create_parent_case,
+        delete_case=delete_parent_case,
     )
 
     auth_controller = providers.Factory(
