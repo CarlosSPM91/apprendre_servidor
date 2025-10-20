@@ -24,7 +24,7 @@ class FindParentCase:
         user = await self.find_user.get_user_by_id(user_id)
 
         return ParentDTO(
-            user_id==user.id,
+            user_id=user.user_id,
             name= user.name,
             last_name=user.last_name,
             email=user.email,

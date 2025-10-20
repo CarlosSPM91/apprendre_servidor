@@ -25,8 +25,8 @@ async def get_token(
 ) -> str:
     return credentials.credentials
 
-@inject
 def require_role(required_roles: List[int]):
+    @inject
     async def role_checker(
       credentials: HTTPAuthorizationCredentials = Depends(secutiry),
         token_service: TokenService = Depends(Provide[Container.token_service]),

@@ -13,8 +13,8 @@ class DeleteParentCase:
 
     async def delete(self, user_id: int, student_id: int) -> bool:
         parent = await self.repo.get(user_id)
-        await self.repo.delete(user_id, student_id)
+        await self.repo.delete(user_id=user_id, student_id=student_id)
         return CommonResponse(
-            item_id=parent.id,
+            item_id=user_id,
             event_date=datetime.now(timezone.utc)
         )

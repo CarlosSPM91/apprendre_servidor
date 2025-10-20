@@ -35,13 +35,13 @@ async def find(
 @inject
 async def create(
     payload: Parent,
-    role: JwtPayload = Depends(require_role([1])),
+    current_user: JwtPayload = Depends(get_current_user),
     controller: ParentController = Depends(Provide[Container.parent_controller]),
 ):
     return await controller.create(payload)
 
 @router.delete(
-    "/{user_id}/{student_id}/delete",
+    "/{user_id}/{student_id}",
     status_code=status.HTTP_200_OK,
     name="delete",
     summary="Delete the parent",
@@ -51,7 +51,7 @@ async def create(
 async def delete(
     user_id: int,
     student_id: int,
-    role: JwtPayload = Depends(require_role([1])),
+    current_user: JwtPayload = Depends(get_current_user),
     controller: ParentController = Depends(Provide[Container.parent_controller]),
 ):
     return await controller.delete(user_id=user_id, student_id=student_id)

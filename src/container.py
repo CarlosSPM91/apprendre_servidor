@@ -199,7 +199,7 @@ class Container(containers.DeclarativeContainer):
     )
 
     find_parent_case = providers.Factory(
-        FindParentCase, repo=parent_repository
+        FindParentCase, repo=parent_repository, find_user=find_user_case
     )
     create_parent_case = providers.Factory(
         CreateParentCase, repo=parent_repository

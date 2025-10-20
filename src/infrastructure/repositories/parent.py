@@ -45,7 +45,7 @@ class ParentRepository:
             async for session in self.session():
                 parent = (
                     await session.exec(
-                        select(Parent).where(Parent.user_id == user_id and Parent.student_id == student_id)
+                        select(Parent).where((Parent.user_id == user_id) & (Parent.student_id == student_id))
                     )
                 ).first()
                 if not parent:
