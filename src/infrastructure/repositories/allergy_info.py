@@ -47,14 +47,12 @@ class AllergyRepository:
             )
 
     async def update(self, allergy: AllergyInfo) -> Optional[AllergyInfo]:
-        print("-------- REPOSITORY update allergy -------- " + allergy.description )
         async for session in self.session():
             allergy_upt: AllergyInfo = (
                 await session.exec(
                     select(AllergyInfo).where(AllergyInfo.id == allergy.id)
                 )
             ).first()
-            print("-------- REPOSITORY update allergy -------- " + allergy_upt.name )
             if allergy_upt is None:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND, detail="Allergy not found"
@@ -68,7 +66,6 @@ class AllergyRepository:
                 session.add(allergy_upt)
                 await session.commit()
                 await session.refresh(allergy_upt)
-                print("-------- REPOSITORY update allergy -------- " + allergy_upt.description )
                 return allergy_upt
             except IntegrityError:
                 await session.rollback()
