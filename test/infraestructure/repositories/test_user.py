@@ -55,7 +55,7 @@ async def async_session(async_engine):
     await session.rollback()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def user_repository(async_session):
     """
     @brief Fixture that provides a UserRepository using the async session.
@@ -68,7 +68,7 @@ def user_repository(async_session):
     return UserRepository(session=session_gen)
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def role_repository(async_session):
     """
     @brief Fixture that provides a RoleRepository using the async session.

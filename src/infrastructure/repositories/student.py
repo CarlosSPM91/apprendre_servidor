@@ -196,12 +196,12 @@ class StudentRepository:
                 detail="Something wrong on server",
             )
 
-    async def delete(self, uptStudent: Student) -> bool:
+    async def delete(self, del_student: Student) -> bool:
         try:
             async for session in self.session():
                 student: Student = (
                     await session.exec(
-                        select(Student).where(Student.id == uptStudent.id)
+                        select(Student).where(Student.id == del_student.id)
                     )
                 ).first()
 

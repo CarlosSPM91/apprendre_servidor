@@ -1,5 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock
 
+from fastapi import HTTPException
 import pytest
 
 from src.infrastructure.entities.student_info.medical_info import MedicalInfo
@@ -123,3 +124,20 @@ async def test_delete_medical_success(medical_repository, mock_session):
     mock_session.exec.assert_awaited_once()
     mock_session.delete.assert_awaited_once()
     mock_session.commit.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_delete_medical_not_found(medical_repository, mock_session):
+    mock_result_select = MagicMock()
+    mock_result_select.first = MagicMock(return_value=None)
+    
+    mock_session.exec = AsyncMock(return_value=mock_result_select)
+    mock_session.delete = AsyncMock()
+
+    with pytest.raises(HTTPException) as exc_info:
+        await medical_repository.delete(999)
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.detail == "Medical Info not found"
+    mock_session.exec.assert_awaited_once()
+    mock_session.delete.assert_not_called()
+    mock_session.commit.assert_not_called()
