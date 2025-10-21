@@ -1,8 +1,10 @@
 from unittest.mock import AsyncMock, MagicMock
 from fastapi import HTTPException
 import pytest
+from sqlalchemy import Select
 
 from src.domain.objects.profiles.student_info_dto import StudentInfoDTO
+from src.domain.objects.profiles.student_update_dto import StudentUpdateDTO
 from src.domain.objects.user.user_create_dto import UserCreateDTO
 from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
 from src.infrastructure.entities.student_info.food_intolerance import FoodIntolerance
@@ -137,17 +139,28 @@ async def test_get_student_full_info_succes(
     assert result.email == "create@test.com"
     assert result.phone == "123456"
     assert result.obvervations == "No observaciones"
-
     assert len(result.allergies) == 1
     assert result.allergies[0].name == "Peanuts"
-
     assert len(result.food_intolerance) == 1
     assert result.food_intolerance[0].name == "Milk"
-
     assert len(result.medical_info) == 1
     assert result.medical_info[0].name == "Asma"
-
     assert mock_session.exec.await_count == 4
+
+
+@pytest.mark.asyncio
+async def test_get_student_full_info_not_found(student_repository, mock_session):
+    mock_result_select = MagicMock()
+    mock_result_select.first = MagicMock(return_value=None)
+
+    mock_session.exec = AsyncMock(return_value=mock_result_select)
+
+    with pytest.raises(HTTPException) as exc_info:
+        await student_repository.get_student_full_info(999)
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.detail == "Student not found"
+    mock_session.exec.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -189,6 +202,64 @@ async def test_create_user_and_student_success(
 
 
 @pytest.mark.asyncio
+async def test_update_student_success(fake_student, student_repository, mock_session):
+    update_student = StudentUpdateDTO(
+        student_id=fake_student.id,
+        user_id=fake_student.user_id,
+        observations="Updated observations",
+        medical_info=[10, 11],
+        allergies=[20],
+        food_intolerance=[30],
+    )
+
+    mock_exec_result = MagicMock()
+    mock_exec_result.first.return_value = fake_student
+
+    mock_session.exec = AsyncMock(side_effect=[mock_exec_result, None, None, None])
+    mock_session.commit = AsyncMock()
+    mock_session.refresh = AsyncMock()
+    mock_session.add = MagicMock()
+
+    result = await student_repository.update(update_student)
+
+    assert result.observations == "Updated observations"
+    mock_session.exec.assert_awaited()
+    mock_session.commit.assert_awaited_once()
+    expected_add_calls = (
+        len(update_student.medical_info)
+        + len(update_student.allergies)
+        + len(update_student.food_intolerance)
+        + 1
+    )
+    assert mock_session.add.call_count == expected_add_calls
+    assert mock_session.exec.await_count == 4
+    mock_session.commit.assert_awaited_once()
+    mock_session.refresh.assert_awaited_once_with(fake_student)
+
+
+@pytest.mark.asyncio
+async def test_update_student_not_found(student_repository, mock_session):
+    update_student = StudentUpdateDTO(
+        student_id=999,
+        user_id=999,
+        observations="Updated observations",
+    )
+
+    mock_result_select = MagicMock()
+    mock_result_select.first = MagicMock(return_value=None)
+
+    mock_session.exec = AsyncMock(return_value=mock_result_select)
+
+    with pytest.raises(HTTPException) as exc_info:
+        await student_repository.update(update_student)
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.detail == "Student not found"
+    mock_session.exec.assert_awaited_once()
+    mock_session.commit.assert_not_called()
+
+
+@pytest.mark.asyncio
 async def test_delete_student_success(fake_student, student_repository, mock_session):
     mock_exec_result = MagicMock()
     mock_exec_result.first = AsyncMock(return_value=fake_student)
@@ -205,10 +276,10 @@ async def test_delete_student_success(fake_student, student_repository, mock_ses
 @pytest.mark.asyncio
 async def test_delete_student_not_found(student_repository, mock_session):
     fake_student = Student(id=999, user_id=999, observations="Non existent student")
-    
+
     mock_result_select = MagicMock()
     mock_result_select.first = MagicMock(return_value=None)
-    
+
     mock_session.exec = AsyncMock(return_value=mock_result_select)
     mock_session.delete = AsyncMock()
 
@@ -220,4 +291,3 @@ async def test_delete_student_not_found(student_repository, mock_session):
     mock_session.exec.assert_awaited_once()
     mock_session.delete.assert_not_called()
     mock_session.commit.assert_not_called()
-

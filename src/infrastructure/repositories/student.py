@@ -51,7 +51,7 @@ class StudentRepository:
                 if not student_result:
                     raise HTTPException(
                         status_code=status.HTTP_404_NOT_FOUND,
-                        detail=f"Student with id {student_id} not found",
+                        detail="Student not found",
                     )
                 student: Student
                 user: User

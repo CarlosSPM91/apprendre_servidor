@@ -1,5 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock
 
+from fastapi import HTTPException
 import pytest
 
 from src.infrastructure.entities.student_info.food_intolerance import FoodIntolerance
@@ -121,3 +122,20 @@ async def test_delete_intolerance_success(intolerance_repository, mock_session):
     mock_session.exec.assert_awaited_once()
     mock_session.delete.assert_awaited_once()
     mock_session.commit.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_delete_intolerance_not_found(intolerance_repository, mock_session):
+    mock_result_select = MagicMock()
+    mock_result_select.first = MagicMock(return_value=None)
+    
+    mock_session.exec = AsyncMock(return_value=mock_result_select)
+    mock_session.delete = AsyncMock()
+
+    with pytest.raises(HTTPException) as exc_info:
+        await intolerance_repository.delete(999)
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.detail == "Food Intolerance not found"
+    mock_session.exec.assert_awaited_once()
+    mock_session.delete.assert_not_called()
+    mock_session.commit.assert_not_called()

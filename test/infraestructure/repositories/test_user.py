@@ -89,6 +89,150 @@ def mock_session():
     """
     return AsyncMock()
 
+@pytest.mark.asyncio
+async def test_get_user_by_id_success(mock_session):
+    """
+    @brief Verifies that UserRepository.get_user_by_id correctly retrieves a user by ID using a mock session.
+    @param mock_session AsyncMock session.
+    """
+
+    fake_user = User(
+        id=1,
+        username="testUser",
+        name="Test",
+        last_name="User",
+        email="user@test.es",
+        phone="123456",
+        dni="12345678X",
+        password="hashed_pass",
+        role_id=1,
+    )
+    mock_exec_result = MagicMock()
+    mock_exec_result.first.return_value = fake_user
+    mock_session.exec.return_value = mock_exec_result 
+    async def fake_session_gen():
+        yield mock_session
+    repo = UserRepository(session=fake_session_gen)
+    result = await repo.get_user_by_id(1)
+    mock_session.exec.assert_called_once()
+    assert isinstance(result, UserDTO)
+    assert result.user_id == 1
+    assert result.username == "testUser"
+
+@pytest.mark.asyncio
+async def test_get_user_by_username_success(mock_session):
+    """
+    @brief Verifies that UserRepository.get_user_by_username correctly retrieves a user by username using a mock session.
+    @param mock_session AsyncMock session.
+    """
+
+    fake_user = User(
+        id=1,
+        username="testUser",
+        name="Test",
+        last_name="User",
+        email="user@test.es",
+        phone="123456",
+        dni="12345678X",
+        password="hashed_pass",
+        role_id=1,
+    )
+    mock_exec_result = MagicMock()
+    mock_exec_result.first.return_value = fake_user
+    mock_session.exec.return_value = mock_exec_result
+    async def fake_session_gen():
+        yield mock_session
+
+    repo = UserRepository(session=fake_session_gen)
+    result = await repo.get_user_by_username("testUser")
+    mock_session.exec.assert_called_once()
+    assert isinstance(result, UserUpdateDTO)
+    assert result.username == "testUser"
+    assert result.user_id == 1
+
+@pytest.mark.asyncio
+async def test_get_all_users_success(mock_session):
+    """
+    @brief Verifies that UserRepository.get_all correctly retrieves all users using a mock session.
+    @param mock_session AsyncMock session.
+    """
+
+    fake_users = [
+        User(
+            id=1,
+        username="testUser",
+        name="Test",
+        last_name="User",
+        email="user@test.es",
+        phone="123456",
+        dni="12345678X",
+        password="hashed_pass",
+        role_id=1,
+        ),
+        User(
+            id=2,
+        username="anotherUser",
+        name="Another",
+        last_name="User",
+        email="qqq",
+        phone="654321",
+        dni="87654321Y",
+        password="hashed_pass2",
+        role_id=2,
+        ),
+    ]
+    mock_exec_result = MagicMock()
+    mock_exec_result.all.return_value = fake_users
+    mock_session.exec.return_value = mock_exec_result
+    async def fake_session_gen():
+        yield mock_session
+    repo = UserRepository(session=fake_session_gen)
+    result = await repo.get_all()
+    mock_session.exec.assert_called_once()
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0].user_id == 1
+    assert result[1].user_id == 2
+
+@pytest.mark.asyncio
+async def test_get_all_users_not_found_exception(mock_session):
+    """
+    @brief Verifies that UserRepository.get_all raises an exception when no users are found using a mock session.
+    @param mock_session AsyncMock session.
+    """
+
+    mock_exec_result = MagicMock()
+    mock_exec_result.all.return_value = []
+    mock_session.exec.return_value = mock_exec_result
+    async def fake_session_gen():
+        yield mock_session
+    repo = UserRepository(session=fake_session_gen)
+
+    with pytest.raises(Exception) as exc_info:
+        await repo.get_all()
+
+    mock_session.exec.assert_called_once()
+    assert exc_info.value.detail == "Users not found"
+
+@pytest.mark.asyncio
+async def test_user_by_id_not_found_exception(mock_session):
+    """
+    @brief Verifies that UserRepository.get_user_by_id raises an exception when the user is not found using a mock session.
+    @param mock_session AsyncMock session.
+    """
+
+    mock_exec_result = MagicMock()
+    mock_exec_result.first.return_value = None
+    mock_session.exec.return_value = mock_exec_result
+    async def fake_session_gen():
+        yield mock_session
+    repo = UserRepository(session=fake_session_gen)
+
+    with pytest.raises(Exception) as exc_info:
+        await repo.get_user_by_id(999)
+
+    mock_session.exec.assert_called_once()
+    assert exc_info.value.detail == "User not found"
 
 @pytest.mark.asyncio
 async def test_create_user_success(mock_session):
@@ -374,3 +518,129 @@ async def test_delete_user_integration(user_repository, role_repository):
     deleted = await user_repository.delete(created.user_id)
 
     assert deleted is True
+
+@pytest.mark.asyncio
+async def test_delete_user_not_found_integration(user_repository, role_repository):
+        """
+        @brief Verifies that UserRepository.delete raises an exception when trying to delete a non-existent user.
+        @param user_repository Instance of UserRepository.
+        @param role_repository Instance of RoleRepository.
+        """
+
+        payload = UserCreateDTO(
+            username="delete_me",
+            name="Delete",
+            last_name="Me",
+            email="ww",
+            phone="100000",
+            dni="11111111D",
+            password="pass",
+            role_id=1,
+        )
+        await role_repository.create("Admin")
+        await user_repository.create(payload)   
+        with pytest.raises(Exception) as exc_info:
+            await user_repository.delete(999)
+        assert exc_info.value.detail == "User not found"
+
+@pytest.mark.asyncio
+async def test_change_user_password(user_repository, role_repository):
+        """
+        @brief Verifies that UserRepository.change_password updates the user's password.
+        @param user_repository Instance of UserRepository.
+        @param role_repository Instance of RoleRepository.
+        """
+
+        payload = UserCreateDTO(
+            username="testUser",
+            name="Test",
+            last_name="User",
+            email="aaas",
+            phone="123456",
+            dni="12345678X",
+            password="old_pass",
+            role_id=1,
+        )
+        await role_repository.create("Admin")
+        created = await user_repository.create(payload)
+        new_password = "new_hashed_pass"
+        await user_repository.change_password(created.user_id, new_password)
+        
+        user = await user_repository.get_user_by_username(created.username)
+        assert user.password == new_password
+
+@pytest.mark.asyncio
+async def test_change_user_password_user_not_found(user_repository, role_repository):
+    """
+    @brief Verifies that UserRepository.change_password raises an exception when the user is not found.
+    @param user_repository Instance of UserRepository.
+    @param role_repository Instance of RoleRepository.
+    """
+
+    payload = UserCreateDTO(
+        username="testUser",
+        name="Test",
+        last_name="User",
+        email="aaas",
+        phone="123456",
+        dni="12345678X",
+        password="old_pass",
+        role_id=1,
+    )
+    await role_repository.create("Admin")
+    await user_repository.create(payload)
+    new_password = "new_hashed_pass"
+
+    with pytest.raises(Exception) as exc_info:
+        await user_repository.change_password(999, new_password)
+
+    assert exc_info.value.detail == "User not found"
+
+@pytest.mark.asyncio
+async def test_update_last_used(user_repository, role_repository):
+        """
+        @brief Verifies that UserRepository.update_last_used updates the user's last used timestamp.
+        @param user_repository Instance of UserRepository.
+        @param role_repository Instance of RoleRepository.
+        """
+
+        payload = UserCreateDTO(
+            username="testUser",
+            name="Test",
+            last_name="User",
+            email="aaas",
+            phone="123456",
+            dni="12345678X",
+            password="old_pass",
+            role_id=1,
+        )
+        await role_repository.create("Admin")
+        created = await user_repository.create(payload)
+        await user_repository.update_last_used(created.user_id)
+
+
+@pytest.mark.asyncio
+async def test_update_last_used_user_not_found(user_repository, role_repository):
+    """
+    @brief Verifies that UserRepository.update_last_used raises an exception when the user is not found.
+    @param user_repository Instance of UserRepository.
+    @param role_repository Instance of RoleRepository.
+    """
+
+    payload = UserCreateDTO(
+        username="testUser",
+        name="Test",
+        last_name="User",
+        email="aaas",
+        phone="123456",
+        dni="12345678X",
+        password="old_pass",
+        role_id=1,
+    )
+    await role_repository.create("Admin")
+    await user_repository.create(payload)
+
+    with pytest.raises(Exception) as exc_info:
+        await user_repository.update_last_used(999)
+
+    assert exc_info.value.detail == "User not found"

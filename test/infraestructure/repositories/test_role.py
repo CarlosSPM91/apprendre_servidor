@@ -74,6 +74,32 @@ def mock_session():
     """
     return AsyncMock()
 
+@pytest.mark.asyncio
+async def test_get_role_by_name_success(mock_session):
+    """
+    @brief Verifies that RoleRepository.find_role_by_name correctly retrieves a role using a mock session.
+    @param mock_session AsyncMock session.
+    """
+
+    fake_role = Role(id=1, role_name="Admin")
+
+    mock_exec_result = MagicMock()
+    mock_exec_result.first.return_value=fake_role
+    mock_session.exec.return_value= mock_exec_result
+
+    async def fake_session_gen():
+        yield mock_session
+
+    repo = RoleRepository(session=fake_session_gen)
+
+    result = await repo.find_role_by_name("Admin")
+
+    mock_session.exec.assert_called_once()
+    assert isinstance(result, Role)
+    assert result.id == 1
+    assert result.role_name == "Admin"
+
+
 
 @pytest.mark.asyncio
 async def test_create_role_success(mock_session):
