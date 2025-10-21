@@ -97,9 +97,13 @@ async def test_create_user_success(mock_session):
     @param mock_session AsyncMock session.
     """
 
-    mock_session.add = AsyncMock()
+    mock_session.add = MagicMock()
     mock_session.commit = AsyncMock()
-    mock_session.refresh = AsyncMock(side_effect=lambda r: setattr(r, "id", 1))
+
+    async def mock_refresh_user(user):
+        user.id = 1
+        
+    mock_session.refresh = AsyncMock(side_effect=mock_refresh_user)
 
     fake_user = UserCreateDTO(
         username="testCreate",
@@ -135,11 +139,12 @@ async def test_update_user_success(mock_session):
     @param mock_session AsyncMock session.
     """
 
-    mock_session.add = AsyncMock()
+    mock_session.add = MagicMock()
     mock_session.commit = AsyncMock()
-    mock_session.refresh = AsyncMock(
-        side_effect=lambda r: setattr(r, "username", "UpdatedChar")
-    )
+
+    async def mock_refresh_user(user):
+        user.id = 1
+    mock_session.refresh = AsyncMock(side_effect=mock_refresh_user)
 
     existing_user = User(
         id=1,
@@ -176,7 +181,7 @@ async def test_update_user_success(mock_session):
 
 
 @pytest.mark.asyncio
-async def test_create_user(user_repository, role_repository):
+async def test_create_user_integration(user_repository, role_repository):
     """
     @brief Verifies that UserRepository.create correctly adds and returns a user in the database.
     @param user_repository Instance of UserRepository.
@@ -202,7 +207,7 @@ async def test_create_user(user_repository, role_repository):
 
 
 @pytest.mark.asyncio
-async def test_get_user_by_id(user_repository, role_repository):
+async def test_get_user_by_id_integration(user_repository, role_repository):
     """
     @brief Verifies that UserRepository.get_user_by_id retrieves the correct user by ID.
     @param user_repository Instance of UserRepository.
@@ -229,7 +234,7 @@ async def test_get_user_by_id(user_repository, role_repository):
 
 
 @pytest.mark.asyncio
-async def test_get_user_by_username(user_repository, role_repository):
+async def test_get_user_by_username_integration(user_repository, role_repository):
     """
     @brief Verifies that UserRepository.get_user_by_username retrieves the correct user by username.
     @param user_repository Instance of UserRepository.
@@ -256,7 +261,7 @@ async def test_get_user_by_username(user_repository, role_repository):
 
 
 @pytest.mark.asyncio
-async def test_get_all(user_repository, role_repository):
+async def test_get_all_integration(user_repository, role_repository):
     """
     @brief Verifies that UserRepository.get_all retrieves all users from the database.
     @param user_repository Instance of UserRepository.
@@ -307,7 +312,7 @@ async def test_get_all(user_repository, role_repository):
 
 
 @pytest.mark.asyncio
-async def test_update_user(user_repository, role_repository):
+async def test_update_user_integration(user_repository, role_repository):
     """
     @brief Verifies that UserRepository.update_user updates and returns the correct user.
     @param user_repository Instance of UserRepository.
@@ -346,7 +351,7 @@ async def test_update_user(user_repository, role_repository):
 
 
 @pytest.mark.asyncio
-async def test_delete_user(user_repository, role_repository):
+async def test_delete_user_integration(user_repository, role_repository):
     """
     @brief Verifies that UserRepository.delete removes the user and returns True.
     @param user_repository Instance of UserRepository.

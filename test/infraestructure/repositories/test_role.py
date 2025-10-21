@@ -82,9 +82,13 @@ async def test_create_role_success(mock_session):
     @param mock_session AsyncMock session.
     """
 
-    mock_session.add = AsyncMock()
+    mock_session.add = MagicMock()
     mock_session.commit = AsyncMock()
-    mock_session.refresh = AsyncMock(side_effect=lambda r: setattr(r, "id", 1))
+
+    async def mock_refresh_role(role):
+        role.id = 1
+    
+    mock_session.refresh = AsyncMock(side_effect=mock_refresh_role)
 
     fake_role = Role(role_name="Admin")
     fake_role.id = 1 
@@ -111,9 +115,13 @@ async def test_update_role_success(mock_session):
     @param mock_session AsyncMock session.
     """
 
-    mock_session.add = AsyncMock()
+    mock_session.add = MagicMock()
     mock_session.commit = AsyncMock()
-    mock_session.refresh = AsyncMock(side_effect=lambda r: setattr(r, "role_name", "Student"))
+
+    async def mock_refresh_role(role):
+        role.id = 1
+
+    mock_session.refresh = AsyncMock(side_effect=mock_refresh_role)
 
     existing_role = Role(id=1, role_name="Admin")
 

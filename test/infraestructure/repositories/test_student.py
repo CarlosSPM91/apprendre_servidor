@@ -1,7 +1,11 @@
 from unittest.mock import AsyncMock, MagicMock
 import pytest
 
+from src.domain.objects.profiles.student_info_dto import StudentInfoDTO
 from src.domain.objects.user.user_create_dto import UserCreateDTO
+from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
+from src.infrastructure.entities.student_info.food_intolerance import FoodIntolerance
+from src.infrastructure.entities.student_info.medical_info import MedicalInfo
 from src.infrastructure.entities.student_info.student import Student
 from src.infrastructure.entities.users.user import User
 from src.infrastructure.repositories.student import StudentRepository
@@ -19,25 +23,27 @@ def mock_session():
     session.exec = AsyncMock()
     return session
 
+
 @pytest.fixture
 def student_repository(mock_session):
     async def session_gen():
         yield mock_session
+
     return StudentRepository(session=session_gen)
+
 
 @pytest.fixture
 def user_repository(mock_session):
     async def session_gen():
         yield mock_session
+
     return UserRepository(session=session_gen)
+
 
 @pytest.fixture
 def fake_student():
-    return Student(
-        id=1,
-        user_id=1,
-        observations="No observaciones"
-    )
+    return Student(id=1, user_id=1, observations="No observaciones")
+
 
 @pytest.fixture
 def fake_user():
@@ -53,6 +59,7 @@ def fake_user():
         role_id=1,
     )
 
+
 @pytest.fixture
 def fake_user_create_dto():
     return UserCreateDTO(
@@ -66,17 +73,18 @@ def fake_user_create_dto():
         role_id=1,
     )
 
+
 @pytest.mark.asyncio
 async def test_init():
     mock_session_test = MagicMock()
     student_repository = StudentRepository(mock_session_test)
     assert student_repository.session == mock_session_test
 
+
 @pytest.mark.asyncio
 async def test_get_student_succes(fake_student, student_repository, mock_session):
     mock_exec_result = MagicMock()
     mock_exec_result.first.return_value = fake_student
-    
 
     mock_session.exec = AsyncMock(return_value=mock_exec_result)
 
@@ -87,50 +95,63 @@ async def test_get_student_succes(fake_student, student_repository, mock_session
     assert result.user_id == 1
     mock_session.exec.assert_awaited_once()
 
+
 @pytest.mark.asyncio
-async def test_get_student_full_info_succes(fake_student, student_repository, mock_session):
-    fake_user = User(
-        id=1,
-        username="testUser",
-        name="Test",
-        last_name="User",
-        email="test@test.com",
-        phone="123456",
-        dni="12345678X",
-        password="hashed_pass",
-        role_id=1,
-    )
-    
+async def test_get_student_full_info_succes(
+    fake_student, fake_user, student_repository, mock_session
+):
+
+    fake_allergy = AllergyInfo(id=1, name="Peanuts")
+    fake_intolerance = FoodIntolerance(id=2, name="Milk")
+    fake_medical = MedicalInfo(id=3, name="Asma")
+
     mock_student_result = MagicMock()
     mock_student_result.first.return_value = (fake_student, fake_user)
-    
 
-    mock_empty_result = MagicMock()
-    mock_empty_result.all.return_value = []
-    
+    mock_allergies_result = MagicMock()
+    mock_allergies_result.all.return_value = [fake_allergy]
 
-    mock_session.exec = AsyncMock(side_effect=[
-        mock_student_result,  
-        mock_empty_result,   
-        mock_empty_result,    
-        mock_empty_result,    
-    ])
+    mock_intolerances_result = MagicMock()
+    mock_intolerances_result.all.return_value = [fake_intolerance]
+
+    mock_medical_result = MagicMock()
+    mock_medical_result.all.return_value = [fake_medical]
+
+    mock_session.exec = AsyncMock(
+        side_effect=[
+            mock_student_result,
+            mock_allergies_result,
+            mock_intolerances_result,
+            mock_medical_result,
+        ]
+    )
 
     result = await student_repository.get_student_full_info(1)
 
+    assert isinstance(result, StudentInfoDTO)
     assert result.student_id == 1
     assert result.user_id == 1
     assert result.name == "Test"
-    assert result.last_name == "User"
+    assert result.last_name == "Create"
+    assert result.email == "create@test.com"
+    assert result.phone == "123456"
+    assert result.obvervations == "No observaciones"
+
+    assert len(result.allergies) == 1
+    assert result.allergies[0].name == "Peanuts"
+
+    assert len(result.food_intolerance) == 1
+    assert result.food_intolerance[0].name == "Milk"
+
+    assert len(result.medical_info) == 1
+    assert result.medical_info[0].name == "Asma"
+
     assert mock_session.exec.await_count == 4
+
 
 @pytest.mark.asyncio
 async def test_create_student_success(fake_student, student_repository, mock_session):
-
-    mock_session.add = MagicMock()
-    mock_session.commit = AsyncMock()
-    mock_session.refresh = AsyncMock()
-
+    
     result = await student_repository.create(fake_student)
 
     assert result.user_id == 1
@@ -139,23 +160,23 @@ async def test_create_student_success(fake_student, student_repository, mock_ses
     mock_session.commit.assert_awaited_once()
     mock_session.refresh.assert_awaited_once()
 
-@pytest.mark.asyncio
-async def test_create_user_and_student_success(fake_user_create_dto, fake_student, user_repository, student_repository, mock_session):
 
-    mock_session.add = MagicMock()
-    mock_session.commit = AsyncMock()
-    
+@pytest.mark.asyncio
+async def test_create_user_and_student_success(
+    fake_user_create_dto,
+    fake_student,
+    user_repository,
+    student_repository,
+    mock_session,
+):
     async def mock_refresh_user(user):
         user.id = 1
+
     mock_session.refresh = AsyncMock(side_effect=mock_refresh_user)
 
     result_user = await user_repository.create(fake_user_create_dto)
-    
+
     mock_session.reset_mock()
-    mock_session.add = MagicMock()
-    mock_session.commit = AsyncMock()
-    mock_session.refresh = AsyncMock()
-    
 
     result_student = await student_repository.create(fake_student)
 

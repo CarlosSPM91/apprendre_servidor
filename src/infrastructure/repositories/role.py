@@ -41,8 +41,8 @@ class RoleRepository:
         """
         async for session in self.session():
             role = Role(role_name=role_name)
-            session.add(role)
             try:
+                session.add(role)
                 await session.commit()
                 await session.refresh(role)
                 return RoleDTO(role_id=role.id, role_name=role.role_name)
@@ -125,8 +125,8 @@ class RoleRepository:
                     if field != "role_id":
                         setattr(role, field, value)
 
-                session.add(role)
                 try:
+                    session.add(role)
                     await session.commit()
                     await session.refresh(role)
                     return RoleDTO(role_id=role.id, role_name=role.role_name)
