@@ -11,7 +11,6 @@ class UpdateAllergyCase:
         self.repo = repo
 
     async def update(self, payload: AllergyInfo) -> CommonResponse:
-        print=("-------- REPOSITORY update allergy -------- " + payload.description )
         allergy = await self.repo.update(payload)
         if allergy:
             return CommonResponse(
