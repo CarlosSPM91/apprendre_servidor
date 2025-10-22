@@ -65,7 +65,7 @@ async def test_update_role_success(role_controller, update_role_case, find_role_
     assert result["data"]["id"] == str(mock_resp.item_id)
 
 @pytest.mark.asyncio
-async def test_deleterole_success(role_controller, delete_role_case):
+async def test_delete_role_success(role_controller, delete_role_case):
     mock_resp = AsyncMock()
     mock_resp.item_id = 1
     mock_resp.event_date = "2025-10-10T12:00:00"
@@ -74,3 +74,13 @@ async def test_deleterole_success(role_controller, delete_role_case):
     result = await role_controller.deleterole(1)
     assert result["status"] == "success"
     assert result["data"]["id"] == str(mock_resp.item_id)
+
+@pytest.mark.asyncio
+async def test_get_all_roles_success(role_controller, find_role_case):
+    mock_role = RoleDTO(role_id=1, role_name="Admin")
+    find_role_case.get_all.return_value = [mock_role]
+
+    result = await role_controller.get_all()
+
+    assert result["status"] == "success"
+    assert len(result["data"]) == 1

@@ -1,4 +1,5 @@
 from unittest.mock import AsyncMock, MagicMock
+from fastapi import HTTPException
 import pytest
 
 from src.infrastructure.entities.users.parents import Parent
@@ -77,3 +78,31 @@ async def test_delete_parent_success(parent_repository, mock_session, fake_paren
     assert result is True
     assert mock_session.exec.await_count == 2 
     mock_session.commit.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_delete_parent_not_found(parent_repository, mock_session):
+    mock_result_select = MagicMock()
+    mock_result_select.first = MagicMock(return_value=None)
+    
+    mock_session.exec = AsyncMock(return_value=mock_result_select)
+
+    with pytest.raises(HTTPException) as exc_info:
+         await parent_repository.delete(user_id=999, student_id=999)
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.detail == "Parent not found" 
+    mock_session.exec.assert_awaited_once()
+    mock_session.commit.assert_not_awaited()
+
+@pytest.mark.asyncio
+async def test_get_parent_not_found(parent_repository, mock_session):
+    mock_result = MagicMock()
+    mock_result.all = MagicMock(return_value=[])
+    mock_session.exec = AsyncMock(return_value=mock_result)
+
+    with pytest.raises(HTTPException) as exc_info:
+        await parent_repository.get(user_id=999)
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.detail == "Parent not found"
+    mock_session.exec.assert_awaited_once()

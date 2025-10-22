@@ -2,13 +2,13 @@ from typing import List
 from fastapi import HTTPException
 import sentry_sdk
 
-from src.application.use_case.allerfy_info.create_allergy_case import CreateAllergyCase
-from src.application.use_case.allerfy_info.delete_allergy_case import DeleteAllergyCase
-from src.application.use_case.allerfy_info.find_allergy_case import FindAllergyCase
-from src.application.use_case.allerfy_info.update_allergy_case import UpdateAllergyCase
+
+from src.application.use_case.allergy_info.create_allergy_case import CreateAllergyCase
+from src.application.use_case.allergy_info.delete_allergy_case import DeleteAllergyCase
+from src.application.use_case.allergy_info.find_allergy_case import FindAllergyCase
+from src.application.use_case.allergy_info.update_allergy_case import UpdateAllergyCase
 from src.domain.exceptions.except_manager import manage_allergy_except
 from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
-from src.infrastructure.entities.student_info.medical_info import MedicalInfo
 
 class AllergyController:
     def __init__(

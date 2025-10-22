@@ -11,10 +11,10 @@ repositories, and application services.
 from dependency_injector import containers, providers
 from src.application.services.password_service import PasswordService
 from src.application.services.token_service import TokenService
-from src.application.use_case.allerfy_info.create_allergy_case import CreateAllergyCase
-from src.application.use_case.allerfy_info.delete_allergy_case import DeleteAllergyCase
-from src.application.use_case.allerfy_info.find_allergy_case import FindAllergyCase
-from src.application.use_case.allerfy_info.update_allergy_case import UpdateAllergyCase
+from src.application.use_case.allergy_info.create_allergy_case import CreateAllergyCase
+from src.application.use_case.allergy_info.delete_allergy_case import DeleteAllergyCase
+from src.application.use_case.allergy_info.find_allergy_case import FindAllergyCase
+from src.application.use_case.allergy_info.update_allergy_case import UpdateAllergyCase
 from src.application.use_case.auth.login_use_case import LoginUseCase
 from src.application.use_case.auth.logout_use_case import LogoutUseCase
 from src.application.use_case.food_intolerance.create_intolerance_case import (

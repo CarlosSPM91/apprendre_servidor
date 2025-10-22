@@ -1,7 +1,7 @@
 
 
 from datetime import datetime, timezone
-from src.application.use_case.allerfy_info.find_allergy_case import FindAllergyCase
+from src.application.use_case.allergy_info.find_allergy_case import FindAllergyCase
 from src.domain.objects.common.common_resp import CommonResponse
 from src.infrastructure.repositories.allergy_info import AllergyRepository
 

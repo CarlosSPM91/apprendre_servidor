@@ -38,7 +38,7 @@ class StudentController:
 
     async def update(self, payload: StudentUpdateDTO):
         try:
-            await self.find_student_case.get_student_by_id(payload.student_id)
+            await self.find_student_case.get_student_by_id(student_id=payload.student_id)
             resp = await self.update_student_case.update_student(payload)
             return {
                 "status": "success",
@@ -56,7 +56,7 @@ class StudentController:
         try:
             await self.find_student_case.get_student_by_id(student_id=student_id)
             resp = await self.delete_student_case.delete(
-                student_id)
+                student_id=student_id)
             return {
                 "status": "success",
                 "data": {

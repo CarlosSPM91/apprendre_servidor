@@ -20,7 +20,7 @@ class ParentRepository:
             if not parent:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Parent with id {user_id} not found",
+                    detail="Parent not found",
                 )
             return parent
         
@@ -51,7 +51,7 @@ class ParentRepository:
                 if not parent:
                     raise HTTPException(
                         status_code=status.HTTP_404_NOT_FOUND,
-                        detail=f"Parent with id {user_id} not found",
+                        detail="Parent not found",
                     )
                 await session.exec(
                     delete(Parent).where(Parent.id == parent.id)
