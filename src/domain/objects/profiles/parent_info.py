@@ -9,5 +9,5 @@ class ParentDTO(BaseModel):
     name:str
     last_name:str
     email: Optional[str] = None
-    phone: Optional[str] = None
+    phone: Optional[int] = None
     students: Optional[List[int]]=[]
