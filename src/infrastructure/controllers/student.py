@@ -6,8 +6,8 @@ from src.application.use_case.student.create_student_case import CreateStudenCas
 from src.application.use_case.student.delete_student_case import DeleteStudentCase
 from src.application.use_case.student.find_student_case import FindStudentCase
 from src.application.use_case.student.update_student_case import UpdateStudentCase
-from src.domain.exceptions.except_manager import manage_student_except
 from src.domain.objects.profiles.student_update_dto import StudentUpdateDTO
+from src.infrastructure.exceptions.except_manager import manage_student_except
 
 class StudentController:
     def __init__(

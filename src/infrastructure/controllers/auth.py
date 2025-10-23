@@ -12,8 +12,8 @@ from fastapi import HTTPException, status
 import sentry_sdk
 from src.application.use_case.auth.login_use_case import LoginUseCase
 from src.application.use_case.auth.logout_use_case import LogoutUseCase
-from src.domain.exceptions.except_manager import manage_auth_except
 from src.domain.objects.auth.login_req import LoginRequest
+from src.infrastructure.exceptions.except_manager import manage_auth_except
 
 
 class AuthController:

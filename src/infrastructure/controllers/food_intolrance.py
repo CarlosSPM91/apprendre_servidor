@@ -6,8 +6,8 @@ from src.application.use_case.food_intolerance.create_intolerance_case import Cr
 from src.application.use_case.food_intolerance.delete_intolerance_case import DeleteIntoleranceCase
 from src.application.use_case.food_intolerance.find_intolerance_case import FindIntoleranceCase
 from src.application.use_case.food_intolerance.update_intolerance_case import UpdateIntoleranceCase
-from src.domain.exceptions.except_manager import manage_intolerance_except
 from src.infrastructure.entities.student_info.food_intolerance import FoodIntolerance
+from src.infrastructure.exceptions.except_manager import manage_intolerance_except
 
 class FoodIntoleranceController:
     def __init__(

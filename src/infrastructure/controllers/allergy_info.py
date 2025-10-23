@@ -7,8 +7,8 @@ from src.application.use_case.allergy_info.create_allergy_case import CreateAlle
 from src.application.use_case.allergy_info.delete_allergy_case import DeleteAllergyCase
 from src.application.use_case.allergy_info.find_allergy_case import FindAllergyCase
 from src.application.use_case.allergy_info.update_allergy_case import UpdateAllergyCase
-from src.domain.exceptions.except_manager import manage_allergy_except
 from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
+from src.infrastructure.exceptions.except_manager import manage_allergy_except
 
 class AllergyController:
     def __init__(

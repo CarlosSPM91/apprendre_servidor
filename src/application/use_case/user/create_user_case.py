@@ -12,6 +12,7 @@ from fastapi import HTTPException, status
 from src.application.services.password_service import PasswordService
 from src.application.use_case.role.find_role_case import FindRoleCase
 from src.application.use_case.student.create_student_case import CreateStudenCase
+from src.application.use_case.teacher.create_teacher_case import CreateTeacherCase
 from src.domain.objects.common.common_resp import CommonResponse
 from src.domain.objects.user.user_create_dto import UserCreateDTO
 from src.infrastructure.entities.student_info.student import Student
@@ -26,6 +27,7 @@ class CreateUserCase:
         pwd_service: PasswordService,
         repo: UserRepository,
         create_student_case: CreateStudenCase,
+        create_teacher_case: CreateTeacherCase,
         find_role_case:FindRoleCase
     ):
         """
@@ -37,8 +39,9 @@ class CreateUserCase:
         """
         self.pwdService = pwd_service
         self.userRepo = repo
-        self.createStudentCase = create_student_case
-        self.findRoleCase = find_role_case
+        self.create_student_case = create_student_case
+        self.create_teacher_case = create_teacher_case
+        self.find_role_case = find_role_case
 
     async def create(self, payload: UserCreateDTO) -> CommonResponse:
         """
@@ -63,7 +66,7 @@ class CreateUserCase:
         payload.password = pwd_hash
 
         user_created = await self.userRepo.create(payload)
-        roles = await self.findRoleCase.get_all()
+        roles = await self.find_role_case.get_all()
         roles_dict = {r.role_id: r.role_name for r in roles}
 
         match user_created.role:
@@ -75,7 +78,7 @@ class CreateUserCase:
 
             case 2: 
                 if roles_dict.get(2, "").lower() == "teacher":
-                    pass
+                    await self.create_teacher_case.create(user_id=user_created.user_id)
                 else:
                     raise HTTPException(status_code=400, detail="Invalid role mapping for Teacher")
 
@@ -84,7 +87,7 @@ class CreateUserCase:
                     student = Student(
                         user_id=user_created.user_id,  
                     )
-                    await self.createStudentCase.create(student)
+                    await self.create_student_case.create(student)
                 else:
                     raise HTTPException(status_code=400, detail="Invalid role mapping for Student")
 

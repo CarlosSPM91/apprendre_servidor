@@ -15,8 +15,8 @@ from src.application.use_case.role.create_role_case import CreateRoleCase
 from src.application.use_case.role.delete_role_case import DeleteRoleCase
 from src.application.use_case.role.find_role_case import FindRoleCase
 from src.application.use_case.role.update_role_case import UpdateRoleCase
-from src.domain.exceptions.except_manager import manage_role_except
 from src.domain.objects.role.role_dto import RoleDTO
+from src.infrastructure.exceptions.except_manager import manage_role_except
 
 
 class RoleController:

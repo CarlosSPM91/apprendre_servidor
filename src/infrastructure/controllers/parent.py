@@ -5,8 +5,8 @@ import sentry_sdk
 from src.application.use_case.parent.create_parent_case import CreateParentCase
 from src.application.use_case.parent.delete_parent_case import DeleteParentCase
 from src.application.use_case.parent.find_parent_case import FindParentCase
-from src.domain.exceptions.except_manager import manage_parent_except
 from src.infrastructure.entities.users.parents import Parent
+from src.infrastructure.exceptions.except_manager import manage_parent_except
 
 
 class ParentController:

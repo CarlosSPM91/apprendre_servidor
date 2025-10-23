@@ -6,8 +6,8 @@ from src.application.use_case.medical_info.create_medical_case import CreateMedi
 from src.application.use_case.medical_info.delete_medical_case import DeleteMedicalCase
 from src.application.use_case.medical_info.find_medical_case import FindMedicalCase
 from src.application.use_case.medical_info.update_medical_case import UpdateMedicalCase
-from src.domain.exceptions.except_manager import manage_medical_except
 from src.infrastructure.entities.student_info.medical_info import MedicalInfo
+from src.infrastructure.exceptions.except_manager import manage_medical_except
 
 class MedicalInfoController:
     def __init__(

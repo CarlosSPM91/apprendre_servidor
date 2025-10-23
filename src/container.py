@@ -44,6 +44,9 @@ from src.application.use_case.student.create_student_case import CreateStudenCas
 from src.application.use_case.student.delete_student_case import DeleteStudentCase
 from src.application.use_case.student.find_student_case import FindStudentCase
 from src.application.use_case.student.update_student_case import UpdateStudentCase
+from src.application.use_case.teacher.create_teacher_case import CreateTeacherCase
+from src.application.use_case.teacher.delete_teacher_case import DeleteTeacherCase
+from src.application.use_case.teacher.find_teacher_case import FindTeacherCase
 from src.application.use_case.user.create_user_case import CreateUserCase
 from src.application.use_case.user.delete_user_case import DeleteUserCase
 from src.application.use_case.user.find_user_case import FindUserCase
@@ -57,6 +60,7 @@ from src.infrastructure.controllers.medical_info import MedicalInfoController
 from src.infrastructure.controllers.parent import ParentController
 from src.infrastructure.controllers.role import RoleController
 from src.infrastructure.controllers.student import StudentController
+from src.infrastructure.controllers.teacher import TeacherController
 from src.infrastructure.controllers.user import UserController
 from src.infrastructure.repositories.acces_logs import AccessRepository
 from src.infrastructure.repositories.allergy_info import AllergyRepository
@@ -66,6 +70,7 @@ from src.infrastructure.repositories.medical_info import MedicalInfoRepository
 from src.infrastructure.repositories.parent import ParentRepository
 from src.infrastructure.repositories.role import RoleRepository
 from src.infrastructure.repositories.student import StudentRepository
+from src.infrastructure.repositories.teacher import TeacherRepository
 from src.infrastructure.repositories.user import UserRepository
 from src.settings import settings
 
@@ -107,6 +112,7 @@ class Container(containers.DeclarativeContainer):
     )
     allergy_repository = providers.Factory(AllergyRepository, session=session.provider)
     parent_repository = providers.Factory(ParentRepository, session=session.provider)
+    teacher_repository = providers.Factory(TeacherRepository, session=session.provider)
 
     find_user_case = providers.Factory(FindUserCase, repo=user_repository)
 
@@ -124,11 +130,15 @@ class Container(containers.DeclarativeContainer):
     # Use case
     find_role_case = providers.Factory(FindRoleCase, role_repo=role_repository)
     create_student_case = providers.Factory(CreateStudenCase, repo=student_repository)
+    create_teacher_case = providers.Factory(
+        CreateTeacherCase, repo=teacher_repository
+    )
     create_user_case = providers.Factory(
         CreateUserCase,
         repo=user_repository,
         pwd_service=pwd_service,
         create_student_case=create_student_case,
+        create_teacher_case=create_teacher_case,
         find_role_case=find_role_case,
     )
     delete_user_case = providers.Factory(
@@ -208,6 +218,16 @@ class Container(containers.DeclarativeContainer):
         DeleteParentCase,
         repo=parent_repository,
     )
+
+    find_teacher_case = providers.Factory(
+        FindTeacherCase, repo=teacher_repository
+    )
+    
+    delete_teacher_case = providers.Factory(
+        DeleteTeacherCase,
+        repo=teacher_repository,
+        find_case=find_teacher_case
+    )
     
     # Controllers
     user_controller = providers.Factory(
@@ -263,6 +283,13 @@ class Container(containers.DeclarativeContainer):
         find_case=find_parent_case,
         create_case=create_parent_case,
         delete_case=delete_parent_case,
+    )
+
+    teacher_controller = providers.Factory(
+        TeacherController,
+        find_case=find_teacher_case,
+        create_case=create_teacher_case,
+        delete_case=delete_teacher_case,
     )
 
     auth_controller = providers.Factory(
