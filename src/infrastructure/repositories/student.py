@@ -27,10 +27,15 @@ class StudentRepository:
     async def get_student(self, student_id: int) -> Student:
         try:
             async for session in self.session():
-                return (
+                selected = (
                     await session.exec(select(Student).where(Student.id == student_id))
                 ).first()
-
+                if not selected:
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail="Student not found",
+                    )
+                return selected
         except IntegrityError as e:
             await session.rollback()
             raise HTTPException(
@@ -118,6 +123,16 @@ class StudentRepository:
                 observations=student.observations,
             )
             async for session in self.session():
+                exists = (
+                    await session.exec(
+                        select(Student).where(Student.user_id == student.user_id)
+                    )
+                ).first()
+                if exists:
+                    raise HTTPException(
+                        status_code=status.HTTP_409_CONFLICT,
+                        detail="Student already exist",
+                    )
                 session.add(created)
                 await session.commit()
                 await session.refresh(created)
@@ -196,12 +211,12 @@ class StudentRepository:
                 detail="Something wrong on server",
             )
 
-    async def delete(self, del_student: Student) -> bool:
+    async def delete(self, student_id: int) -> bool:
         try:
             async for session in self.session():
                 student: Student = (
                     await session.exec(
-                        select(Student).where(Student.id == del_student.id)
+                        select(Student).where(Student.id == student_id)
                     )
                 ).first()
 

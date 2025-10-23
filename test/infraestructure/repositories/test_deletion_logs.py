@@ -114,7 +114,7 @@ async def test_create_role(deletion_log_repo, user_repository, role_repository):
         username="deleter",
         name="deleter",
         last_name="ex2",
-        email="create@test.com",
+        email="second@test.com",
         phone="123456",
         dni="12345678X",
         password="hashed_pass",

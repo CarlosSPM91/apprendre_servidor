@@ -183,59 +183,58 @@ async def test_create_user_and_student_success(
     student_repository,
     mock_session,
 ):
-    async def mock_refresh_user(user):
-        user.id = 1
+    mock_exec_result = MagicMock()
+    mock_exec_result.first.return_value = None 
 
-    mock_session.refresh = AsyncMock(side_effect=mock_refresh_user)
+    mock_session.exec = AsyncMock(return_value=mock_exec_result)
+    
+    result = await student_repository.create(fake_student)
 
-    result_user = await user_repository.create(fake_user_create_dto)
-
-    mock_session.reset_mock()
-
-    result_student = await student_repository.create(fake_student)
-
-    assert result_user.username == "testCreate"
-    assert result_student.user_id == 1
+    assert result.user_id == 1
+    assert result.observations == "No observaciones"
     mock_session.add.assert_called_once()
     mock_session.commit.assert_awaited_once()
     mock_session.refresh.assert_awaited_once()
 
 
 @pytest.mark.asyncio
-async def test_update_student_success(fake_student, student_repository, mock_session):
-    update_student = StudentUpdateDTO(
-        student_id=fake_student.id,
+async def test_create_student_success(fake_student, student_repository, mock_session):
+
+    mock_exists_result = MagicMock()
+    mock_exists_result.first.return_value = None  
+
+    mock_session.exec = AsyncMock(return_value=mock_exists_result)
+    
+    new_student = Student(
         user_id=fake_student.user_id,
-        observations="Updated observations",
-        medical_info=[10, 11],
-        allergies=[20],
-        food_intolerance=[30],
+        observations=fake_student.observations
     )
+    
+    result = await student_repository.create(new_student)
 
-    mock_exec_result = MagicMock()
-    mock_exec_result.first.return_value = fake_student
-
-    mock_session.exec = AsyncMock(side_effect=[mock_exec_result, None, None, None])
-    mock_session.commit = AsyncMock()
-    mock_session.refresh = AsyncMock()
-    mock_session.add = MagicMock()
-
-    result = await student_repository.update(update_student)
-
-    assert result.observations == "Updated observations"
-    mock_session.exec.assert_awaited()
+    assert result.user_id == 1
+    assert result.observations == "No observaciones"
+    mock_session.add.assert_called_once()
     mock_session.commit.assert_awaited_once()
-    expected_add_calls = (
-        len(update_student.medical_info)
-        + len(update_student.allergies)
-        + len(update_student.food_intolerance)
-        + 1
-    )
-    assert mock_session.add.call_count == expected_add_calls
-    assert mock_session.exec.await_count == 4
-    mock_session.commit.assert_awaited_once()
-    mock_session.refresh.assert_awaited_once_with(fake_student)
+    mock_session.refresh.assert_awaited_once()
 
+
+@pytest.mark.asyncio
+async def test_create_student_already_exists(fake_student, student_repository, mock_session):
+
+    mock_exists_result = MagicMock()
+    mock_exists_result.first.return_value = fake_student
+    
+    mock_session.exec = AsyncMock(return_value=mock_exists_result)
+    
+    with pytest.raises(HTTPException) as exc_info:
+        await student_repository.create(fake_student)
+    
+    assert exc_info.value.status_code == 409
+    assert exc_info.value.detail == "Student already exist"
+    mock_session.exec.assert_awaited_once()
+    mock_session.add.assert_not_called()
+    mock_session.commit.assert_not_called()
 
 @pytest.mark.asyncio
 async def test_update_student_not_found(student_repository, mock_session):
@@ -266,7 +265,7 @@ async def test_delete_student_success(fake_student, student_repository, mock_ses
 
     mock_session.exec = AsyncMock(return_value=mock_exec_result)
 
-    result = await student_repository.delete(fake_student)
+    result = await student_repository.delete(1)
 
     assert result is True
     mock_session.exec.assert_awaited()
@@ -275,8 +274,6 @@ async def test_delete_student_success(fake_student, student_repository, mock_ses
 
 @pytest.mark.asyncio
 async def test_delete_student_not_found(student_repository, mock_session):
-    fake_student = Student(id=999, user_id=999, observations="Non existent student")
-
     mock_result_select = MagicMock()
     mock_result_select.first = MagicMock(return_value=None)
 
@@ -284,7 +281,7 @@ async def test_delete_student_not_found(student_repository, mock_session):
     mock_session.delete = AsyncMock()
 
     with pytest.raises(HTTPException) as exc_info:
-        await student_repository.delete(fake_student)
+        await student_repository.delete(999)
 
     assert exc_info.value.status_code == 404
     assert exc_info.value.detail == "Student not found"

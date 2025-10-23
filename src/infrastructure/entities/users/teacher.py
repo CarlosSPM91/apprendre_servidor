@@ -15,8 +15,8 @@ from sqlmodel import Column, ForeignKey, Integer, Relationship, SQLModel, Field
 from src.infrastructure.entities.users.user import User
 
 
-class Professor(SQLModel, table=True):
-    __tablename__ = "professors"
+class Teacher(SQLModel, table=True):
+    __tablename__ = "teachers"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     create_time: datetime = Field(

@@ -44,7 +44,7 @@ async def async_init_db(engine):
     from src.infrastructure.entities.users.user import User
     from src.infrastructure.entities.users.accces_logs import AccessLog
     from src.infrastructure.entities.users.deletion_logs import DeletionLog
-    from src.infrastructure.entities.users.professor import Professor
+    from src.infrastructure.entities.users.teacher import Teacher
     from src.infrastructure.entities.users.parents import Parent
 
     # Student
