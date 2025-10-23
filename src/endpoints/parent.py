@@ -10,8 +10,24 @@ from src.middleware.token.authenticateToken import get_current_user, require_rol
 
 router = APIRouter(prefix="/parent", tags=["parent"])
 
+
 @router.get(
-    "/{user_id}/find",
+    "/all",
+    status_code=status.HTTP_200_OK,
+    name="find-all",
+    summary="Get information of all parents",
+    response_description="Returns a list of all parents information",
+)
+@inject
+async def find_all(
+    current_user: JwtPayload = Depends(get_current_user),
+    controller: ParentController = Depends(Provide[Container.parent_controller]),
+):
+    return await controller.get_all()
+
+
+@router.get(
+    "/{user_id}",
     status_code=status.HTTP_200_OK,
     name="find",
     summary="Get information of the parent",

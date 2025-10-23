@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import HTTPException, status
 from src.application.use_case.student.find_student_case import FindStudentCase
 from src.application.use_case.user.find_user_case import FindUserCase
@@ -19,7 +20,7 @@ class FindParentCase:
         if not parent_info:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Parent with id {user_id} not found",
+                detail="Parent not found",
             )
         user = await self.find_user.get_user_by_id(user_id)
 
@@ -31,3 +32,8 @@ class FindParentCase:
             phone=user.phone,
             students=[ parent.student_id for parent in parent_info],
         )
+
+    async def get_all(self) -> List[ParentDTO]:
+        parents_info = await self.repo.get_all()
+            
+        return parents_info

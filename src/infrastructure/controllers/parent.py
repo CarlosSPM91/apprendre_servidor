@@ -58,3 +58,14 @@ class ParentController:
         except HTTPException as e:
             sentry_sdk.capture_exception(e)
             manage_parent_except(e)
+    
+    async def get_all(self):
+        try:
+            parents = await self.find_case.get_all()
+            return {
+                "status": "success",
+                "data": parents,
+            }
+        except HTTPException as e:
+            sentry_sdk.capture_exception(e)
+            manage_parent_except(e)
