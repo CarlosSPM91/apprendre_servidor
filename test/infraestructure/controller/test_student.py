@@ -109,7 +109,7 @@ async def test_get_student_success(student_controller, find_case, student_dto):
 
     response = await student_controller.get_student(student_id="1")
 
-    assert response == student_dto
+    assert response["data"] == student_dto
     find_case.get_student_by_id.assert_awaited_once_with(student_id="1")
 
 @pytest.mark.asyncio
@@ -157,7 +157,7 @@ async def test_get_student_full_info_success(student_controller, find_case):
         name="test",
         last_name="last name",
         dni="12345678A",
-        phone="123456789",
+        phone=123456789,
         username="testuser",
         allergies=[],
         medical_info=[],
@@ -167,7 +167,7 @@ async def test_get_student_full_info_success(student_controller, find_case):
 
     response = await student_controller.get_student_full_info(student_id=1)
 
-    assert response == student_info
+    assert response["data"] == student_info
     find_case.get_student_full_info.assert_awaited_once_with(student_id=1) 
 
 @pytest.mark.asyncio

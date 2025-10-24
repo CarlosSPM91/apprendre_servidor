@@ -23,6 +23,10 @@ def create_student_case():
     return AsyncMock()
 
 @pytest.fixture
+def create_teacher_case():
+    return AsyncMock()
+
+@pytest.fixture
 def find_role_case():
     mock = AsyncMock()
     mock_roles = [
@@ -35,11 +39,12 @@ def find_role_case():
     return mock
 
 @pytest.fixture
-def use_case(pwd_service, user_repo, create_student_case, find_role_case):
+def use_case(pwd_service, user_repo, create_student_case,create_teacher_case, find_role_case):
     return CreateUserCase(
         pwd_service,
         user_repo,
         create_student_case,
+        create_teacher_case,
         find_role_case
     )
 

@@ -120,7 +120,7 @@ async def test_get_food_intolerance(
 
     response = await food_controller.get_intolerance(intolernce_id=1)
 
-    assert response == fake_intolerance
+    assert response["data"] == fake_intolerance
     find_case.get_intolerance.assert_awaited_once_with(1)
 
 @pytest.mark.asyncio

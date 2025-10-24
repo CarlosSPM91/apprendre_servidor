@@ -126,7 +126,7 @@ async def test_get_medical_info(
 
     response = await medical_controller.get_medical(medical_id=1)
 
-    assert response == fake_medical
+    assert response["data"] == fake_medical
     find_case.get_medical.assert_awaited_once_with(1)
 
 @pytest.mark.asyncio

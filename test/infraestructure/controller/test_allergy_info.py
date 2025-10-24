@@ -138,7 +138,7 @@ async def test_get_allergy(
 
     response = await allergy_controller.get_allergy(allergy_id=1)
 
-    assert response == fake_allergy
+    assert response["data"] == fake_allergy
     find_case.get_allergy.assert_awaited_once_with(1)
 
 @pytest.mark.asyncio

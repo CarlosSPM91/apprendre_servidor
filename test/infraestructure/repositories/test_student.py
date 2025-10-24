@@ -56,7 +56,7 @@ def fake_user():
         name="Test",
         last_name="Create",
         email="create@test.com",
-        phone="123456",
+        phone=123456,
         dni="12345678X",
         password="hashed_pass",
         role_id=1,
@@ -70,7 +70,7 @@ def fake_user_create_dto():
         name="Test",
         last_name="Create",
         email="create@test.com",
-        phone="123456",
+        phone=123456,
         dni="12345678X",
         password="hashed_pass",
         role_id=1,
@@ -137,7 +137,7 @@ async def test_get_student_full_info_succes(
     assert result.name == "Test"
     assert result.last_name == "Create"
     assert result.email == "create@test.com"
-    assert result.phone == "123456"
+    assert result.phone == 123456
     assert result.obvervations == "No observaciones"
     assert len(result.allergies) == 1
     assert result.allergies[0].name == "Peanuts"
