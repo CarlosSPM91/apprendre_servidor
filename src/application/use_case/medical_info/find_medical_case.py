@@ -18,3 +18,5 @@ class FindMedicalCase:
             )
         return intolerance
 
+    async def get_all(self):
+        return await self.repo.get_all()

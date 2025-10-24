@@ -14,6 +14,19 @@ from src.middleware.token.authenticateToken import get_current_user
 router = APIRouter(prefix="/food-intolerance", tags=["food-intolerance"])
 
 @router.get(
+    "/all",
+    status_code=status.HTTP_200_OK,
+    name="find",
+    summary="Get information of all allergy info",
+    response_description="Returns a list of all the allergy info",
+)
+@inject
+async def find_all(
+    controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
+):
+    return await controller.get_all()
+
+@router.get(
     "/{intolerance_id}/find",
     status_code=status.HTTP_200_OK,
     name="find",

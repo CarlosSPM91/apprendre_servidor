@@ -148,6 +148,26 @@ class UserController:
         except HTTPException as e:
             sentry_sdk.capture_exception(e)
             manage_user_except(e)
+    
+    async def get_all_by_role(self, role_id:int):
+        """
+        Retrieve all users of a determinate role.
+
+        Returns:
+            dict: Status and list of users by role.
+
+        Raises:
+            HTTPException: If retrieval fails or no users found.
+        """
+        try:
+            resp: List[UserDTO] = await self.find_user_case.get_all_by_role(role_id=role_id)
+            return {
+                "status": "success",
+                "data": resp,
+            }
+        except HTTPException as e:
+            sentry_sdk.capture_exception(e)
+            manage_user_except(e)
 
     async def get_user(self, user_id: str):
         """

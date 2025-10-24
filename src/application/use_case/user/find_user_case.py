@@ -85,3 +85,21 @@ class FindUserCase:
                 detail="Users not found"
             )
         return users
+    
+    async def get_all_by_role(self, role_id:int) -> Optional[List[UserDTO]]:
+        """
+        Retrieve all users.
+
+        Returns:
+            Optional[List[UserDTO]]: List of users if any exist.
+
+        Raises:
+            HTTPException: If no users are found (HTTP 404).
+        """
+        users: Optional[List[UserDTO]] = await self.userRepo.get_all_by_role(role_id=role_id)
+        if users is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Users not found"
+            )
+        return users

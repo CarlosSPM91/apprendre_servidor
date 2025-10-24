@@ -108,6 +108,40 @@ class UserRepository:
                 )
                 for user in users
             ]
+    
+    async def get_all_by_role(
+        self,
+        role_id:int
+    ) -> Optional[List[UserDTO]]:
+        """Retrieve all users by role from the database.
+
+        Returns:
+            Optional[List[UserDTO]]: A list of users, or raises 404 if none are found.
+
+        Raises:
+            HTTPException: If no users are found in the database.
+        """
+        async for session in self.session():
+            users: List[User] = (await session.exec(select(User).where(User.role_id==role_id))).all()
+
+            if not users:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, detail="Users not found"
+                )
+
+            return [
+                UserDTO(
+                    user_id=user.id,
+                    username=user.username,
+                    name=user.name,
+                    last_name=user.last_name,
+                    phone=user.phone,
+                    email=user.email,
+                    dni=user.dni,
+                    role=user.role_id,
+                )
+                for user in users
+            ]
 
     async def get_user_by_id(
         self,

@@ -69,6 +69,30 @@ async def find_all_user(
     """
     return await controller.get_all()
 
+@router.get(
+    "/{role_id}/all",
+    status_code=status.HTTP_200_OK,
+    name="find-all-by-role",
+    summary="Get all users of one role",
+    response_description="Returns a list of all users of one role",
+)
+@inject
+async def find_all_user_by_role(
+    role_id: int,
+    current_user: JwtPayload = Depends(get_current_user),
+    controller: UserController = Depends(Provide[Container.user_controller]),
+):
+    """Retrieve all users in the system.
+
+    Args:
+        current_user (JwtPayload): Current authenticated user.
+        controller (UserController): Controller handling user operations.
+
+    Returns:
+        list: List of UserDTO objects.
+    """
+    return await controller.get_all_by_role(role_id=role_id)
+
 
 @router.get(
     "/{user_id}/find",

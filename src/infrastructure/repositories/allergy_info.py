@@ -1,5 +1,5 @@
 from sqlite3 import IntegrityError
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 from fastapi import HTTPException, status
 from sqlmodel import delete, select
@@ -19,6 +19,18 @@ class AllergyRepository:
                         select(AllergyInfo).where(AllergyInfo.id == allergy_id)
                     )
                 ).first()
+
+        except IntegrityError as e:
+            await session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Something wrong on server",
+            )
+
+    async def get_all(self) -> List[AllergyInfo]:
+        try:
+            async for session in self.session():
+                return (await session.exec(select(AllergyInfo))).all()
 
         except IntegrityError as e:
             await session.rollback()
@@ -57,7 +69,7 @@ class AllergyRepository:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND, detail="Allergy not found"
                 )
-            
+
             for field, value in allergy.model_dump(exclude_unset=True).items():
                 if field != "id":
                     setattr(allergy_upt, field, value)

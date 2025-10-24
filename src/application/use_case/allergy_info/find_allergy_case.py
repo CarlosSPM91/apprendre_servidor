@@ -18,4 +18,7 @@ class FindAllergyCase:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Allergy info not found"
             )
         return allergy
+    
+    async def get_all(self):
+        return await self.repo.get_all()
 

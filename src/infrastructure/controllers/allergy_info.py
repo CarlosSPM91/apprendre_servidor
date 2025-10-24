@@ -72,7 +72,23 @@ class AllergyController:
 
     async def get_allergy (self, allergy_id: str):
         try:
-            return await self.find_case.get_allergy(allergy_id)
+            resp= await self.find_case.get_allergy(allergy_id)
+
+            return {
+                "status": "success",
+                "data": resp
+            }
+        except HTTPException as e:
+            sentry_sdk.capture_exception(e)
+            manage_allergy_except(e)
+
+    async def get_all(self):
+        try:
+            resp = await self.find_case.get_all()
+            return {
+                "status": "success",
+                "data": resp
+            }
         except HTTPException as e:
             sentry_sdk.capture_exception(e)
             manage_allergy_except(e)

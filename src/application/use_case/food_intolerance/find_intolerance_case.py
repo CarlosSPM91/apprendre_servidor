@@ -17,3 +17,7 @@ class FindIntoleranceCase:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Intolerance not found"
             )
         return intolerance
+
+    async def get_all(self):
+        return await self.repo.get_all()
+
