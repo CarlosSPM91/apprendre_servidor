@@ -70,14 +70,34 @@ class StudentController:
 
     async def get_student(self, student_id: str):
         try:
-            return await self.find_student_case.get_student_by_id(student_id=student_id)
+            resp = await self.find_student_case.get_student_by_id(student_id=student_id)
+            return {
+                "status": "success",
+                "data": resp
+            }
+        except HTTPException as e:
+            sentry_sdk.capture_exception(e)
+            manage_student_except(e)
+    
+    async def get_all(self):
+        try:
+            resp = await self.find_student_case.get_all()
+            return {
+                "status": "success",
+                "data": resp
+            }
         except HTTPException as e:
             sentry_sdk.capture_exception(e)
             manage_student_except(e)
 
-    async def get_student_full_info(self, student_id: str):
+    async def get_student_full_info(self, student_id: int):
         try:
-            return await self.find_student_case.get_student_full_info(student_id=student_id)
+            resp = await self.find_student_case.get_student_full_info(student_id=student_id)
+
+            return {
+                "status": "success",
+                "data": resp
+            }
         except HTTPException as e:
             sentry_sdk.capture_exception(e)
             manage_student_except(e)

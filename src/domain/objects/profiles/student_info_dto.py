@@ -13,7 +13,7 @@ class StudentInfoDTO(BaseModel):
     name:str
     last_name:str
     email: Optional[str] = None
-    phone: Optional[str] = None
+    phone: Optional[int] = None
     classe: Optional[str] = None
     obvervations:Optional[str] = None
     medical_info: Optional[List[MedicalInfo]] = []

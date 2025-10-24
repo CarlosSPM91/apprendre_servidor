@@ -14,6 +14,20 @@ from src.middleware.token.authenticateToken import get_current_user
 router = APIRouter(prefix="/student", tags=["student"])
 
 @router.get(
+    "/all",
+    status_code=status.HTTP_200_OK,
+    name="find",
+    summary="Get information of all students",
+    response_description="Returns a list of all students",
+)
+@inject
+async def find(
+    current_user: JwtPayload = Depends(get_current_user),
+    controller: StudentController = Depends(Provide[Container.student_contoller]),
+):
+    return await controller.get_all()
+
+@router.get(
     "/{student_id}/find",
     status_code=status.HTTP_200_OK,
     name="find",

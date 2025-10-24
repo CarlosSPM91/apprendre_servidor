@@ -42,6 +42,25 @@ class StudentRepository:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Something wrong on server",
             )
+    
+    async def get_all(self) -> List[Student]:
+        try:
+            async for session in self.session():
+                selected = (
+                    await session.exec(select(Student))
+                ).all()
+                if not selected:
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail="Students not found",
+                    )
+                return selected
+        except IntegrityError as e:
+            await session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Something wrong on server",
+            )
 
     async def get_student_full_info(self, student_id: int) -> StudentInfoDTO:
         try:
