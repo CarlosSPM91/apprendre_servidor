@@ -15,7 +15,7 @@ from src.infrastructure.entities.course.subject_activity import SubjectActivity
 from src.infrastructure.entities.student_info.student import Student
 
 class SubjectActivityScore(SQLModel, table=True):
-    __tablename__ = "subject_activities_copy"
+    __tablename__ = "subject_activities_scores"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     subject_activity_id: int = Field(foreign_key="subject_activities.id", index=True)

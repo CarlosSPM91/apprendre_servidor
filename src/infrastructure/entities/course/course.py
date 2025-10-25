@@ -17,6 +17,5 @@ class Course(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     year: Optional[int] = None
-    password: Optional[str] = Field(default=None, max_length=50)
     from_date: Optional[datetime] = None
     to_date: Optional[datetime] = None
