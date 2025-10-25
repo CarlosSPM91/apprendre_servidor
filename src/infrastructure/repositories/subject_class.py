@@ -62,7 +62,7 @@ class SubjectClassRepository:
                 for field, value in subject_class_upt.model_dump(
                     exclude_unset=True
                 ).items():
-                    if field != "id" or field != "course_id" or field != "subject_id":
+                    if field != "id" or field != "subject_id":
                         setattr(subject, field, value)
 
                 try:

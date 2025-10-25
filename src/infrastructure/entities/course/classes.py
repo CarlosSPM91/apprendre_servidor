@@ -16,5 +16,5 @@ class Classes(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     course_id: int = Field(foreign_key="courses.id")
-    student_class_id: int = Field(foreign_key="student_class.id")
+    name: Optional[str] = None
     tutor_id: Optional[int] = Field(default=None, foreign_key="teachers.id")

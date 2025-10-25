@@ -16,6 +16,6 @@ class Course(SQLModel, table=True):
     __tablename__ = "courses"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    year: Optional[int] = None
+    year: Optional[int] = Field(default=None, unique=True)
     from_date: Optional[datetime] = None
     to_date: Optional[datetime] = None

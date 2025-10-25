@@ -17,6 +17,14 @@ from src.application.use_case.allergy_info.find_allergy_case import FindAllergyC
 from src.application.use_case.allergy_info.update_allergy_case import UpdateAllergyCase
 from src.application.use_case.auth.login_use_case import LoginUseCase
 from src.application.use_case.auth.logout_use_case import LogoutUseCase
+from src.application.use_case.classes.create_classes_case import CreateClassesCase
+from src.application.use_case.classes.delete_classes_case import DeleteClassesCase
+from src.application.use_case.classes.find_classes_case import FindClassesCase
+from src.application.use_case.classes.update_classes_case import UpdateClassesCase
+from src.application.use_case.course.create_course_case import CreateCourseCase
+from src.application.use_case.course.delete_course_case import DeleteCourseCase
+from src.application.use_case.course.find_course_case import FindCourseCase
+from src.application.use_case.course.update_course_case import UpdateCourseCase
 from src.application.use_case.food_intolerance.create_intolerance_case import (
     CreateIntoleranceCase,
 )
@@ -55,6 +63,8 @@ from src.infrastructure.connection.db import get_engine, get_session
 from src.infrastructure.connection.redis import get_redis_client, get_redis_session
 from src.infrastructure.controllers.allergy_info import AllergyController
 from src.infrastructure.controllers.auth import AuthController
+from src.infrastructure.controllers.classes import ClassesController
+from src.infrastructure.controllers.course import CourseController
 from src.infrastructure.controllers.food_intolrance import FoodIntoleranceController
 from src.infrastructure.controllers.medical_info import MedicalInfoController
 from src.infrastructure.controllers.parent import ParentController
@@ -62,14 +72,28 @@ from src.infrastructure.controllers.role import RoleController
 from src.infrastructure.controllers.student import StudentController
 from src.infrastructure.controllers.teacher import TeacherController
 from src.infrastructure.controllers.user import UserController
+from src.infrastructure.entities.course.activity_type import ActivityType
+from src.infrastructure.entities.course.school_subject import SchoolSubject
+from src.infrastructure.entities.course.subject_activity import SubjectActivity
+from src.infrastructure.entities.course.subject_class import SubjectClass
 from src.infrastructure.repositories.acces_logs import AccessRepository
+from src.infrastructure.repositories.activity_type import ActivityTypeRepository
 from src.infrastructure.repositories.allergy_info import AllergyRepository
+from src.infrastructure.repositories.classes import ClassesRepository
+from src.infrastructure.repositories.course import CourseRepository
 from src.infrastructure.repositories.deletion_logs import DeletionRepository
 from src.infrastructure.repositories.food_intolerance import FoodIntoleranceRepository
 from src.infrastructure.repositories.medical_info import MedicalInfoRepository
 from src.infrastructure.repositories.parent import ParentRepository
 from src.infrastructure.repositories.role import RoleRepository
+from src.infrastructure.repositories.school_subject import SchoolSubjectRepository
 from src.infrastructure.repositories.student import StudentRepository
+from src.infrastructure.repositories.student_class import StudentClassRepository
+from src.infrastructure.repositories.subject_activities import SubjectActivityRepository
+from src.infrastructure.repositories.subject_activity_score import (
+    SubjectActivityScoreRepository,
+)
+from src.infrastructure.repositories.subject_class import SubjectClassRepository
 from src.infrastructure.repositories.teacher import TeacherRepository
 from src.infrastructure.repositories.user import UserRepository
 from src.settings import settings
@@ -113,6 +137,26 @@ class Container(containers.DeclarativeContainer):
     allergy_repository = providers.Factory(AllergyRepository, session=session.provider)
     parent_repository = providers.Factory(ParentRepository, session=session.provider)
     teacher_repository = providers.Factory(TeacherRepository, session=session.provider)
+    course_repository = providers.Factory(CourseRepository, session=session.provider)
+    classes_repository = providers.Factory(ClassesRepository, session=session.provider)
+    school_subject_repository = providers.Factory(
+        SchoolSubjectRepository, session=session.provider
+    )
+    activity_type_repository = providers.Factory(
+        ActivityTypeRepository, session=session.provider
+    )
+    subject_class_repository = providers.Factory(
+        SubjectClassRepository, session=session.provider
+    )
+    student_class_repository = providers.Factory(
+        StudentClassRepository, session=session.provider
+    )
+    subject_activity_repository = providers.Factory(
+        SubjectActivityRepository, session=session.provider
+    )
+    subject_activity_score_repository = providers.Factory(
+        SubjectActivityScoreRepository, session=session.provider
+    )
 
     find_user_case = providers.Factory(FindUserCase, repo=user_repository)
 
@@ -130,9 +174,7 @@ class Container(containers.DeclarativeContainer):
     # Use case
     find_role_case = providers.Factory(FindRoleCase, role_repo=role_repository)
     create_student_case = providers.Factory(CreateStudenCase, repo=student_repository)
-    create_teacher_case = providers.Factory(
-        CreateTeacherCase, repo=teacher_repository
-    )
+    create_teacher_case = providers.Factory(CreateTeacherCase, repo=teacher_repository)
     create_user_case = providers.Factory(
         CreateUserCase,
         repo=user_repository,
@@ -211,24 +253,36 @@ class Container(containers.DeclarativeContainer):
     find_parent_case = providers.Factory(
         FindParentCase, repo=parent_repository, find_user=find_user_case
     )
-    create_parent_case = providers.Factory(
-        CreateParentCase, repo=parent_repository
-    )
+    create_parent_case = providers.Factory(CreateParentCase, repo=parent_repository)
     delete_parent_case = providers.Factory(
         DeleteParentCase,
         repo=parent_repository,
     )
 
-    find_teacher_case = providers.Factory(
-        FindTeacherCase, repo=teacher_repository
-    )
-    
+    find_teacher_case = providers.Factory(FindTeacherCase, repo=teacher_repository)
+
     delete_teacher_case = providers.Factory(
-        DeleteTeacherCase,
-        repo=teacher_repository,
-        find_case=find_teacher_case
+        DeleteTeacherCase, repo=teacher_repository, find_case=find_teacher_case
     )
-    
+
+    find_course_case = providers.Factory(FindCourseCase, repo=course_repository)
+    create_course_case = providers.Factory(CreateCourseCase, repo=course_repository)
+    update_course_case = providers.Factory(UpdateCourseCase, repo=course_repository)
+    delete_course_Case = providers.Factory(
+        DeleteCourseCase,
+        repo=course_repository,
+        find_case=find_course_case,
+    )
+
+    find_classes_case = providers.Factory(FindClassesCase, repo=classes_repository)
+    create_classes_case = providers.Factory(CreateClassesCase, repo=classes_repository)
+    update_classes_case = providers.Factory(UpdateClassesCase, repo=classes_repository)
+    delete_classes_Case = providers.Factory(
+        DeleteClassesCase,
+        repo=classes_repository,
+        find_case=find_classes_case,
+    )
+
     # Controllers
     user_controller = providers.Factory(
         UserController,
@@ -290,6 +344,22 @@ class Container(containers.DeclarativeContainer):
         find_case=find_teacher_case,
         create_case=create_teacher_case,
         delete_case=delete_teacher_case,
+    )
+
+    course_controller = providers.Factory(
+        CourseController,
+        find_case=find_course_case,
+        create_case=create_course_case,
+        update_case=update_course_case,
+        delete_case=delete_course_Case,
+    )
+
+    classes_controller = providers.Factory(
+        ClassesController,
+        find_case=find_classes_case,
+        create_case=create_classes_case,
+        update_case=update_classes_case,
+        delete_case=delete_classes_Case,
     )
 
     auth_controller = providers.Factory(

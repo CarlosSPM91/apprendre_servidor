@@ -17,7 +17,7 @@ class CourseRepository:
             async for session in self.session():
                 session.add(course)
                 await session.commit()
-                await session.refreash(course)
+                await session.refresh(course)
                 return course
 
         except IntegrityError:
@@ -30,14 +30,12 @@ class CourseRepository:
     async def get_all(self) -> List[Course]:
         async for session in self.session():
             courses: List[Course] = (await session.exec(select(Course))).all()
-            if not courses:
-                return []
             return courses
 
-    async def get(self, year: int) -> Course:
+    async def get(self, course_id: int) -> Course:
         async for session in self.session():
             course: Course = (
-                await session.exec(select(Course).where(Course.year == year))
+                await session.exec(select(Course).where(Course.id == course_id))
             ).first()
             if not course:
                 raise HTTPException(

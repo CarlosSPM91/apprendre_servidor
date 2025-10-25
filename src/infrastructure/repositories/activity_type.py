@@ -1,10 +1,4 @@
-"""
-Role Repository.
 
-Implements data access methods for the Role entity.
-
-:author: Carlos S. Paredes Morillo
-"""
 
 from sqlalchemy.exc import IntegrityError
 from typing import Callable, List, Optional
