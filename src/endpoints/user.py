@@ -45,6 +45,28 @@ async def me(
     """
     return await controller.me(current_user.user_id)
 
+@router.get(
+    "/sessions",
+    status_code=status.HTTP_200_OK,
+    name="me",
+    summary="Get current authenticated user",
+    response_description="Returns the current user's information",
+)
+@inject
+async def me(
+    controller: UserController = Depends(Provide[Container.user_controller]),
+    current_user: JwtPayload = Depends(get_current_user),
+):
+    """Retrieve information about the total day sessions.
+
+    Args:
+        controller (UserController): The user controller injected by DI.
+        current_user (JwtPayload): The current authenticated user's JWT payload.
+
+    Returns:
+        dict: The current user's data.
+    """
+    return await controller.get_sessions()
 
 @router.get(
     "/all",

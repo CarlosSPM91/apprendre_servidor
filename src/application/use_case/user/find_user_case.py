@@ -103,3 +103,7 @@ class FindUserCase:
                 detail="Users not found"
             )
         return users
+    
+    async def get_day_sessions(self) -> int:
+        return await self.userRepo.get_day_sessions()
+        

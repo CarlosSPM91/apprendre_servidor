@@ -148,8 +148,8 @@ class UserController:
         except HTTPException as e:
             sentry_sdk.capture_exception(e)
             manage_user_except(e)
-    
-    async def get_all_by_role(self, role_id:int):
+
+    async def get_all_by_role(self, role_id: int):
         """
         Retrieve all users of a determinate role.
 
@@ -160,7 +160,9 @@ class UserController:
             HTTPException: If retrieval fails or no users found.
         """
         try:
-            resp: List[UserDTO] = await self.find_user_case.get_all_by_role(role_id=role_id)
+            resp: List[UserDTO] = await self.find_user_case.get_all_by_role(
+                role_id=role_id
+            )
             return {
                 "status": "success",
                 "data": resp,
@@ -184,6 +186,23 @@ class UserController:
         """
         try:
             return await self.find_user_case.get_user_by_id(user_id)
+        except HTTPException as e:
+            sentry_sdk.capture_exception(e)
+            manage_user_except(e)
+
+    async def get_sessions(self):
+        """
+        Retrieve a total user sessions.
+
+        Returns:
+            int: number of sessions.
+        """
+        try:
+            resp = await self.find_user_case.get_day_sessions()
+            return {
+                "status": "success",
+                "data": {"total_sessions": resp},
+            }
         except HTTPException as e:
             sentry_sdk.capture_exception(e)
             manage_user_except(e)

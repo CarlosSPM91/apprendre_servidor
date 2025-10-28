@@ -6,14 +6,14 @@ Implements data access methods for the User entity.
 :author: Carlos S. Paredes Morillo
 """
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Callable, List, Optional
 
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from src.domain.objects.user.user_create_dto import UserCreateDTO
 from src.domain.objects.user.user_dto import UserDTO
-from sqlmodel import select
+from sqlmodel import func, select
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
 from src.infrastructure.entities.users.user import User
 
@@ -210,6 +210,23 @@ class UserRepository:
                 role_id=user.role_id,
                 password=user.password,
             )
+    
+    async def get_day_sessions(
+        self,
+    ) -> Optional[int]:
+        """Retrieve count of total user logged now.
+
+
+        Returns:
+            Optional[int]: The number os ussers logged.
+        """
+        async for session in self.session():
+            today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+            tomorrow = today + timedelta(days=1)
+            user_count = (
+                await session.exec(select(func.count()).select_from(User).where(User.last_used >= today).where(User.last_used<tomorrow))
+            ).one()
+            return user_count
 
     async def update_last_used(
         self,
