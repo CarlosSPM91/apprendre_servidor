@@ -8,7 +8,7 @@ from src.infrastructure.controllers.parent import ParentController
 from src.infrastructure.entities.users.parents import Parent
 from src.middleware.token.authenticateToken import get_current_user, require_role
 
-router = APIRouter(prefix="/parent", tags=["parent"])
+router = APIRouter(prefix="/parents", tags=["parents"])
 
 
 @router.get(

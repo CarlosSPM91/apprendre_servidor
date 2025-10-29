@@ -10,7 +10,7 @@ from src.infrastructure.entities.course.classes import Classes
 from src.middleware.token.authenticateToken import get_current_user
 
 
-router = APIRouter(prefix="/class", tags=["class"])
+router = APIRouter(prefix="/classes", tags=["class"])
 
 
 @router.get(

@@ -11,7 +11,7 @@ from src.infrastructure.entities.student_info.student import Student
 from src.middleware.token.authenticateToken import get_current_user
 
 
-router = APIRouter(prefix="/student", tags=["student"])
+router = APIRouter(prefix="/students", tags=["students"])
 
 @router.get(
     "/all",

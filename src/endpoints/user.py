@@ -19,7 +19,7 @@ from src.infrastructure.controllers.user import UserController
 from src.middleware.token.authenticateToken import get_current_user
 
 
-router = APIRouter(prefix="/user", tags=["user"])
+router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get(

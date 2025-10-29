@@ -9,7 +9,7 @@ from src.infrastructure.entities.course.course import Course
 from src.middleware.token.authenticateToken import get_current_user
 
 
-router = APIRouter(prefix="/course", tags=["course"])
+router = APIRouter(prefix="/courses", tags=["course"])
 
 
 @router.get(

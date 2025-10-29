@@ -17,8 +17,8 @@ from src.infrastructure.controllers.role import RoleController
 
 
 router = APIRouter(
-    prefix="/role",
-    tags=["role"]
+    prefix="/roles",
+    tags=["roles"]
 )
 
 security = HTTPBearer()

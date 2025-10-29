@@ -8,7 +8,7 @@ from src.infrastructure.controllers.teacher import TeacherController
 from src.middleware.token.authenticateToken import get_current_user
 
 
-router = APIRouter(prefix="/teacher", tags=["teacher"])
+router = APIRouter(prefix="/teachers", tags=["teachers"])
 
 
 @router.get(
