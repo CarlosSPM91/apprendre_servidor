@@ -21,8 +21,8 @@ class MedicalInfo(SQLModel, table=True):
     __tablename__ = "medical_info"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    name:str = Field(max_length=50)
-    description: Optional[str] = Field(default=None, max_length=100)
-    medication: Optional[str] = Field(default=None, max_length=100)
+    name:str = Field(max_length=100)
+    description: Optional[str] = Field(default=None, max_length=250)
+    medication: Optional[str] = Field(default=None, max_length=250)
 
 
