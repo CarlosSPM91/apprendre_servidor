@@ -7,7 +7,7 @@ Implements data access methods for the AccessLog entity.
 """
 
 from sqlalchemy.exc import IntegrityError
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 from fastapi import HTTPException, status
 from sqlmodel import select
@@ -66,6 +66,33 @@ class AccessRepository:
                         select(AccessLog).where(AccessLog.id == acces_id)
                     )
                 ).first()
+            except IntegrityError:
+                await session.rollback()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Something wrong on server",
+                )
+    
+    async def get_all(self) -> List[AccessLog]:
+        """
+        Retrieve a list of access logs.
+
+        Args:
+            acces_id (int): The unique identifier of the access log to retrieve.
+
+        Returns:
+            List[AccessLog]: A list of the AccessLog entity if found, otherwise None.
+
+        Raises:
+            HTTPException: If a database error occurs during retrieval.
+        """
+        async for session in self.session():
+            try:
+                return (
+                    await session.exec(
+                        select(AccessLog).where()
+                    )
+                ).all()
             except IntegrityError:
                 await session.rollback()
                 raise HTTPException(

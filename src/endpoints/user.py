@@ -69,6 +69,29 @@ async def me(
     return await controller.get_sessions()
 
 @router.get(
+    "/access-logs",
+    status_code=status.HTTP_200_OK,
+    name="accces logs",
+    summary="Get all the acces logs",
+    response_description="Returns the information of acces logs",
+)
+@inject
+async def get_access_logs(
+    controller: UserController = Depends(Provide[Container.user_controller]),
+    current_user: JwtPayload = Depends(get_current_user),
+):
+    """Retrieve information about logs of the users.
+
+    Args:
+        controller (UserController): The user controller injected by DI.
+        current_user (JwtPayload): The current authenticated user's JWT payload.
+
+    Returns:
+        dict: The current user's data.
+    """
+    return await controller.get_access_logs()
+
+@router.get(
     "/all",
     status_code=status.HTTP_200_OK,
     name="findAll",

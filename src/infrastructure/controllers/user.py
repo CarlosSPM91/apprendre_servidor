@@ -207,6 +207,23 @@ class UserController:
             sentry_sdk.capture_exception(e)
             manage_user_except(e)
 
+    async def get_access_logs(self):
+        """
+        Retrieve a total user acces logs.
+
+        Returns:
+            AccessLog: List oc access logs.
+        """
+        try:
+            resp = await self.find_user_case.get_access_logs()
+            return {
+                "status": "success",
+                "data": resp,
+            }
+        except HTTPException as e:
+            sentry_sdk.capture_exception(e)
+            manage_user_except(e)
+
     async def me(self, user_id: str):
         """
         Retrieve information about the current authenticated user.

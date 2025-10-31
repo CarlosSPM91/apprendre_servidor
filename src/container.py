@@ -158,7 +158,7 @@ class Container(containers.DeclarativeContainer):
         SubjectActivityScoreRepository, session=session.provider
     )
 
-    find_user_case = providers.Factory(FindUserCase, repo=user_repository)
+    find_user_case = providers.Factory(FindUserCase, repo=user_repository, repo_access_logs= access_repository)
 
     # Services
     pwd_service = providers.Factory(PasswordService)
