@@ -81,7 +81,7 @@ class FindUserCase:
         Raises:
             HTTPException: If no users are found (HTTP 404).
         """
-        users: Optional[List[UserDTO]] = await self.userRepo.get_all()
+        users: Optional[List[UserDTO]] = await self.user_repo.get_all()
         if users is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
