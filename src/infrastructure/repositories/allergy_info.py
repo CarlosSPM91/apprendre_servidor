@@ -6,8 +6,21 @@ from sqlmodel import delete, select
 
 from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
 
+"""
+Allergy Repository.
+
+Implements data access methods for the AllergyInfo entity.
+
+:author: Carlos S. Paredes Morillo
+"""
 
 class AllergyRepository:
+    """Repository for managing AllergyInfo persistence.
+
+    Provides CRUD operations for interacting with the AllergyInfo entity.
+
+    :author: Carlos S. Paredes Morillo
+    """
     def __init__(self, session: Callable):
         self.session = session
 

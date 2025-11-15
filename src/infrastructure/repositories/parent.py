@@ -8,12 +8,37 @@ from src.domain.objects.profiles.parent_info import ParentDTO
 from src.infrastructure.entities.users.parents import Parent
 from src.infrastructure.entities.users.user import User
 
+"""
+Parents Repository.
+
+Implements data access methods for the Parent entity.
+
+:author: Carlos S. Paredes Morillo
+"""
 
 class ParentRepository:
+    """Repository for managing Parent persistence.
+
+    Provides CRUD operations and auxiliary methods
+    for interacting with the Parent entity in the database.
+
+    :author: Carlos S. Paredes Morillo
+    """
     def __init__(self, session: Callable):
         self.session = session
 
     async def get(self, user_id: int) -> List[Parent]:
+        """Retrieve parents associated with a user.
+
+        Args:
+            user_id (int): The user ID.
+
+        Returns:
+            List[Parent]: List of parent entities.
+
+        Raises:
+            HTTPException: If no parents are found.
+        """
         async for session in self.session():
             parent = (
                 await session.exec(select(Parent).where(Parent.user_id == user_id))
@@ -26,6 +51,14 @@ class ParentRepository:
             return parent
 
     async def get_all(self) -> List[ParentDTO]:
+        """Retrieve all parents with their students.
+
+        Returns:
+            List[ParentDTO]: List of parents with student associations.
+
+        Raises:
+            HTTPException: If no parents are found or a database error occurs.
+        """
         try:
             async for session in self.session():
                 users = (
@@ -67,6 +100,17 @@ class ParentRepository:
             )
 
     async def create(self, parent: Parent) -> Parent:
+        """Create a new parent entry.
+
+        Args:
+            parent (Parent): The parent entity to create.
+
+        Returns:
+            Parent: The created parent.
+
+        Raises:
+            HTTPException: If a database error occurs.
+        """
         try:
             async for session in self.session():
                 session.add(parent)
@@ -82,6 +126,18 @@ class ParentRepository:
             )
 
     async def delete(self, user_id: int, student_id: int) -> bool:
+        """Delete a parent association.
+
+        Args:
+            user_id (int): The parent user ID.
+            student_id (int): The associated student ID.
+
+        Returns:
+            bool: True if deletion succeeded.
+
+        Raises:
+            HTTPException: If the parent association is not found or a database error occurs.
+        """
         try:
             async for session in self.session():
                 parent = (

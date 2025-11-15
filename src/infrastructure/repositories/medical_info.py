@@ -6,12 +6,30 @@ from sqlmodel import delete, select
 
 from src.infrastructure.entities.student_info.medical_info import MedicalInfo
 
+"""Delete a parent association.
 
+        Args:
+            user_id (int): The parent user ID.
+            student_id (int): The associated student ID.
+
+        Returns:
+            bool: True if deletion succeeded.
+
+        Raises:
+            HTTPException: If the parent association is not found or a database error occurs.
+        """
 class MedicalInfoRepository:
+    """Repository for managing MedicalInfo persistence.
+
+    Provides CRUD operations for interacting with the MedicalInfo entity.
+
+    :author: Carlos S. Paredes Morillo
+    """
     def __init__(self, session: Callable):
         self.session = session
 
     async def get(self, medical_id: int) -> MedicalInfo:
+        """Retrieve medical info by ID."""
         try:
             async for session in self.session():
                 return (
@@ -28,6 +46,7 @@ class MedicalInfoRepository:
             )
     
     async def get_all(self) -> List[MedicalInfo]:
+        """Retrieve medical all."""
         try:
             async for session in self.session():
                 return (
@@ -44,6 +63,7 @@ class MedicalInfoRepository:
             )
 
     async def create(self, medical: MedicalInfo) -> MedicalInfo:
+        """Create a new medical info entry."""
         try:
             created = MedicalInfo(
                 name=medical.name,
@@ -64,6 +84,7 @@ class MedicalInfoRepository:
             )
 
     async def update(self, medical: MedicalInfo) -> Optional[MedicalInfo]:
+        """Update an existing medical info entry."""
         async for session in self.session():
             medical_upt: MedicalInfo = (
                 await session.exec(
@@ -94,6 +115,7 @@ class MedicalInfoRepository:
                 )
 
     async def delete(self, medical_id: int) -> bool:
+        """Delete a medical info entry by ID."""
         try:
             async for session in self.session():
                 allergy: MedicalInfo = (

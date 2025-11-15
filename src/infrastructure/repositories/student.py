@@ -19,12 +19,37 @@ from src.infrastructure.entities.student_info.student_medical_info import (
 )
 from src.infrastructure.entities.users.user import User
 
+"""
+Students Repository.
+
+Implements data access methods for the Student entity.
+
+:author: Carlos S. Paredes Morillo
+"""
 
 class StudentRepository:
+    """Repository for managing Student persistence.
+
+    Provides CRUD operations and auxiliary methods
+    for interacting with the Student entity in the database.
+
+    :author: Carlos S. Paredes Morillo
+    """
     def __init__(self, session: Callable):
         self.session = session
 
     async def get_student(self, student_id: int) -> Student:
+        """Retrieve a student by ID.
+
+        Args:
+            student_id (int): The ID of the student.
+
+        Returns:
+            Student: The student entity.
+
+        Raises:
+            HTTPException: If the student is not found or a database error occurs.
+        """
         try:
             async for session in self.session():
                 selected = (
@@ -44,6 +69,14 @@ class StudentRepository:
             )
     
     async def get_all(self) -> List[Student]:
+        """Retrieve all students.
+
+        Returns:
+            List[Student]: A list of student entities.
+
+        Raises:
+            HTTPException: If no students are found or a database error occurs.
+        """
         try:
             async for session in self.session():
                 selected = (
@@ -63,6 +96,17 @@ class StudentRepository:
             )
 
     async def get_student_full_info(self, student_id: int) -> StudentInfoDTO:
+        """Retrieve full information of a student, including user info, allergies, intolerances, and medical info.
+
+        Args:
+            student_id (int): The ID of the student.
+
+        Returns:
+            StudentInfoDTO: Full student information.
+
+        Raises:
+            HTTPException: If the student is not found or a database error occurs.
+        """
         try:
             async for session in self.session():
                 student_result = (
@@ -136,6 +180,17 @@ class StudentRepository:
             )
 
     async def create(self, student: Student) -> Student:
+        """Create a new student.
+
+        Args:
+            student (Student): The student entity to create.
+
+        Returns:
+            Student: The created student.
+
+        Raises:
+            HTTPException: If the student already exists or a database error occurs.
+        """
         try:
             created = Student(
                 user_id=student.user_id,
@@ -165,6 +220,17 @@ class StudentRepository:
             )
 
     async def update(self, uptStudent: StudentUpdateDTO) -> Student:
+        """Update a student's information, including allergies, intolerances, and medical info.
+
+        Args:
+            uptStudent (StudentUpdateDTO): Data for updating the student.
+
+        Returns:
+            Student: The updated student entity.
+
+        Raises:
+            HTTPException: If the student is not found or a database error occurs.
+        """
         try:
             async for session in self.session():
                 student: Student = (
@@ -231,6 +297,17 @@ class StudentRepository:
             )
 
     async def delete(self, student_id: int) -> bool:
+        """Delete a student by ID.
+
+        Args:
+            student_id (int): The ID of the student.
+
+        Returns:
+            bool: True if deletion succeeded.
+
+        Raises:
+            HTTPException: If the student is not found or a database error occurs.
+        """
         try:
             async for session in self.session():
                 student: Student = (

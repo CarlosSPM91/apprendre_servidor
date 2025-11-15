@@ -12,26 +12,38 @@ from src.middleware.token.authenticateToken import get_current_user
 
 
 router = APIRouter(prefix="/food-intolerance", tags=["food-intolerance"])
-
 @router.get(
     "/all",
     status_code=status.HTTP_200_OK,
-    name="find",
-    summary="Get information of all allergy info",
-    response_description="Returns a list of all the allergy info",
+    name="find-all-food-intolerance",
+    summary="Get all food intolerances",
+    response_description="Returns a list of all food intolerance records",
 )
 @inject
 async def find_all(
     controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
 ):
+    """
+    Retrieve all food intolerance records.
+
+    Args:
+        controller (FoodIntoleranceController): Controller handling food intolerance logic.
+
+    Returns:
+        List[FoodIntolerance]: List of all food intolerance records.
+
+    Raises:
+        HTTPException: If retrieval fails.
+    """
     return await controller.get_all()
+
 
 @router.get(
     "/{intolerance_id}/find",
     status_code=status.HTTP_200_OK,
-    name="find",
-    summary="Get information of the intolerance",
-    response_description="Returns the information of the intolerance",
+    name="find-food-intolerance",
+    summary="Get a specific food intolerance",
+    response_description="Returns information of a specific food intolerance record",
 )
 @inject
 async def find(
@@ -39,14 +51,29 @@ async def find(
     current_user: JwtPayload = Depends(get_current_user),
     controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
 ):
+    """
+    Retrieve a specific food intolerance record by ID.
+
+    Args:
+        intolerance_id (int): ID of the food intolerance record.
+        current_user (JwtPayload): Authenticated user.
+        controller (FoodIntoleranceController): Controller handling food intolerance logic.
+
+    Returns:
+        FoodIntolerance: The requested food intolerance record.
+
+    Raises:
+        HTTPException: If record not found or retrieval fails.
+    """
     return await controller.get_intolerance(intolerance_id)
+
 
 @router.post(
     "/",
     status_code=status.HTTP_200_OK,
-    name="create",
-    summary="Create the food intolerance",
-    response_description="Returns the information of intolerance",
+    name="create-food-intolerance",
+    summary="Create a food intolerance record",
+    response_description="Returns the created food intolerance record",
 )
 @inject
 async def create(
@@ -54,14 +81,29 @@ async def create(
     current_user: JwtPayload = Depends(get_current_user),
     controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
 ):
+    """
+    Create a new food intolerance record.
+
+    Args:
+        payload (FoodIntolerance): The food intolerance data to create.
+        current_user (JwtPayload): Authenticated user.
+        controller (FoodIntoleranceController): Controller handling food intolerance logic.
+
+    Returns:
+        FoodIntolerance: The newly created food intolerance record.
+
+    Raises:
+        HTTPException: If creation fails.
+    """
     return await controller.create(payload)
+
 
 @router.put(
     "/",
     status_code=status.HTTP_200_OK,
-    name="update-student",
-    summary="Update an existing intolerance",
-    response_description="Returns the updated intolerance information",
+    name="update-food-intolerance",
+    summary="Update an existing food intolerance record",
+    response_description="Returns the updated food intolerance record",
 )
 @inject
 async def update(
@@ -69,14 +111,29 @@ async def update(
     current_user: JwtPayload = Depends(get_current_user),
     controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
 ):
+    """
+    Update an existing food intolerance record.
+
+    Args:
+        payload (FoodIntolerance): The updated food intolerance data.
+        current_user (JwtPayload): Authenticated user.
+        controller (FoodIntoleranceController): Controller handling food intolerance logic.
+
+    Returns:
+        FoodIntolerance: The updated food intolerance record.
+
+    Raises:
+        HTTPException: If update fails or record not found.
+    """
     return await controller.update(payload)
+
 
 @router.delete(
     "/{intolerance_id}",
     status_code=status.HTTP_200_OK,
-    name="delete-intolerance",
-    summary="Delete a intolerance",
-    response_description="Returns the deleted intolerance ID and timestamp",
+    name="delete-food-intolerance",
+    summary="Delete a food intolerance record",
+    response_description="Returns the deleted food intolerance ID",
 )
 @inject
 async def delete(
@@ -84,4 +141,18 @@ async def delete(
     controller: FoodIntoleranceController = Depends(Provide[Container.food_intolerance_controller]),
     current_user: JwtPayload = Depends(get_current_user),
 ):
+    """
+    Delete a food intolerance record by ID.
+
+    Args:
+        intolerance_id (int): ID of the food intolerance record to delete.
+        current_user (JwtPayload): Authenticated user.
+        controller (FoodIntoleranceController): Controller handling food intolerance logic.
+
+    Returns:
+        bool: True if deletion succeeded.
+
+    Raises:
+        HTTPException: If record not found or deletion fails.
+    """
     return await controller.delete(intolerance_id)

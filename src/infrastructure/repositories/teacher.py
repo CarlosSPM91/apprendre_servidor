@@ -12,12 +12,37 @@ from src.infrastructure.entities.course.subject_class import SubjectClass
 from src.infrastructure.entities.users.teacher import Teacher
 from src.infrastructure.entities.users.user import User
 
+"""
+Teachers Repository.
+
+Implements data access methods for the Teacher entity.
+
+:author: Carlos S. Paredes Morillo
+"""
 
 class TeacherRepository:
+    """Repository for managing Teacher persistence.
+
+    Provides CRUD operations and auxiliary methods
+    for interacting with the Teacher entity in the database.
+
+    :author: Carlos S. Paredes Morillo
+    """
     def __init__(self, session: Callable):
         self.session = session
 
     async def get_teacher(self, teacher_id: int):
+        """Retrieve a teacher by ID.
+
+        Args:
+            teacher_id (int): The ID of the teacher.
+
+        Returns:
+            Teacher: The teacher entity.
+
+        Raises:
+            HTTPException: If the teacher is not found or a database error occurs.
+        """
         try:
             async for session in self.session():
                 selected = (
@@ -37,6 +62,17 @@ class TeacherRepository:
             )
 
     async def get_teacher_full_info(self, teacher_id: int):
+        """Retrieve full information of a teacher, including user info and subjects.
+
+        Args:
+            teacher_id (int): The ID of the teacher.
+
+        Returns:
+            TeacherDTO: The teacher data transfer object with related subjects.
+
+        Raises:
+            HTTPException: If the teacher is not found or a database error occurs.
+        """
         try:
             async for session in self.session():
                 selected = (
@@ -94,6 +130,14 @@ class TeacherRepository:
             )
 
     async def get_all(self):
+        """Retrieve all teachers with their user info and subjects.
+
+        Returns:
+            List[TeacherDTO]: A list of teachers.
+
+        Raises:
+            HTTPException: If no teachers are found or a database error occurs.
+        """
         try:
             async for session in self.session():
                 teachers_users = (
@@ -156,6 +200,17 @@ class TeacherRepository:
             )
 
     async def create(self, user_id: int):
+        """Create a new teacher.
+
+        Args:
+            user_id (int): The ID of the associated user.
+
+        Returns:
+            Teacher: The created teacher entity.
+
+        Raises:
+            HTTPException: If the teacher already exists or a database error occurs.
+        """
         try:
             created = Teacher(user_id=user_id)
             async for session in self.session():
@@ -183,6 +238,17 @@ class TeacherRepository:
             )
 
     async def delete(self, teacher_id: int):
+        """Delete a teacher by ID.
+
+        Args:
+            teacher_id (int): The ID of the teacher to delete.
+
+        Returns:
+            bool: True if deletion succeeded.
+
+        Raises:
+            HTTPException: If the teacher is not found or a database error occurs.
+        """
         try:
             async for session in self.session():
                 teacher: Teacher = (

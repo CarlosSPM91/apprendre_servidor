@@ -7,8 +7,21 @@ from sqlmodel import delete, select
 from src.infrastructure.entities.student_info.food_intolerance import FoodIntolerance
 
 
+"""
+Food Intolerance Repository.
+
+Implements data access methods for the FoodIntolerance entity.
+
+:author: Carlos S. Paredes Morillo
+"""
 
 class FoodIntoleranceRepository:
+    """Repository for managing FoodIntolerance persistence.
+
+    Provides CRUD operations for interacting with the FoodIntolerance entity.
+
+    :author: Carlos S. Paredes Morillo
+    """
     def __init__(self, session: Callable):
         self.session = session
 

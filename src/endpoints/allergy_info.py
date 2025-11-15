@@ -15,22 +15,35 @@ router = APIRouter(prefix="/allergy-info", tags=["allergy-info"])
 @router.get(
     "/all",
     status_code=status.HTTP_200_OK,
-    name="find",
-    summary="Get information of all allergy info",
-    response_description="Returns a list of all the allergy info",
+    name="find-all-allergy-info",
+    summary="Get all allergy info",
+    response_description="Returns a list of all allergy info records",
 )
 @inject
 async def find_all(
     controller: AllergyController = Depends(Provide[Container.allergy_controller]),
 ):
+    """
+    Retrieve all allergy info records.
+
+    Args:
+        controller (AllergyController): Controller handling allergy info logic.
+
+    Returns:
+        List[AllergyInfo]: List of all allergy info records.
+
+    Raises:
+        HTTPException: If retrieval fails.
+    """
     return await controller.get_all()
+
 
 @router.get(
     "/{allergy_id}/find",
     status_code=status.HTTP_200_OK,
-    name="find",
-    summary="Get information of the allergy info",
-    response_description="Returns the information of the allergy info",
+    name="find-allergy-info",
+    summary="Get a specific allergy info",
+    response_description="Returns information of a specific allergy info record",
 )
 @inject
 async def find(
@@ -38,14 +51,29 @@ async def find(
     current_user: JwtPayload = Depends(get_current_user),
     controller: AllergyController = Depends(Provide[Container.allergy_controller]),
 ):
+    """
+    Retrieve a specific allergy info record by ID.
+
+    Args:
+        allergy_id (int): ID of the allergy info record.
+        current_user (JwtPayload): Authenticated user.
+        controller (AllergyController): Controller handling allergy info logic.
+
+    Returns:
+        AllergyInfo: The requested allergy info record.
+
+    Raises:
+        HTTPException: If record not found or retrieval fails.
+    """
     return await controller.get_allergy(allergy_id=allergy_id)
+
 
 @router.post(
     "/",
     status_code=status.HTTP_200_OK,
-    name="create",
-    summary="Create the medical info",
-    response_description="Returns the information of medical",
+    name="create-allergy-info",
+    summary="Create an allergy info record",
+    response_description="Returns the created allergy info record",
 )
 @inject
 async def create(
@@ -53,14 +81,29 @@ async def create(
     current_user: JwtPayload = Depends(get_current_user),
     controller: AllergyController = Depends(Provide[Container.allergy_controller]),
 ):
+    """
+    Create a new allergy info record.
+
+    Args:
+        payload (AllergyInfo): The allergy info data to create.
+        current_user (JwtPayload): Authenticated user.
+        controller (AllergyController): Controller handling allergy info logic.
+
+    Returns:
+        AllergyInfo: The newly created allergy info record.
+
+    Raises:
+        HTTPException: If creation fails.
+    """
     return await controller.create(payload)
+
 
 @router.put(
     "/",
     status_code=status.HTTP_200_OK,
-    name="update-allergy",
-    summary="Update an existing allergy info",
-    response_description="Returns the updated allergy information",
+    name="update-allergy-info",
+    summary="Update an existing allergy info record",
+    response_description="Returns the updated allergy info record",
 )
 @inject
 async def update(
@@ -68,15 +111,29 @@ async def update(
     current_user: JwtPayload = Depends(get_current_user),
     controller: AllergyController = Depends(Provide[Container.allergy_controller]),
 ):
-    print("-------- REPOSITORY update allergy -------- " + payload.description )
+    """
+    Update an existing allergy info record.
+
+    Args:
+        payload (AllergyInfo): The updated allergy info data.
+        current_user (JwtPayload): Authenticated user.
+        controller (AllergyController): Controller handling allergy info logic.
+
+    Returns:
+        AllergyInfo: The updated allergy info record.
+
+    Raises:
+        HTTPException: If update fails or record not found.
+    """
     return await controller.update(payload)
+
 
 @router.delete(
     "/{allergy_id}",
     status_code=status.HTTP_200_OK,
     name="delete-allergy-info",
-    summary="Delete a allergy info record",
-    response_description="Returns the deleted allergy info ID and timestamp",
+    summary="Delete an allergy info record",
+    response_description="Returns the deleted allergy info ID",
 )
 @inject
 async def delete(
@@ -84,4 +141,18 @@ async def delete(
     controller: AllergyController = Depends(Provide[Container.allergy_controller]),
     current_user: JwtPayload = Depends(get_current_user),
 ):
+    """
+    Delete an allergy info record by ID.
+
+    Args:
+        allergy_id (int): ID of the allergy info to delete.
+        current_user (JwtPayload): Authenticated user.
+        controller (AllergyController): Controller handling allergy info logic.
+
+    Returns:
+        bool: True if deletion succeeded.
+
+    Raises:
+        HTTPException: If record not found or deletion fails.
+    """
     return await controller.delete(allergy_id=allergy_id)
