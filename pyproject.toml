@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "aiopg>=1.4.0",
+    "aiosqlite>=0.21.0",
     "alembic>=1.16.5",
     "coverage>=7.10.7",
     "dependency-injector>=4.48.2",

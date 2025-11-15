@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock
 from fastapi import HTTPException
 from src.domain.objects.user.user_dto import UserDTO
 from src.domain.objects.user.user_update_dto import UserUpdateDTO
+from src.infrastructure.repositories.acces_logs import AccessRepository
 from src.infrastructure.repositories.user import UserRepository
 from src.application.use_case.user.find_user_case import FindUserCase
 
@@ -13,8 +14,12 @@ def repo():
     return AsyncMock(spec=UserRepository)
 
 @pytest.fixture
-def use_case( repo):
-    return FindUserCase(repo)
+def repo_access_logs():
+    return AsyncMock(spec=AccessRepository)
+
+@pytest.fixture
+def use_case(repo, repo_access_logs):
+    return FindUserCase(repo, repo_access_logs)
 
 @pytest.mark.asyncio
 async def test_get_user_by_username_found(use_case, repo):

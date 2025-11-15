@@ -1,7 +1,7 @@
 from unittest.mock import AsyncMock, MagicMock
 from fastapi import HTTPException
 import pytest
-from sqlalchemy import Select
+from sqlalchemy import select
 
 from src.domain.objects.profiles.student_info_dto import StudentInfoDTO
 from src.domain.objects.profiles.student_update_dto import StudentUpdateDTO
@@ -162,6 +162,65 @@ async def test_get_student_full_info_not_found(student_repository, mock_session)
     assert exc_info.value.detail == "Student not found"
     mock_session.exec.assert_awaited_once()
 
+@pytest.mark.asyncio
+async def test_get_all_students_success(mock_session):
+    """
+    @brief Verifies that StudentRepository.get_all correctly retrieves all students using a mock session.
+    @param mock_session AsyncMock session.
+    """
+
+    fake_students = [
+        Student(
+            id=1,
+            user_id=1,
+            observations="test observations",
+        ),
+        Student(
+            id=1,
+            user_id=2,
+            observations="test second",
+        ),
+        Student(
+            id=3,
+            user_id=3,
+            observations="test allow",
+        ),
+    ]
+    mock_exec_result = MagicMock()
+    mock_exec_result.all.return_value = fake_students
+    mock_session.exec.return_value = mock_exec_result
+    async def fake_session_gen():
+        yield mock_session
+    repo = StudentRepository(session=fake_session_gen)
+    result = await repo.get_all()
+    mock_session.exec.assert_called_once()
+    assert isinstance(result, list)
+    assert len(result) == 3
+    assert result[0].user_id == 1
+    assert result[1].user_id == 2
+    assert result[0].observations == "test observations"
+    assert result[2].observations == "test allow"
+
+@pytest.mark.asyncio
+async def test_get_all_students_not_found_exception(mock_session):
+    """
+    @brief Verifies that StudentRepository.get_all raises an exception when no students are found using a mock session.
+    @param mock_session AsyncMock session.
+    """
+
+    mock_exec_result = MagicMock()
+    mock_exec_result.all.return_value = []
+    mock_session.exec.return_value = mock_exec_result
+    async def fake_session_gen():
+        yield mock_session
+    repo = StudentRepository(session=fake_session_gen)
+
+    with pytest.raises(Exception) as exc_info:
+        await repo.get_all()
+
+    mock_session.exec.assert_called_once()
+    assert exc_info.value.detail == "Students not found"
+
 
 @pytest.mark.asyncio
 async def test_create_student_success(fake_student, student_repository, mock_session):
@@ -235,6 +294,41 @@ async def test_create_student_already_exists(fake_student, student_repository, m
     mock_session.exec.assert_awaited_once()
     mock_session.add.assert_not_called()
     mock_session.commit.assert_not_called()
+
+@pytest.mark.asyncio
+async def test_update_student_success(mock_session, student_repository):
+    """
+    Verifies that update() correctly updates student and related tables.
+    """
+
+    student = Student(
+        id=1,
+        user_id=1,
+        observations="old obs"
+    )
+    uptStudent = StudentUpdateDTO(
+        student_id=1,
+        observations="new obs",
+        medical_info=[10, 11],
+        allergies=[20],
+        food_intolerance=[30, 31]
+    )
+
+
+    mock_exec_result = MagicMock()
+    mock_exec_result.first.return_value = student
+    mock_session.exec.return_value = mock_exec_result
+
+
+    async def fake_session_gen():
+        yield mock_session
+    repo = StudentRepository(session=fake_session_gen)
+    result = await repo.update(uptStudent)
+    
+
+    assert result.observations == "new obs"
+    mock_session.commit.assert_called_once()
+    mock_session.refresh.assert_called_once_with(student)
 
 @pytest.mark.asyncio
 async def test_update_student_not_found(student_repository, mock_session):

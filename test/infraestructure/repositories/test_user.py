@@ -215,6 +215,70 @@ async def test_get_all_users_not_found_exception(mock_session):
     assert exc_info.value.detail == "Users not found"
 
 @pytest.mark.asyncio
+async def test_get_all_users_by_role_success(mock_session):
+    """
+    @brief Verifies that UserRepository.get_all correctly retrieves all users with the same role using a mock session.
+    @param mock_session AsyncMock session.
+    """
+
+    fake_users = [
+        User(
+            id=1,
+        username="testUser",
+        name="Test",
+        last_name="User",
+        email="user@test.es",
+        phone="123456",
+        dni="12345678X",
+        password="hashed_pass",
+        role_id=1,
+        ),
+        User(
+            id=3,
+        username="testUser2",
+        name="Test2",
+        last_name="User1",
+        email="user2@test.es",
+        phone="123456",
+        dni="12345678X",
+        password="hashed_pass",
+        role_id=1,
+        ),
+    ]
+    mock_exec_result = MagicMock()
+    mock_exec_result.all.return_value = fake_users
+    mock_session.exec.return_value = mock_exec_result
+    async def fake_session_gen():
+        yield mock_session
+    repo = UserRepository(session=fake_session_gen)
+    result = await repo.get_all_by_role(1)
+    mock_session.exec.assert_called_once()
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0].user_id == 1
+    assert result[1].user_id == 3
+
+@pytest.mark.asyncio
+async def test_get_all_users_by_id_not_found_exception(mock_session):
+    """
+    @brief Verifies that UserRepository.get_all raises an exception when no users are found using a mock session.
+    @param mock_session AsyncMock session.
+    """
+
+    mock_exec_result = MagicMock()
+    mock_exec_result.all.return_value = []
+    mock_session.exec.return_value = mock_exec_result
+    async def fake_session_gen():
+        yield mock_session
+    repo = UserRepository(session=fake_session_gen)
+
+    with pytest.raises(Exception) as exc_info:
+        await repo.get_all_by_role(1)
+
+    mock_session.exec.assert_called_once()
+    assert exc_info.value.detail == "Users not found"
+
+@pytest.mark.asyncio
 async def test_user_by_id_not_found_exception(mock_session):
     """
     @brief Verifies that UserRepository.get_user_by_id raises an exception when the user is not found using a mock session.
@@ -644,3 +708,28 @@ async def test_update_last_used_user_not_found(user_repository, role_repository)
         await user_repository.update_last_used(999)
 
     assert exc_info.value.detail == "User not found"
+
+
+@pytest.mark.asyncio
+async def test_get_day_sessions_success(mock_session):
+    """
+    @brief Verifies that get_day_sessions returns the count of users logged today.
+    @param mock_session AsyncMock session.
+    """
+
+    mock_exec_result = MagicMock()
+    mock_exec_result.one.return_value = 5  
+
+    mock_session.exec.return_value = mock_exec_result
+
+    async def fake_session_gen():
+        yield mock_session
+
+    repo = UserRepository(session=fake_session_gen)
+
+    result = await repo.get_day_sessions()
+
+    mock_session.exec.assert_called_once()
+
+    assert isinstance(result, int)
+    assert result == 5

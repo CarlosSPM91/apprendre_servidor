@@ -1,3 +1,4 @@
+from sqlite3 import IntegrityError
 from unittest.mock import AsyncMock, MagicMock
 
 from fastapi import HTTPException
@@ -139,3 +140,24 @@ async def test_delete_intolerance_not_found(intolerance_repository, mock_session
     mock_session.exec.assert_awaited_once()
     mock_session.delete.assert_not_called()
     mock_session.commit.assert_not_called()
+
+@pytest.mark.asyncio
+async def test_get_all_food_intolerance_success(mock_session):
+    fake_items = [FoodIntolerance(id=1), FoodIntolerance(id=2)]
+    mock_exec_result = AsyncMock()
+    mock_exec_result = MagicMock()
+    mock_exec_result.all.return_value = fake_items
+    mock_session.exec = AsyncMock(return_value=mock_exec_result)
+
+
+
+    async def fake_session_gen():
+        yield mock_session
+    repo = FoodIntoleranceRepository(session=fake_session_gen)
+    result = await repo.get_all()
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0].id == 1
+    assert result[1].id == 2
+    mock_session.exec.assert_awaited_once()

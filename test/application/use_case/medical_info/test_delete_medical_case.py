@@ -1,11 +1,8 @@
 
 from unittest.mock import AsyncMock
 import pytest
-from src.application.use_case.allergy_info.delete_allergy_case import DeleteAllergyCase
-from src.application.use_case.allergy_info.find_allergy_case import FindAllergyCase
 from src.application.use_case.medical_info.delete_medical_case import DeleteMedicalCase
 from src.application.use_case.medical_info.find_medical_case import FindMedicalCase
-from src.infrastructure.repositories.allergy_info import AllergyRepository
 
 
 @pytest.fixture

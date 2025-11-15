@@ -1,10 +1,6 @@
-
-
 from unittest.mock import AsyncMock
 import pytest
 from src.application.use_case.medical_info.create_medical_case import CreateMedicalCase
-
-
 
 @pytest.fixture
 def repo():

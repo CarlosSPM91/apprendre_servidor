@@ -2,9 +2,7 @@
 from unittest.mock import AsyncMock
 import pytest
 from fastapi import HTTPException, status
-from src.application.use_case.allergy_info.find_allergy_case import FindAllergyCase
 from src.application.use_case.medical_info.find_medical_case import FindMedicalCase
-from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
 from src.infrastructure.entities.student_info.medical_info import MedicalInfo
 
 @pytest.fixture

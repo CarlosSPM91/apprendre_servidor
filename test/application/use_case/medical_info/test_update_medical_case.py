@@ -3,11 +3,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from src.application.use_case.allergy_info.update_allergy_case import UpdateAllergyCase
+
 from src.application.use_case.medical_info.update_medical_case import UpdateMedicalCase
-from src.infrastructure.entities.student_info.allergy_info import AllergyInfo
 from src.infrastructure.entities.student_info.medical_info import MedicalInfo
-from src.infrastructure.repositories.allergy_info import AllergyRepository
+
 
 
 @pytest.fixture

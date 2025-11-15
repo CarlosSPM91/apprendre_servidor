@@ -4,6 +4,9 @@
 @details This file contains integration tests for the AccessRepository, verifying correct creation and retrieval of access logs, including user and role setup.
 """
 
+from sqlite3 import IntegrityError
+from unittest.mock import AsyncMock, MagicMock
+from fastapi import HTTPException
 import pytest
 import pytest_asyncio
 from sqlmodel import SQLModel, text
@@ -20,6 +23,9 @@ from src.infrastructure.repositories.user import UserRepository
 
 DATABASE_URL = "postgresql+psycopg://root:Adm1n@0.0.0.0:5432/apprendre_test"
 
+@pytest.fixture
+def mock_session():
+    return MagicMock()
 
 @pytest_asyncio.fixture(scope="function")
 async def async_engine():
@@ -118,3 +124,24 @@ async def test_create_and_find_access_log(access_repository, role_repository, us
     assert result.user_id == 1
     assert result.username == "access"
     assert result.acces_date == access_log.acces_date
+
+@pytest.mark.asyncio
+async def test_get_all_access_logs_success(mock_session):
+    fake_logs = [AccessLog(id=1), AccessLog(id=2)]
+
+    mock_exec_result = MagicMock()
+    mock_exec_result.all.return_value = fake_logs
+    mock_session.exec = AsyncMock(return_value=mock_exec_result)
+
+
+    async def fake_session_gen():
+        yield mock_session
+    repo = AccessRepository(session=fake_session_gen)
+    result = await repo.get_all()
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0].id == 1
+    assert result[1].id == 2
+    mock_session.exec.assert_awaited_once()
+

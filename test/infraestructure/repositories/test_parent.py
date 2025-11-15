@@ -3,6 +3,7 @@ from fastapi import HTTPException
 import pytest
 
 from src.infrastructure.entities.users.parents import Parent
+from src.infrastructure.entities.users.user import User
 from src.infrastructure.repositories.parent import ParentRepository
 
 
@@ -106,3 +107,49 @@ async def test_get_parent_not_found(parent_repository, mock_session):
     assert exc_info.value.status_code == 404
     assert exc_info.value.detail == "Parent not found"
     mock_session.exec.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_get_all_parents_success():
+    fake_users = [
+        User(id=1, name="John", last_name="Doe", dni="123", phone="111", email="a@test.com", username="john", role_id=4),
+        User(id=2, name="Jane", last_name="Doe", dni="456", phone="222", email="b@test.com", username="jane", role_id=4),
+    ]
+    fake_parents = [
+        Parent(id=1, user_id=1, student_id=101),
+        Parent(id=2, user_id=1, student_id=102),
+        Parent(id=3, user_id=2, student_id=103),
+    ]
+
+    mock_session = AsyncMock()
+
+    async def exec_coroutine(statement, *args, **kwargs):
+        stmt_str = str(statement)
+        if "WHERE" in stmt_str and "role_id" in stmt_str:
+            mock_exec_users = MagicMock()
+            mock_exec_users.all.return_value = fake_users
+            return mock_exec_users
+        elif "FROM parents" in stmt_str:
+            mock_exec_parents = MagicMock()
+            mock_exec_parents.all.return_value = fake_parents
+            return mock_exec_parents
+        else:
+            raise ValueError("Unexpected statement")
+
+    mock_session.exec.side_effect = exec_coroutine
+
+    async def fake_session_gen():
+        yield mock_session
+
+    repo = ParentRepository(session=fake_session_gen)
+    result = await repo.get_all()
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+
+    assert result[0].user_id == 1
+    assert result[0].students == [101, 102]
+
+    assert result[1].user_id == 2
+    assert result[1].students == [103]
+
+    assert mock_session.exec.await_count == 2

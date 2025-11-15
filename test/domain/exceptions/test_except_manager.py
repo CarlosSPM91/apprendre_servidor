@@ -3,11 +3,14 @@ import pytest
 from fastapi import HTTPException, status
 from src.infrastructure.exceptions.except_manager import (
     manage_allergy_except,
+    manage_classes_except,
+    manage_course_except,
     manage_intolerance_except,
     manage_medical_except,
     manage_parent_except,
     manage_role_except,
     manage_student_except,
+    manage_teacher_except,
     manage_user_except,
     manage_auth_except,
 )
@@ -348,3 +351,135 @@ def test_manage_intolerance_except_default():
         manage_intolerance_except(exc)
     assert e.value.status_code == 500
     assert "Unexpected" in str(e.value.detail)
+
+
+@pytest.mark.parametrize(
+    "exc, expected_status, expected_message",
+    [
+        (
+            HTTPException(status_code=status.HTTP_409_CONFLICT, detail=""),
+            status.HTTP_409_CONFLICT,
+            "Teacher already exist",
+        ),
+        (
+            HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=""),
+            status.HTTP_404_NOT_FOUND,
+            "Teacher not found",
+        ),
+        (
+            HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=""),
+            status.HTTP_401_UNAUTHORIZED,
+            "Unauthorizad. Invalid Token or Expired",
+        ),
+    ],
+)
+def test_manage_teacher_info_except(
+    exc: HTTPException,
+    expected_status: Literal[409] | Literal[404] | Literal[401],
+    expected_message: (
+        Literal["Teacher already exist"]
+        | Literal["Teacher not found"]
+        | Literal["Unauthorizad. Invalid Token or Expired"]
+    ),
+):
+    with pytest.raises(HTTPException) as e:
+        manage_teacher_except(exc)
+    assert e.value.status_code == expected_status
+    assert expected_message in str(e.value.detail)
+
+
+def test_manage_teacher_info_except_default():
+    exc = HTTPException(status_code=999, detail="Unexpected")
+    with pytest.raises(HTTPException) as e:
+        manage_teacher_except(exc)
+    assert e.value.status_code == 500
+    assert "Unexpected" in str(e.value.detail)
+
+import pytest
+from fastapi import HTTPException, status
+from typing import Literal
+
+@pytest.mark.parametrize(
+    "exc, expected_status, expected_message",
+    [
+        (
+            HTTPException(status_code=status.HTTP_409_CONFLICT, detail=""),
+            status.HTTP_409_CONFLICT,
+            "Course already exist",
+        ),
+        (
+            HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=""),
+            status.HTTP_404_NOT_FOUND,
+            "Course not found",
+        ),
+        (
+            HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=""),
+            status.HTTP_401_UNAUTHORIZED,
+            "Unauthorizad. Invalid Token or Expired",
+        ),
+    ],
+)
+def test_manage_course_except(
+    exc: HTTPException,
+    expected_status: Literal[409] | Literal[404] | Literal[401],
+    expected_message: (
+        Literal["Course already exist"]
+        | Literal["Course not found"]
+        | Literal["Unauthorizad. Invalid Token or Expired"]
+    ),
+):
+    with pytest.raises(HTTPException) as e:
+        manage_course_except(exc)
+    assert e.value.status_code == expected_status
+    assert expected_message in str(e.value.detail)
+
+
+def test_manage_course_except_default():
+    exc = HTTPException(status_code=999, detail="Unexpected Error")
+    with pytest.raises(HTTPException) as e:
+        manage_course_except(exc)
+    assert e.value.status_code == 500
+    assert "Unexpected Error" in str(e.value.detail)
+
+
+@pytest.mark.parametrize(
+    "exc, expected_status, expected_message",
+    [
+        (
+            HTTPException(status_code=status.HTTP_409_CONFLICT, detail=""),
+            status.HTTP_409_CONFLICT,
+            "Classes already exist",
+        ),
+        (
+            HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=""),
+            status.HTTP_404_NOT_FOUND,
+            "Classes not found",
+        ),
+        (
+            HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=""),
+            status.HTTP_401_UNAUTHORIZED,
+            "Unauthorizad. Invalid Token or Expired",
+        ),
+    ],
+)
+def test_manage_classes_except(
+    exc: HTTPException,
+    expected_status: Literal[409] | Literal[404] | Literal[401],
+    expected_message: (
+        Literal["Classes already exist"]
+        | Literal["Classes not found"]
+        | Literal["Unauthorizad. Invalid Token or Expired"]
+    ),
+):
+    with pytest.raises(HTTPException) as e:
+        manage_classes_except(exc)
+    assert e.value.status_code == expected_status
+    assert expected_message in str(e.value.detail)
+
+
+def test_manage_classes_except_default():
+    exc = HTTPException(status_code=999, detail="Unexpected Classes Error")
+    with pytest.raises(HTTPException) as e:
+        manage_classes_except(exc)
+    assert e.value.status_code == 500
+    assert "Unexpected Classes Error" in str(e.value.detail)

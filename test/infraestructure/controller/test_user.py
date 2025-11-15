@@ -212,3 +212,78 @@ async def test_get_user_exception(user_controller, find_case):
         await user_controller.get_user("1")
         mock_sentry.assert_called_once()
         mock_manager.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_get_all_by_role_success(user_controller, find_case, fake_user):
+    role_id = 2
+    find_case.get_all_by_role = AsyncMock(return_value=[fake_user])
+
+    resp = await user_controller.get_all_by_role(role_id=role_id)
+
+    assert resp["status"] == "success"
+    assert len(resp["data"]) == 1
+    assert resp["data"][0].username == "test"
+    find_case.get_all_by_role.assert_awaited_once_with(role_id=role_id)
+
+
+
+@pytest.mark.asyncio
+async def test_get_all_by_role_exception(user_controller, find_case):
+    role_id = 2
+    find_case.get_all_by_role.side_effect = HTTPException(status_code=404, detail="Not found")
+
+    with (
+        patch("src.infrastructure.controllers.user.sentry_sdk.capture_exception") as mock_sentry,
+        patch("src.infrastructure.controllers.user.manage_user_except") as mock_manager,
+    ):
+        await user_controller.get_all_by_role(role_id=role_id)
+        mock_sentry.assert_called_once()
+        mock_manager.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_get_access_logs_success(user_controller, find_case, fake_user):
+    fake_logs = [{"id": 1, "user_id": 1}, {"id": 2, "user_id": 2}]
+    find_case.get_access_logs.return_value = fake_logs
+
+    resp = await user_controller.get_access_logs()
+
+    assert resp["status"] == "success"
+    assert len(resp["data"]) == 2
+    assert resp["data"][0]["user_id"] == 1
+    find_case.get_access_logs.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_get_access_logs_exception(user_controller, find_case):
+    find_case.get_access_logs.side_effect = HTTPException(status_code=500, detail="Error")
+
+    with (
+        patch("src.infrastructure.controllers.user.sentry_sdk.capture_exception") as mock_sentry,
+        patch("src.infrastructure.controllers.user.manage_user_except") as mock_manager,
+    ):
+        await user_controller.get_access_logs()
+        mock_sentry.assert_called_once()
+        mock_manager.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_get_sessions_success(user_controller, find_case):
+    find_case.get_day_sessions.return_value = 5
+
+    resp = await user_controller.get_sessions()
+
+    assert resp["status"] == "success"
+    assert resp["data"]["total_sessions"] == 5
+    find_case.get_day_sessions.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_get_sessions_exception(user_controller, find_case):
+    find_case.get_day_sessions.side_effect = HTTPException(status_code=500, detail="Error")
+
+    with (
+        patch("src.infrastructure.controllers.user.sentry_sdk.capture_exception") as mock_sentry,
+        patch("src.infrastructure.controllers.user.manage_user_except") as mock_manager,
+    ):
+        await user_controller.get_sessions()
+        mock_sentry.assert_called_once()
+        mock_manager.assert_called_once()

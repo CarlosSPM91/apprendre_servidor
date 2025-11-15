@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
-from src.application.use_case.parent.find_parent_case import FindParentCase
+
+from fastapi import HTTPException, status
 from src.domain.objects.common.common_resp import CommonResponse
 from src.infrastructure.repositories.parent import ParentRepository
 
@@ -13,6 +14,11 @@ class DeleteParentCase:
 
     async def delete(self, user_id: int, student_id: int) -> bool:
         parent = await self.repo.get(user_id)
+        if not parent:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Parent not found"
+            )
         await self.repo.delete(user_id=user_id, student_id=student_id)
         return CommonResponse(
             item_id=user_id,
