@@ -118,7 +118,7 @@ async def test_get_food_intolerance(
 ):
     find_case.get_intolerance.return_value = fake_intolerance
 
-    response = await food_controller.get_intolerance(intolernce_id=1)
+    response = await food_controller.get_intolerance(intolerance_id=1)
 
     assert response["data"] == fake_intolerance
     find_case.get_intolerance.assert_awaited_once_with(1)
@@ -131,7 +131,7 @@ async def test_get_food_intolerance_not_found(
     find_case.get_intolerance.side_effect = HTTPException(status_code=404, detail="Not Found")
 
     with pytest.raises(HTTPException):
-        await food_controller.get_intolerance(intolernce_id=999)
+        await food_controller.get_intolerance(intolerance_id=999)
 
     find_case.get_intolerance.assert_awaited_once_with(999)
 
