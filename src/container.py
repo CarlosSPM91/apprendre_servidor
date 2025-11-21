@@ -17,6 +17,10 @@ from src.application.use_case.allergy_info.find_allergy_case import FindAllergyC
 from src.application.use_case.allergy_info.update_allergy_case import UpdateAllergyCase
 from src.application.use_case.auth.login_use_case import LoginUseCase
 from src.application.use_case.auth.logout_use_case import LogoutUseCase
+from src.application.use_case.calendar.create_calendar_activity_case import CreateCalendarActivityCase
+from src.application.use_case.calendar.delete_calendar_activity_case import DeleteCalendarActivityCase
+from src.application.use_case.calendar.find_calendar_activity_case import FindCalendarActivityCase
+from src.application.use_case.calendar.update_calendar_activity_case import UpdateCalendarActivityCase
 from src.application.use_case.classes.create_classes_case import CreateClassesCase
 from src.application.use_case.classes.delete_classes_case import DeleteClassesCase
 from src.application.use_case.classes.find_classes_case import FindClassesCase
@@ -63,6 +67,7 @@ from src.infrastructure.connection.db import get_engine, get_session
 from src.infrastructure.connection.redis import get_redis_client, get_redis_session
 from src.infrastructure.controllers.allergy_info import AllergyController
 from src.infrastructure.controllers.auth import AuthController
+from src.infrastructure.controllers.calendar_activity import CalendarController
 from src.infrastructure.controllers.classes import ClassesController
 from src.infrastructure.controllers.course import CourseController
 from src.infrastructure.controllers.food_intolrance import FoodIntoleranceController
@@ -79,6 +84,7 @@ from src.infrastructure.entities.course.subject_class import SubjectClass
 from src.infrastructure.repositories.acces_logs import AccessRepository
 from src.infrastructure.repositories.activity_type import ActivityTypeRepository
 from src.infrastructure.repositories.allergy_info import AllergyRepository
+from src.infrastructure.repositories.calendary_activity import CalendarActivityRepository
 from src.infrastructure.repositories.classes import ClassesRepository
 from src.infrastructure.repositories.course import CourseRepository
 from src.infrastructure.repositories.deletion_logs import DeletionRepository
@@ -156,6 +162,9 @@ class Container(containers.DeclarativeContainer):
     )
     subject_activity_score_repository = providers.Factory(
         SubjectActivityScoreRepository, session=session.provider
+    )
+    calendar_activity_repository = providers.Factory(
+        CalendarActivityRepository, session=session.provider
     )
 
     find_user_case = providers.Factory(FindUserCase, repo=user_repository, repo_access_logs= access_repository)
@@ -283,6 +292,15 @@ class Container(containers.DeclarativeContainer):
         find_case=find_classes_case,
     )
 
+    find_calendar_case = providers.Factory(FindCalendarActivityCase, repo=calendar_activity_repository)
+    create_calendar_case = providers.Factory(CreateCalendarActivityCase, repo=calendar_activity_repository)
+    update_calendar_case = providers.Factory(UpdateCalendarActivityCase, repo=calendar_activity_repository)
+    delete_calendar_case = providers.Factory(
+        DeleteCalendarActivityCase,
+        repo=calendar_activity_repository,
+        find_case=find_calendar_case,
+    )
+
     # Controllers
     user_controller = providers.Factory(
         UserController,
@@ -360,6 +378,14 @@ class Container(containers.DeclarativeContainer):
         create_case=create_classes_case,
         update_case=update_classes_case,
         delete_case=delete_classes_Case,
+    )
+
+    calendar_controller = providers.Factory(
+        CalendarController,
+        find_case=find_calendar_case,
+        create_case=create_calendar_case,
+        update_case=update_calendar_case,
+        delete_case=delete_calendar_case,
     )
 
     auth_controller = providers.Factory(

@@ -12,10 +12,7 @@ from datetime import datetime
 from typing import List, Optional
 from sqlmodel import Relationship, SQLModel, Field
 
-from src.infrastructure.entities.course.activity_type import ActivityType
-from src.infrastructure.entities.course.class_common_activity import ClassCommonActivity
-from src.infrastructure.entities.course.course import Course
-from src.infrastructure.entities.course.student_class import StudentClass
+
 
 class CalendarActivity(SQLModel, table=True):
     __tablename__ = "calendar_activities"
