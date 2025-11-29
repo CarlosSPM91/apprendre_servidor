@@ -49,9 +49,15 @@ class CourseRepository:
                 await session.exec(select(Course).where(Course.id == course_upt.id))
             ).first()
 
+            if course is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Course not found",
+                )
+               
             if course:
                 for field, value in course_upt.model_dump(exclude_unset=True).items():
-                    if field != "id" or field != "year":
+                    if field != "id":
                         setattr(course, field, value)
 
                 try:

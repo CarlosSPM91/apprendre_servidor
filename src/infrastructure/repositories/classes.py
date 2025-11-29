@@ -42,7 +42,7 @@ class ClassesRepository:
             ).first()
             if not classes:
                 raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail="Class not found"
+                    status_code=status.HTTP_404_NOT_FOUND, detail="Classes not found"
                 )
 
             subjects = (
@@ -62,15 +62,21 @@ class ClassesRepository:
     async def update(self, classes_upt: Classes) -> Optional[Classes]:
         async for session in self.session():
             classes: Classes = (
-                await session.exec(select(Classes).where(Classes.id == classes.id))
+                await session.exec(select(Classes).where(Classes.id == classes_upt.id))
             ).first()
 
+            if classes is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Classes not found",
+                ) 
+
             if classes:
+                if classes_upt.course_id is not None:
+                    classes.course_id = classes_upt.course_id
+
                 if classes_upt.tutor_id is not None:
                     classes.tutor_id = classes_upt.tutor_id
-
-                if classes_upt.student_class_id is not None:
-                    classes.student_class_id = classes_upt.student_class_id
 
                 if classes_upt.name is not None:
                     classes.name = classes_upt.name
@@ -98,6 +104,11 @@ class ClassesRepository:
                 )
             ).first()
 
+            if classes is None:
+                raise HTTPException(
+                status_code=404,
+                detail="Class not found",
+            )
             try:
                 if classes:
                     await session.exec(
@@ -127,7 +138,6 @@ class ClassesRepository:
                         id=classes.id,
                         course_id=classes.course_id,
                         name=classes.name,
-                        student_class_id=classes.student_class_id,
                         tutor_id=classes.tutor_id,
                         subjects=[subject.subject_id for subject in subjects],
                     )
