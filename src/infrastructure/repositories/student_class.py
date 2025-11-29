@@ -18,7 +18,7 @@ class StudentClassRepository:
             async for session in self.session():
                 session.add(student_class)
                 await session.commit()
-                await session.refreash(student_class)
+                await session.refresh(student_class)
                 return student_class
 
         except IntegrityError:
@@ -28,10 +28,10 @@ class StudentClassRepository:
                 detail="Something wrong on server",
             )
 
-    async def get_all(self, student_class_id:int) -> List[StudentClass]:
+    async def get_all(self, class_id:int) -> List[StudentClass]:
         async for session in self.session():
             student_class: List[StudentClass] = (
-                await session.exec(select(StudentClass).where(StudentClass.class_id == student_class_id))
+                await session.exec(select(StudentClass).where(StudentClass.class_id == class_id))
             ).all()
             if not student_class:
                 return []
@@ -51,16 +51,22 @@ class StudentClassRepository:
                 )
             return student_class
 
-    async def update_points(self, class_id:int, student_id:int, points:int) -> Optional[StudentClass]:
+    async def update_points(self, payload: StudentClass) -> Optional[StudentClass]:
         async for session in self.session():
             student_class: StudentClass = (
                 await session.exec(
-                    select(StudentClass).where(StudentClass.class_id == class_id).where(StudentClass.student_id == student_id)
+                    select(StudentClass).where(StudentClass.class_id == payload.class_id).where(StudentClass.student_id == payload.student_id)
                 )
             ).first()
-
+            
+            if student_class is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Student Class not found",
+                )
+        
             if student_class:
-                student_class.points +=points
+                student_class.points +=payload.points
 
                 try:
                     session.add(student_class)

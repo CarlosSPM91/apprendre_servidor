@@ -10,8 +10,8 @@ class UpdateStudentClassCase:
     def __init__(self,repo: StudentClassRepository):
         self.repo = repo
 
-    async def update(self, payload: StudentClass) -> CommonResponse:
-        student_class = await self.repo.update(payload)
+    async def update_points(self, payload: StudentClass) -> CommonResponse:
+        student_class = await self.repo.update_points(payload)
         if student_class:
             return CommonResponse(
                 item_id=student_class.id,

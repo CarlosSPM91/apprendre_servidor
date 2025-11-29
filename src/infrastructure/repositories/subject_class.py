@@ -17,7 +17,7 @@ class SubjectClassRepository:
             async for session in self.session():
                 session.add(subject_class)
                 await session.commit()
-                await session.refreash(subject_class)
+                await session.refresh(subject_class)
                 return subject_class
 
         except IntegrityError:

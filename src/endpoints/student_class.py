@@ -5,7 +5,7 @@ from src.container import Container
 
 from src.domain.objects.token.jwtPayload import JwtPayload
 from src.infrastructure.controllers.student_class import StudentClassController
-from src.infrastructure.entities.course.school_subject import SchoolSubject
+from src.infrastructure.entities.course.student_class import StudentClass
 from src.middleware.token.authenticateToken import get_current_user
 
 
@@ -51,7 +51,7 @@ async def find(
 )
 @inject
 async def create(
-    payload: SchoolSubject,
+    payload: StudentClass,
     current_user: JwtPayload = Depends(get_current_user),
     controller: StudentClassController = Depends(Provide[Container.student_class_controller]),
 ):
@@ -61,17 +61,17 @@ async def create(
 @router.put(
     "/",
     status_code=status.HTTP_200_OK,
-    name="update",
-    summary="Update an existing student class",
+    name="update-points",
+    summary="Update points of student ",
     response_description="Returns the updated student class",
 )
 @inject
 async def update(
-    payload: SchoolSubject,
+    payload: StudentClass,
     current_user: JwtPayload = Depends(get_current_user),
     controller: StudentClassController = Depends(Provide[Container.student_class_controller]),
 ):
-    return await controller.update(payload)
+    return await controller.update_points(payload)
 
 
 @router.delete(

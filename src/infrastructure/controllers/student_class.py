@@ -35,7 +35,7 @@ class StudentClassController:
             sentry_sdk.capture_exception(e)
             manage_student_class_except(e)
 
-    async def update(self, payload: StudentClass):
+    async def update_points(self, payload: StudentClass):
         try:
             await self.find_case.get(payload.id)
             resp = await self.update_case.update(payload)
