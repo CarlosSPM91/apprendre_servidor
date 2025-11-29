@@ -1,5 +1,5 @@
 """
-Role Entity.
+School Subject Entity.
 
 Represents the role table in the database. Each role can be
 associated with multiple users.

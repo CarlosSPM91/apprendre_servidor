@@ -269,3 +269,72 @@ def manage_calendar_except(e: HTTPException):
     raise HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
     )
+
+def manage_school_subject_except(e: HTTPException):
+    if e.status_code == status.HTTP_409_CONFLICT:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={"status": "error", "message": "School Subject already exist"},
+        )
+    if e.status_code == status.HTTP_404_NOT_FOUND:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"status": "error", "message": "School Subject not found"},
+        )
+    if e.status_code == status.HTTP_401_UNAUTHORIZED:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "status": "error",
+                "message": "Unauthorizad. Invalid Token or Expired",
+            },
+        )
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+    )
+
+def manage_student_class_except(e: HTTPException):
+    if e.status_code == status.HTTP_409_CONFLICT:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={"status": "error", "message": "Student Class already exist"},
+        )
+    if e.status_code == status.HTTP_404_NOT_FOUND:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"status": "error", "message": "Student Class not found"},
+        )
+    if e.status_code == status.HTTP_401_UNAUTHORIZED:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "status": "error",
+                "message": "Unauthorizad. Invalid Token or Expired",
+            },
+        )
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+    )
+
+def manage_subject_class_except(e: HTTPException):
+    if e.status_code == status.HTTP_409_CONFLICT:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={"status": "error", "message": "Subject Class already exist"},
+        )
+    if e.status_code == status.HTTP_404_NOT_FOUND:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"status": "error", "message": "Subject Class not found"},
+        )
+    if e.status_code == status.HTTP_401_UNAUTHORIZED:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "status": "error",
+                "message": "Unauthorizad. Invalid Token or Expired",
+            },
+        )
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+    )

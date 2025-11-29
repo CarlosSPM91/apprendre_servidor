@@ -52,10 +52,22 @@ from src.application.use_case.role.create_role_case import CreateRoleCase
 from src.application.use_case.role.delete_role_case import DeleteRoleCase
 from src.application.use_case.role.find_role_case import FindRoleCase
 from src.application.use_case.role.update_role_case import UpdateRoleCase
+from src.application.use_case.school_subject.create_school_subject_case import CreateSchoolSubjectCase
+from src.application.use_case.school_subject.delete_school_subject_case import DeleteSchoolSubjectCase
+from src.application.use_case.school_subject.find_school_subject_case import FindSchoolSubjectCase
+from src.application.use_case.school_subject.update_school_subject_case import UpdateSchoolSubjectCase
 from src.application.use_case.student.create_student_case import CreateStudenCase
 from src.application.use_case.student.delete_student_case import DeleteStudentCase
 from src.application.use_case.student.find_student_case import FindStudentCase
 from src.application.use_case.student.update_student_case import UpdateStudentCase
+from src.application.use_case.student_class.create_student_class_case import CreateStudentClassCase
+from src.application.use_case.student_class.delete_student_class_case import DeleteStudentClassCase
+from src.application.use_case.student_class.find_student_class_case import FindStudentClassCase
+from src.application.use_case.student_class.update_student_class_case import UpdateStudentClassCase
+from src.application.use_case.subject_class.create_subject_class_case import CreateSubjectClassCase
+from src.application.use_case.subject_class.delete_subject_class_case import DeleteSubjectClassCase
+from src.application.use_case.subject_class.find_subject_class_case import FindSubjectClassCase
+from src.application.use_case.subject_class.update_subject_class_case import UpdateSubjectClassCase
 from src.application.use_case.teacher.create_teacher_case import CreateTeacherCase
 from src.application.use_case.teacher.delete_teacher_case import DeleteTeacherCase
 from src.application.use_case.teacher.find_teacher_case import FindTeacherCase
@@ -74,7 +86,10 @@ from src.infrastructure.controllers.food_intolrance import FoodIntoleranceContro
 from src.infrastructure.controllers.medical_info import MedicalInfoController
 from src.infrastructure.controllers.parent import ParentController
 from src.infrastructure.controllers.role import RoleController
+from src.infrastructure.controllers.school_subject import SchoolSubjectController
 from src.infrastructure.controllers.student import StudentController
+from src.infrastructure.controllers.student_class import StudentClassController
+from src.infrastructure.controllers.subject_class import SubjectClassController
 from src.infrastructure.controllers.teacher import TeacherController
 from src.infrastructure.controllers.user import UserController
 from src.infrastructure.entities.course.activity_type import ActivityType
@@ -301,6 +316,33 @@ class Container(containers.DeclarativeContainer):
         find_case=find_calendar_case,
     )
 
+    find_school_subject_case = providers.Factory(FindSchoolSubjectCase, repo=school_subject_repository)
+    create_school_subject_case = providers.Factory(CreateSchoolSubjectCase, repo=school_subject_repository)
+    update_school_subject_case = providers.Factory(UpdateSchoolSubjectCase, repo=school_subject_repository)
+    delete_school_subject_case = providers.Factory(
+        DeleteSchoolSubjectCase,
+        repo=school_subject_repository,
+        find_case=find_school_subject_case,
+    )
+
+    find_student_class_case = providers.Factory(FindStudentClassCase, repo=subject_class_repository)
+    create_student_class_case = providers.Factory(CreateStudentClassCase, repo=subject_class_repository)
+    update_student_class_case = providers.Factory(UpdateStudentClassCase, repo=subject_class_repository)
+    delete_student_class_case = providers.Factory(
+        DeleteStudentClassCase,
+        repo=subject_class_repository,
+        find_case=find_student_class_case,
+    )
+    
+    find_subject_class_case = providers.Factory(FindSubjectClassCase, repo=subject_class_repository)
+    create_subject_class_case = providers.Factory(CreateSubjectClassCase, repo=subject_class_repository)
+    update_subject_class_case = providers.Factory(UpdateSubjectClassCase, repo=subject_class_repository)
+    delete_subject_class_case = providers.Factory(
+        DeleteSubjectClassCase,
+        repo=subject_class_repository,
+        find_case=find_subject_class_case,
+    )
+
     # Controllers
     user_controller = providers.Factory(
         UserController,
@@ -386,6 +428,30 @@ class Container(containers.DeclarativeContainer):
         create_case=create_calendar_case,
         update_case=update_calendar_case,
         delete_case=delete_calendar_case,
+    )
+
+    school_subject_controller = providers.Factory(
+        SchoolSubjectController,
+        find_case=find_school_subject_case,
+        create_case=create_school_subject_case,
+        update_case=update_school_subject_case,
+        delete_case=delete_school_subject_case,
+    )
+
+    student_class_controller = providers.Factory(
+        StudentClassController,
+        find_case=find_student_class_case,
+        create_case=create_student_class_case,
+        update_case=update_student_class_case,
+        delete_case=delete_student_class_case,
+    )
+
+    subject_class_controller = providers.Factory(
+        SubjectClassController,
+        find_case=find_school_subject_case,
+        create_case=create_school_subject_case,
+        update_case=update_school_subject_case,
+        delete_case=delete_school_subject_case,
     )
 
     auth_controller = providers.Factory(

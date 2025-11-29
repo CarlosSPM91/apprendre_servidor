@@ -55,7 +55,6 @@ class ClassesRepository:
                 id=classes.id,
                 course_id=classes.course_id,
                 name=classes.name,
-                student_class_id=classes.student_class_id,
                 tutor_id=classes.tutor_id,
                 subjects=[subject.subject_id for subject in subjects],
             )

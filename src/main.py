@@ -23,6 +23,9 @@ from src.endpoints.teacher import router as teacher_router
 from src.endpoints.course import router as course_router
 from src.endpoints.classes import router as classes_router
 from src.endpoints.calendar_activity import router as calendar_router
+from src.endpoints.school_subject import router as school_subject_router
+from src.endpoints.student_class import router as student_class_router
+from src.endpoints.subject_class import router as subject_class_router
 from src.settings import settings
 from .infrastructure.connection.db import async_init_db
 from .container import Container
@@ -86,6 +89,9 @@ app.include_router(teacher_router)
 app.include_router(classes_router)
 app.include_router(course_router)
 app.include_router(calendar_router)
+app.include_router(school_subject_router)
+app.include_router(student_class_router)
+app.include_router(subject_class_router)
 
 container.wire(
     modules=[
@@ -101,6 +107,9 @@ container.wire(
         "src.endpoints.course",
         "src.endpoints.classes",
         "src.endpoints.calendar_activity",
+        "src.endpoints.school_subject",
+        "src.endpoints.student_class",
+        "src.endpoints.subject_class",
         "src.middleware.token.authenticateToken",
     ]
 )
