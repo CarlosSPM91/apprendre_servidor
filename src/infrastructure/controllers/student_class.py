@@ -83,7 +83,7 @@ class StudentClassController:
         """
         try:
             await self.find_case.get(payload.id)
-            resp = await self.update_case.update(payload)
+            resp = await self.update_case.update_points(payload)
             return {
                 "status": "success",
                 "data": {
