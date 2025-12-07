@@ -54,8 +54,8 @@ class ClassesController:
     
     async def update_subjects(self, payload: UpdateClassSubjectsDTO):
         try:
-            await self.find_case.get(payload.id)
-            resp = await self.update_case.update(payload)
+            await self.find_case.get(payload.class_id)
+            resp = await self.update_case.update_subjects(payload)
             return {
                 "status": "success",
                 "data": {

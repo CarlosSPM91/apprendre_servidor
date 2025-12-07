@@ -92,10 +92,6 @@ from src.infrastructure.controllers.student_class import StudentClassController
 from src.infrastructure.controllers.subject_class import SubjectClassController
 from src.infrastructure.controllers.teacher import TeacherController
 from src.infrastructure.controllers.user import UserController
-from src.infrastructure.entities.course.activity_type import ActivityType
-from src.infrastructure.entities.course.school_subject import SchoolSubject
-from src.infrastructure.entities.course.subject_activity import SubjectActivity
-from src.infrastructure.entities.course.subject_class import SubjectClass
 from src.infrastructure.repositories.acces_logs import AccessRepository
 from src.infrastructure.repositories.activity_type import ActivityTypeRepository
 from src.infrastructure.repositories.allergy_info import AllergyRepository
@@ -110,10 +106,6 @@ from src.infrastructure.repositories.role import RoleRepository
 from src.infrastructure.repositories.school_subject import SchoolSubjectRepository
 from src.infrastructure.repositories.student import StudentRepository
 from src.infrastructure.repositories.student_class import StudentClassRepository
-from src.infrastructure.repositories.subject_activities import SubjectActivityRepository
-from src.infrastructure.repositories.subject_activity_score import (
-    SubjectActivityScoreRepository,
-)
 from src.infrastructure.repositories.subject_class import SubjectClassRepository
 from src.infrastructure.repositories.teacher import TeacherRepository
 from src.infrastructure.repositories.user import UserRepository
@@ -172,12 +164,7 @@ class Container(containers.DeclarativeContainer):
     student_class_repository = providers.Factory(
         StudentClassRepository, session=session.provider
     )
-    subject_activity_repository = providers.Factory(
-        SubjectActivityRepository, session=session.provider
-    )
-    subject_activity_score_repository = providers.Factory(
-        SubjectActivityScoreRepository, session=session.provider
-    )
+
     calendar_activity_repository = providers.Factory(
         CalendarActivityRepository, session=session.provider
     )

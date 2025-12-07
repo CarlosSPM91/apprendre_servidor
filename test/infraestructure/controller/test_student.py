@@ -179,5 +179,31 @@ async def test_get_student_full_info_exception(student_controller, find_case):
     find_case.get_student_full_info.assert_awaited_once_with(student_id=999)
     find_case.delete.assert_not_awaited()
 
+@pytest.mark.asyncio
+async def test_get_all_students_success(student_controller, find_case, fake_student):
+    # Arrange
+    find_case.get_all.return_value = [fake_student]
+
+    # Act
+    resp = await student_controller.get_all()
+
+    # Assert
+    assert resp["status"] == "success"
+    assert len(resp["data"]) == 1
+    assert resp["data"][0].username == fake_student.username
+    find_case.get_all.assert_awaited_once()
 
 
+@pytest.mark.asyncio
+async def test_get_all_students_success(student_controller, find_case):
+    fake_student = MagicMock()
+    fake_student.username = "testuser"
+
+    find_case.get_all.return_value = [fake_student]
+
+    response = await student_controller.get_all()
+
+    assert response["status"] == "success"
+    assert len(response["data"]) == 1
+    assert response["data"][0].username == "testuser"
+    find_case.get_all.assert_awaited_once()
