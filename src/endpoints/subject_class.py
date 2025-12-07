@@ -5,6 +5,7 @@ from src.container import Container
 from src.domain.objects.token.jwtPayload import JwtPayload
 from src.infrastructure.controllers.subject_class import SubjectClassController
 from src.infrastructure.entities.course.school_subject import SchoolSubject
+from src.infrastructure.entities.course.subject_class import SubjectClass
 from src.middleware.token.authenticateToken import get_current_user
 
 router = APIRouter(prefix="/subject_classes", tags=["subject_classes"])
@@ -67,14 +68,14 @@ async def find(
 )
 @inject
 async def create(
-    payload: SchoolSubject,
+    payload: SubjectClass,
     current_user: JwtPayload = Depends(get_current_user),
     controller: SubjectClassController = Depends(Provide[Container.subject_class_controller]),
 ):
     """Create a new subject class in the system.
 
     Args:
-        payload (SchoolSubject): Payload containing subject class data.
+        payload (SubjectClass): Payload containing subject class data.
         current_user (JwtPayload): Authenticated user's JWT payload.
         controller (SubjectClassController): Controller handling subject class operations.
 
@@ -93,14 +94,14 @@ async def create(
 )
 @inject
 async def update(
-    payload: SchoolSubject,
+    payload: SubjectClass,
     current_user: JwtPayload = Depends(get_current_user),
     controller: SubjectClassController = Depends(Provide[Container.subject_class_controller]),
 ):
     """Update an existing subject class.
 
     Args:
-        payload (SchoolSubject): Payload containing updated subject class data.
+        payload (SubjectClass): Payload containing updated subject class data.
         current_user (JwtPayload): Authenticated user's JWT payload.
         controller (SubjectClassController): Controller handling subject class operations.
 
