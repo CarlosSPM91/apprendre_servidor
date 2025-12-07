@@ -435,10 +435,10 @@ class Container(containers.DeclarativeContainer):
 
     subject_class_controller = providers.Factory(
         SubjectClassController,
-        find_case=find_school_subject_case,
-        create_case=create_school_subject_case,
-        update_case=update_school_subject_case,
-        delete_case=delete_school_subject_case,
+        find_case=find_subject_class_case,
+        create_case=create_subject_class_case,
+        update_case=update_subject_class_case,
+        delete_case=delete_subject_class_case,
     )
 
     auth_controller = providers.Factory(
