@@ -1,5 +1,3 @@
-
-
 from sqlalchemy.exc import IntegrityError
 from typing import Callable, List, Optional
 
@@ -7,20 +5,48 @@ from fastapi import HTTPException, status
 from sqlmodel import select
 from src.infrastructure.entities.course.activity_type import ActivityType
 
+"""
+ActivityType Repository.
+
+Implements data access methods for the ActivityType entity.
+
+:author: Carlos S. Paredes Morillo
+"""
 
 class ActivityTypeRepository:
+    """Repository for managing ActivityType persistence.
 
+    Provides CRUD operations for interacting with the ActivityType entity.
+
+    :author: Carlos S. Paredes Morillo
+    """
     def __init__(self, session: Callable):
+        """Initialize the repository with a session factory.
+
+        Args:
+            session (Callable): A callable that returns an async database session.
+        """
         self.session = session
 
     async def create(self, activity_name: str) -> ActivityType:
+        """Create a new activity type.
+
+        Args:
+            activity_name (str): The name of the activity type.
+
+        Returns:
+            ActivityType: The created activity type entity.
+
+        Raises:
+            HTTPException: If a database integrity error occurs.
+        """
         async for session in self.session():
-            types = ActivityType(role_name=activity_name)
+            new_type = ActivityType(activity_name=activity_name)
             try:
-                session.add(types)
+                session.add(new_type)
                 await session.commit()
-                await session.refresh(types)
-                return types
+                await session.refresh(new_type)
+                return new_type
             except IntegrityError:
                 await session.rollback()
                 raise HTTPException(
@@ -29,49 +55,77 @@ class ActivityTypeRepository:
                 )
 
     async def get_all(self) -> List[ActivityType]:
+        """Retrieve all activity types.
+
+        Returns:
+            List[ActivityType]: A list of activity type entities. Returns an empty list if none exist.
+
+        Raises:
+            HTTPException: If a database error occurs.
+        """
         async for session in self.session():
             types: List[ActivityType] = (await session.exec(select(ActivityType))).all()
-            if not types:
-                return []
-            return types
+            return types or []
 
     async def find_by_id(self, activity_id: int) -> Optional[ActivityType]:
+        """Find an activity type by ID.
+
+        Args:
+            activity_id (int): The ID of the activity type.
+
+        Returns:
+            Optional[ActivityType]: The found activity type, or None if not found.
+        """
         async for session in self.session():
-            type: ActivityType = (
+            return (
                 await session.exec(
                     select(ActivityType).where(ActivityType.id == activity_id)
                 )
             ).first()
-            return type
 
     async def find_by_name(self, activity_name: str) -> Optional[ActivityType]:
+        """Find an activity type by name.
+
+        Args:
+            activity_name (str): The name of the activity type.
+
+        Returns:
+            Optional[ActivityType]: The found activity type, or None if not found.
+        """
         async for session in self.session():
-            type: ActivityType = (
+            return (
                 await session.exec(
-                    select(ActivityType).where(
-                        ActivityType.activity_name == activity_name
-                    )
+                    select(ActivityType).where(ActivityType.activity_name == activity_name)
                 )
             ).first()
-            return type
 
     async def update(self, type_upt: ActivityType) -> Optional[ActivityType]:
+        """Update an activity type's details.
+
+        Args:
+            type_upt (ActivityType): ActivityType entity with updated fields.
+
+        Returns:
+            Optional[ActivityType]: The updated entity, or None if not found.
+
+        Raises:
+            HTTPException: If a database integrity error occurs.
+        """
         async for session in self.session():
-            types: ActivityType = (
+            existing_type: ActivityType = (
                 await session.exec(
-                    select(ActivityType).where(ActivityType.id == type.acti)
+                    select(ActivityType).where(ActivityType.id == type_upt.id)
                 )
             ).first()
 
-            if types:
+            if existing_type:
                 if type_upt.activity_name is not None:
-                    types.activity_name = type_upt.activity_name
-
+                    existing_type.activity_name = type_upt.activity_name
                 try:
-                    session.add(types)
+                    session.add(existing_type)
                     await session.commit()
-                    await session.refresh(types)
-                    return types
+                    await session.refresh(existing_type)
+                    return existing_type
                 except IntegrityError:
                     await session.rollback()
                     raise HTTPException(
@@ -80,18 +134,31 @@ class ActivityTypeRepository:
                     )
             return None
 
-    async def delete(self, types_id: int) -> bool:
+    async def delete(self, type_id: int) -> bool:
+        """Delete an activity type by ID.
+
+        Args:
+            type_id (int): The ID of the activity type.
+
+        Returns:
+            bool: True if deletion succeeded.
+
+        Raises:
+            HTTPException: If the entity is not found or a database integrity error occurs.
+        """
         async for session in self.session():
-            types: ActivityType = (
+            existing_type: ActivityType = (
                 await session.exec(
-                    select(ActivityType).where(ActivityType.id == types_id)
+                    select(ActivityType).where(ActivityType.id == type_id)
                 )
             ).first()
-            if not types:
-                raise HTTPException(status_code=404, detail="Activity Type not found")
-
+            if not existing_type:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Activity Type not found",
+                )
             try:
-                await session.delete(types)
+                await session.delete(existing_type)
                 await session.commit()
                 return True
             except IntegrityError:
