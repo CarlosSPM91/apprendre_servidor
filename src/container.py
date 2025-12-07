@@ -312,12 +312,12 @@ class Container(containers.DeclarativeContainer):
         find_case=find_school_subject_case,
     )
 
-    find_student_class_case = providers.Factory(FindStudentClassCase, repo=subject_class_repository)
-    create_student_class_case = providers.Factory(CreateStudentClassCase, repo=subject_class_repository)
-    update_student_class_case = providers.Factory(UpdateStudentClassCase, repo=subject_class_repository)
+    find_student_class_case = providers.Factory(FindStudentClassCase, repo=student_class_repository)
+    create_student_class_case = providers.Factory(CreateStudentClassCase, repo=student_class_repository)
+    update_student_class_case = providers.Factory(UpdateStudentClassCase, repo=student_class_repository)
     delete_student_class_case = providers.Factory(
         DeleteStudentClassCase,
-        repo=subject_class_repository,
+        repo=student_class_repository,
         find_case=find_student_class_case,
     )
     

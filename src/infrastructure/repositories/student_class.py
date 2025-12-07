@@ -5,7 +5,6 @@ from fastapi import HTTPException, status
 from sqlmodel import select
 
 from src.infrastructure.entities.course.student_class import StudentClass
-from src.infrastructure.entities.course.subject_class import SubjectClass
 
 """
 StudentClass Repository.

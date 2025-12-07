@@ -5,6 +5,7 @@ from src.infrastructure.entities.course.student_class import StudentClass
 from src.infrastructure.repositories.student_class import StudentClassRepository
 
 
+
 class UpdateStudentClassCase:
 
     def __init__(self,repo: StudentClassRepository):
