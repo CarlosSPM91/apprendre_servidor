@@ -40,8 +40,6 @@ def student_class_controller(find_case, create_case, update_case, delete_case):
         delete_case=delete_case,
     )
 
-
-
 @pytest.mark.asyncio
 async def test_create_student_class_success(
     student_class_controller, create_case, student_class_dto
@@ -65,12 +63,14 @@ async def test_create_student_class_success(
 async def test_update_student_class_points_success(
     student_class_controller, update_case, find_case, student_class_dto
 ):
+
     mock_response = MagicMock()
     mock_response.item_id = 1
     mock_response.event_date = datetime.now(timezone.utc)
 
-    find_case.get.return_value = MagicMock(id=1)
-    update_case.update.return_value = mock_response
+    find_case.get = AsyncMock(return_value=MagicMock(id=1))
+    update_case.update_points = AsyncMock(return_value=mock_response)
+
 
     response = await student_class_controller.update_points(student_class_dto)
 
@@ -79,7 +79,8 @@ async def test_update_student_class_points_success(
     assert "updated_date" in response["data"]
 
     find_case.get.assert_awaited_once_with(student_class_dto.id)
-    update_case.update.assert_awaited_once_with(student_class_dto)
+    update_case.update_points.assert_awaited_once_with(student_class_dto)
+
 
 
 @pytest.mark.asyncio

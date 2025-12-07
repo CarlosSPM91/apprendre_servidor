@@ -85,13 +85,13 @@ async def test_update_subject_class_success(subject_class_repo, mock_session):
     updated_subject_class_ = SubjectClass(
         id=1,
         class_id=1,
-        professor_id=1,
-        subject_id=2,
+        professor_id=2,
+        subject_id=1,
     )
 
     result = await subject_class_repo.update(updated_subject_class_)
 
-    assert result.subject_id == 2
+    assert result.professor_id == 2
     mock_session.exec.assert_awaited_once()
     mock_session.commit.assert_awaited_once() 
     mock_session.refresh.assert_awaited_once()
