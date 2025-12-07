@@ -112,7 +112,7 @@ async def update(
 
 
 @router.put(
-    "/",
+    "/subjects",
     status_code=status.HTTP_200_OK,
     name="update-class-subjects",
     summary="Update an existing class with subjects",
