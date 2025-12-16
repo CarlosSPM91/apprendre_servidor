@@ -11,7 +11,7 @@ router = APIRouter(prefix="/student_classes", tags=["student_classes"])
 
 
 @router.get(
-    "/all",
+    "{student_class_id}/all",
     status_code=status.HTTP_200_OK,
     name="find",
     summary="Get information of all student classes",
@@ -19,6 +19,7 @@ router = APIRouter(prefix="/student_classes", tags=["student_classes"])
 )
 @inject
 async def find_all(
+    student_class_id: int,
     controller: StudentClassController = Depends(Provide[Container.student_class_controller]),
 ):
     """Retrieve all student classes in the system.
@@ -29,7 +30,7 @@ async def find_all(
     Returns:
         list: List of StudentClass objects.
     """
-    return await controller.get_all()
+    return await controller.get_all(student_class_id)
 
 
 @router.get(

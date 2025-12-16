@@ -18,5 +18,5 @@ class FindStudentClassCase:
             )
         return student_class
 
-    async def get_all(self) -> List[StudentClass]:
-        return await self.repo.get_all()
+    async def get_all(self, class_id: int) -> List[StudentClass]:
+        return await self.repo.get_all(class_id)

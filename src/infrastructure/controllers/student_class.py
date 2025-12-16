@@ -143,7 +143,7 @@ class StudentClassController:
             sentry_sdk.capture_exception(e)
             manage_student_class_except(e)
     
-    async def get_all(self):
+    async def get_all(self, class_id: int):
         """Retrieve all student-class records.
 
         Returns:
@@ -153,7 +153,7 @@ class StudentClassController:
             HTTPException: Propagates exceptions from the use case.
         """
         try:
-            resp = await self.find_case.get_all()
+            resp = await self.find_case.get_all(class_id)
             return {
                 "status": "success",
                 "data": resp
