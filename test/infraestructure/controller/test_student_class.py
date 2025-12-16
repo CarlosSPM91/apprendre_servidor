@@ -123,7 +123,7 @@ async def test_get_all_student_class_success(
 ):
     find_case.get_all.return_value = [student_class_dto]
 
-    response = await student_class_controller.get_all()
+    response = await student_class_controller.get_all(1)
 
     assert response["status"] == "success"
     assert len(response["data"]) == 1
@@ -190,6 +190,6 @@ async def test_get_all_student_class_exception(
     find_case.get_all.side_effect = HTTPException(status_code=500, detail="Error")
 
     with pytest.raises(HTTPException):
-        await student_class_controller.get_all()
+        await student_class_controller.get_all(2)
 
     find_case.get_all.assert_awaited_once()
