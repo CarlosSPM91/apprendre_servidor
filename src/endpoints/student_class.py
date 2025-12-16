@@ -11,7 +11,7 @@ router = APIRouter(prefix="/student_classes", tags=["student_classes"])
 
 
 @router.get(
-    "{student_class_id}/all",
+    "/{student_class_id}/all",
     status_code=status.HTTP_200_OK,
     name="find",
     summary="Get information of all student classes",
